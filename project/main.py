@@ -22,8 +22,9 @@ from kivy.properties import ObjectProperty, NumericProperty
 from kivy.core.window import Window, WindowBase
 from kivy.animation import Animation
 from kivymd.theming import ThemeManager
+from kivymd.pickers import MDThemePicker
 from kivymd.button import MDRaisedButton
-from kivymd.textfields import MDTextField
+from textfields import MDTextField
 import xlrd
 
 import os
@@ -31,7 +32,7 @@ from os.path import sep, expanduser, isdir, dirname
 from kivy.garden.filebrowser import FileBrowser
 from kivy.utils import platform
 
-from database import Database
+from extract import Database
 import re
 
 usernameHash= ''
@@ -79,15 +80,6 @@ class CourseDrop(DropDown):
 class YearDrop(DropDown):
 	pass
 
-#dropDown class for Semester
-class SemesterDrop(DropDown):
-	
-	def on_open(self):
-		pass
-
-	def on_dismiss(self):
-		pass
-
 
 #sidenav class
 class SideNav(ModalView,Database):
@@ -133,11 +125,51 @@ class SideNav(ModalView,Database):
 			self.ids.yearBtn.text=yearNameList[0]
 		if(btn.text=="All"):
 			self.ids.yearBtn.text=txt[0]       #txt is global variable(delclared at on_start) for instant action of year btn
-
+		#UserScreen().ids.batchLabel.text=self.ids.courseBtn.text+"\nBatch:"+self.ids.yearBtn.text
+		#print(UserScreen().ids.batchLabel.text)
+		#print(self.ids.courseBtn.text+"\nBatch:"+self.ids.yearBtn.text)
 
 #popups class
 class LoginPopup(ModalView, Database):
 	#loginTitle= ObjectProperty()
+
+
+	'''
+	underprocess for keydown login
+
+	def __init__(self, **kwargs):
+		super(LoginPopup,self).__init__(**kwargs)
+		self._keyboard= Window.request_keyboard(self._on_keyboard_close, self)
+		#self._keyboard.bind(on_key_down= self._on_keyboard_down)
+
+	def _on_keyboard_close(self):
+		self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+		#self._keyboard.release()
+		self.keyboard=None
+		print("here")
+
+	def _on_keyboard_down(self, keyboard, keycode, text, modifier):
+		#print("herererere")
+		print(keycode)
+		if(keycode[1]=='enter'):
+			self.login()
+		return True
+
+	def login(self):
+		print("Login Success")
+		#self._keyboard.release()
+		print(self._keyboard.target)
+		#self.keyboard.unbind(on_key_down=self.on_keyboard_down)
+
+	def on_dismiss(self):
+		#del self
+		#self._keyboard.target=None
+		self._on_keyboard_close()
+
+	def on_open(self):
+		self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+	'''
 
 	def login(self, username, password):
 		self.username= username
@@ -154,6 +186,12 @@ class LoginPopup(ModalView, Database):
 		else:
 			self.ids.warningInfo.text="Wrong username or password"
 			return False
+
+	def show_password(self, field, button):
+		field.password = not field.password
+		field.focus = True
+		button.icon = 'eye' if button.icon == 'eye-off' else 'eye-off'
+
 
 
 #ScreenManager Class
@@ -235,8 +273,13 @@ class AdminScreen(Screen, Database):
 			self.ids.scrManager.current = 'manageUser'
 		elif instance.text == 'Manage Student':
 			self.ids.scrManager.current = 'manageStudent'
-		else:
+		elif instance.text=='Admin Setting':
 			self.ids.scrManager.current = 'adminSetting'
+		elif instance.text=='App Setting':
+			self.ids.scrManager.current = 'appSetting'
+
+	def theme_picker_open(self):
+		MDThemePicker().open()
 
 	def Add_User_Layout(self):
 		target=self.ids.dyn_input
@@ -399,13 +442,14 @@ class AdminScreen(Screen, Database):
 
 class AccountManagementSystem(App,Database):
 	theme_cls = ThemeManager()
-	theme_cls.primary_palette = 'DeepPurple'
+	theme_cls.primary_palette = 'Red'
+	theme_cls.theme_style='Light'
 
-	red_cls=ThemeManager()
-	red_cls.primary_palette = 'Red'
+	#red_cls=ThemeManager()
+	#red_cls.primary_palette = 'Red'
 
-	green_cls=ThemeManager()
-	green_cls.primary_palette = 'Green'
+	#green_cls=ThemeManager()
+	#green_cls.primary_palette = 'Green'
 
 	def on_start(self):	
 		table_list= self.findTables("student_main.db")
@@ -428,3 +472,6 @@ if __name__ == '__main__':
 	print(Window.position)
 
 	AccountManagementSystem().run()
+
+
+
