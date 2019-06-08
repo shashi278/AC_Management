@@ -32,7 +32,7 @@ from os.path import sep, expanduser, isdir, dirname
 from kivy.garden.filebrowser import FileBrowser
 from kivy.utils import platform
 
-from extract import Database
+from database import Database
 import re
 
 usernameHash= ''
