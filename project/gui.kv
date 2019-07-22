@@ -2,13 +2,14 @@
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
 #:import MDTabbedPanel tabs.MDTabbedPanel
 #:import MDTab tabs.MDTab
-#:import MDTextField kivymd.textfields.MDTextField
+#:import MDTextField textfields.MDTextField
 #:import ThemeManager kivymd.theming.ThemeManager
 #:import MDRaisedButton kivymd.button.MDRaisedButton
 #:import MDRoundFlatIconButton kivymd.button.MDRoundFlatIconButton
-
-
+#:import MDRaisedButton kivymd.button.MDRaisedButton
+#:import MDLabel kivymd.label.MDLabel
 #:import MDCard card.MDCard
+#:import MDTextFieldRound textfields.MDTextFieldRound
 #:import MDSeparator card.MDSeparator
 
 <Section@BoxLayout>:
@@ -279,16 +280,19 @@
 	size_hint_y: 1
     canvas:
         Color:
-            rgba: C("#1B2631")
+            rgba: (.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
         Rectangle:
             pos: self.pos
             size: self.size
+<LabelForList@Label>:
+	color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+	
 
 ##--------------------List Items' Layout---------------------------------------###########
 <Row@BoxLayout>:
 	canvas.before:
 		Color:
-			rgba: C("#17202A")
+			rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -307,7 +311,7 @@
 	#-------S. No. item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.reg
 			font_size:"20dp"
@@ -316,7 +320,7 @@
 	#-------name item--------#
 	ListItemLayout:
 		size_hint:(0.2,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.name
 			font_size:"20dp"
@@ -325,7 +329,7 @@
 	#-------fees item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.fees
 			font_size:"20dp"
@@ -334,7 +338,7 @@
 	#-------paid item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.paid
 			font_size:"20dp"
@@ -343,7 +347,7 @@
 	#-------due item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.due
 			font_size:"20dp"
@@ -352,7 +356,7 @@
 	#-------due item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.late
 			font_size:"20dp"
@@ -360,7 +364,7 @@
 	#-------due item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.date
 			font_size:"20dp"
@@ -369,7 +373,7 @@
 	#-------due item--------#
 	ListItemLayout:
 		size_hint:(0.2,1)
-		Label:
+		LabelForList:
 			id: lbl0
 			text: root.remarks
 			font_size:"20dp"
@@ -378,7 +382,7 @@
 <AdminRow@BoxLayout>:
 	canvas.before:
 		Color:
-			rgba: C("#17202A")
+			rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -391,28 +395,28 @@
 
 	ListItemLayout:
 		size_hint:(0.23,1)
-		Label:
+		LabelForList:
 			text: root.name
 			font_size:"15dp"
 			bold: True
 
 	ListItemLayout:
 		size_hint:(0.23,1)
-		Label:
+		LabelForList:
 			text: root.email
 			font_size:"15dp"
 			bold: True
 
 	ListItemLayout:
 		size_hint:(0.23,1)
-		Label:
+		LabelForList:
 			text: root.username
 			font_size:"15dp"
 			bold: True
 
 	ListItemLayout:
 		size_hint:(0.23,1)
-		Label:
+		LabelForList:
 			text: root.password
 			font_size:"15dp"
 			bold: True
@@ -453,7 +457,7 @@ ScreenManager:
 	#background: "media/images/image.png"
 	AnchorLayout:
 		Video:
-            source: 'Moving_Floor_V1_01.mp4'
+            source: 'vid1.mov'
             size_hint: (None, None)
             size:1400,800
             play:True
@@ -597,7 +601,7 @@ ScreenManager:
 	
 	auto_dismiss: True
 
-	background: "media/images/login3.png"
+	background: "media/images/login4.png"
 	canvas:
 		Color:
 			rgba: (0,0,1,0)
@@ -632,7 +636,7 @@ ScreenManager:
 				text: ""
 				font_size: dp(35)
 				bold: True
-				color: (0, 0, 0, 1)
+				color: (1, 1, 1, 1)
 
 
 		AnchorLayout:
@@ -689,26 +693,26 @@ ScreenManager:
 						height: 40
 						canvas:
 							Color:
-								rgba: (0,0,0,1)
+								rgba: (0,0,0,0)
 							Rectangle:
 								pos: self.pos
 								size: self.size
 
 						#--------username icon-----------##
-						AnchorLayout:
-							size_hint: (None, 1)
-							width: 40
-							BoxLayout:
-								size_hint: (None, None)
-								height: 30
-								width: 30
-								canvas:
-									Color:
-										rgba: (1,1,1,0.7)
-									Rectangle:
-										pos: self.pos
-										size: self.size
-										source: "media/images/user_icon.png"
+						#AnchorLayout:
+						#	size_hint: (None, 1)
+						#	width: 40
+						#	BoxLayout:
+						#		size_hint: (None, None)
+						#		height: 30
+						#		width: 30
+						#		canvas:
+						#			Color:
+						#				rgba: (1,1,1,0.7)
+						#			Rectangle:
+						#				pos: self.pos
+						#				size: self.size
+						#				source: "media/images/user_icon.png"
 
 						#---------username input----------#
 						BoxLayout:
@@ -719,24 +723,25 @@ ScreenManager:
 								Rectangle:
 									pos: self.pos
 									size: self.size
-							TextInput:
+							MDTextFieldRound:
 								id: username_
 								size_hint: (1, 1)
 								hint_text:"Username"
-								background_color: (0, 0, 0, 1)
-								hint_text_color: (1,1,1,0.5)
-								font_size: dp(20)
-								padding: self.size[0]*0.1,self.size[1]/6
-								foreground_color: (1, 1, 1, 1)
+								icon_left: 'account-box'
+								icon_type:'left'
+								#background_color: (0, 0, 0, 1)
+								#hint_text_color: (1,1,1,0.5)
+								#font_size: dp(20)
+								#padding: self.size[0]*0.1,self.size[1]/6
+								#foreground_color: (1, 1, 1, 1)
 								write_tab: False
 								multiline: False
-								cursor_color:(1,1,1,1)
-								on_text_validate:
-									x= root.login(root.ids.username_.text, root.ids.password_.text,)
-									if x: app.root.transition= SlideTransition(direction='left')
-									if x and root.ids.loginTitle.text=="User Login": app.root.current= "userScreen"
-									if x and root.ids.loginTitle.text=="Admin Login": app.root.current= "adminScreen"
-									if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
+								#cursor_color:(1,1,1,1)
+								#on_text_validate:
+									#if x: app.root.transition= SlideTransition(direction='left')
+									#if x and root.ids.loginTitle.text=="User Login": app.root.current= "userScreen"
+									#if x and root.ids.loginTitle.text=="Admin Login": app.root.current= "adminScreen"
+									#if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
 
 
 
@@ -757,56 +762,59 @@ ScreenManager:
 						height: 40
 						canvas:
 							Color:
-								rgba: (0,0,0,1)
+								rgba: (0,0,0,0)
 							Rectangle:
 								pos: self.pos
 								size: self.size
 
 						#--------password icon-----------##
-						AnchorLayout:
-							size_hint: (None, 1)
-							width: 40
-							BoxLayout:
-								size_hint: (None, None)
-								height: 30
-								width: 30
-								canvas:
-									Color:
-										rgba: (1,1,1,0.7)
-									Rectangle:
-										pos: self.pos
-										size: self.size
-										source: "media/images/pass_icon.png"
+						#AnchorLayout:
+						#	size_hint: (None, 1)
+						#	width: 40
+						#	BoxLayout:
+						#		size_hint: (None, None)
+						#		height: 30
+						#		width: 30
+						#		canvas:
+						#			Color:
+						#				rgba: (1,1,1,0.7)
+						#			Rectangle:
+						#				pos: self.pos
+						#				size: self.size
+						#				source: "media/images/pass_icon.png"
 
 						#---------password input----------#
 						BoxLayout:
 							size_hint: (1,1)
 							canvas:
 								Color:
-									rgba: (0,0,0,1)
+									rgba: (0,0,0,0)
 								Rectangle:
 									pos: self.pos
 									size: self.size
-							TextInput:
+							MDTextFieldRound:
 								id: password_
 								size_hint: (1, 1)
 								hint_text:"Password"
+								icon_left: 'key-variant'
+								icon_right: 'eye-off'
+								icon_right_dasabled: False
 								password: True
-								password_mask:"*"
-								background_color: (0, 0, 0, 1)
-								hint_text_color: (1,1,1,0.5)
-								font_size: dp(20)
-								padding: self.size[0]*0.1,self.size[1]/6
-								foreground_color: (1, 1, 1, 1)
+								icon_callback: root.show_password
+								#password_mask:"*"
+								#background_color: (0, 0, 0, 1)
+								#hint_text_color: (1,1,1,0.5)
+								#padding: self.size[0]*0.1,self.size[1]/6
+								#foreground_color: (1, 1, 1, 1)
 								write_tab: False
 								multiline: False
-								cursor_color:(1,1,1,1)
-								on_text_validate:
-									x=root.login(root.ids.username_.text, root.ids.password_.text,)
-									if x: app.root.transition= SlideTransition(direction='left')
-									if x and root.ids.loginTitle.text=="User Login": app.root.current= "userScreen"
-									if x and root.ids.loginTitle.text=="Admin Login": app.root.current= "adminScreen"
-									if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
+								#cursor_color:(1,1,1,1)
+								#on_text_validate:
+									#x=root.login(root.ids.username_.text, root.ids.password_.text,)
+									#if x: app.root.transition= SlideTransition(direction='left')
+									#if x and root.ids.loginTitle.text=="User Login": app.root.current= "userScreen"
+									#if x and root.ids.loginTitle.text=="Admin Login": app.root.current= "adminScreen"
+									#if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
 
 
 
@@ -832,7 +840,7 @@ ScreenManager:
 								size: self.size
 
 						#-----------------login btn-------------#
-						CustomButton:
+						MDFillRoundFlatButton:
 							size_hint: (1, .5)
 							border: (10, 10, 10, 10)
 							background_normal: 'media/images/but_blue_down.png'
@@ -884,12 +892,12 @@ ScreenManager:
 
 	BoxLayout:
 		orientation: 'vertical'
-		canvas:
-			Color:
-				rgb: C("#0face0")
-			Rectangle:
-				pos: self.pos
-				size: self.size
+		#canvas:
+		#	Color:
+		#		rgb: C("#0face0")
+		#	Rectangle:
+		#		pos: self.pos
+		#		size: self.size
 
 		#---------------------------header Area--------------------------------------###########
 		BoxLayout:
@@ -929,11 +937,6 @@ ScreenManager:
 				#	Rectangle:
 				#		pos: self.pos
 				#		size: self.size
-				DropBtn:
-					id:semesterBtn
-					text:"Semester"
-					on_release:
-						root.openSemesterList(self)
 
 
 
@@ -948,7 +951,8 @@ ScreenManager:
 				#		size: self.size
 
 				Label:
-					text: "B.Tech(CSE)\nBatch: 2017-2021"
+					id:batchLabel
+					text: "B.Tech(CSE)\nBatch: Ist Year"
 					halign: "center"
 					color: (0, 0, 0, 1)
 					font_size: 30
@@ -962,10 +966,14 @@ ScreenManager:
 				#	Rectangle:
 				#		pos: self.pos
 				#		size: self.size
-
-				TextInput:
+				MDTextFieldRound:
 					size_hint: (0.7, .5)
-					hint_text: "search"
+					hint_text:"search"
+					icon_left: 'magnify'
+					icon_type:'left'
+					hint_text_color:1,1,1,1
+					active_color: [0, 0, 0, .2]
+					normal_color: [.3, .3, 0.3, .5]
 
 		#-----------------------body section------------------------------------#################
 		BoxLayout:
@@ -1573,16 +1581,16 @@ ScreenManager:
 		#------------Main Layout ---------#
 		BoxLayout:
 			size_hint: (1,0.96)
-			canvas:
-				Color:
-					rgb: C("#00ffff")
-				Rectangle:
-					pos: self.pos
-					size: self.size
+			#canvas:
+			#	Color:
+					#rgb: C("#00ffff")
+			#	Rectangle:
+			#		pos: self.pos
+			#		size: self.size
 			#-------------Side Navigation---------#
 			MDCard:
 				orientation: 'vertical'
-				size_hint: (0.2,1)
+				size_hint: (0.17,1)
 				canvas:
 					Color:
 						rgb: C("#ffffff")
@@ -1592,7 +1600,7 @@ ScreenManager:
 
 				#----------ToggleButtons in here--------------#
 				GridLayout:
-					size_hint: (1,0.6)
+					size_hint: (1,0.7)
 					rows:4
 					spacing:2
 					padding:2
@@ -1631,17 +1639,16 @@ ScreenManager:
 						group: "utilBtns"
 						background_normal: 'media/images/adminsett.png'
 						on_state: root.change_screen(self)
-					#--------invisible btn in initial down state
+					#--------Appsetting btn in initial down state
 					ToggleButton:
-						size_hint:(None,None)
-						height: 0
-						width:0
-						group: 'utilsBtns'
-						state: 'down'
-						background_color: (1, 1, 1, 0)
+						text:"App Setting" if self.state=="down" else ""
+						font_size:25
+						group: 'utilBtns'
+						background_normal: 'media/images/appsetting.png'
+						on_state:root.change_screen(self)
 
 				AnchorLayout:
-					size_hint: (1,0.3)
+					size_hint: (1,0.2)
 					
 					BoxLayout:
 						size_hint: (1,None)
@@ -1676,13 +1683,13 @@ ScreenManager:
 
 			#------------Working Layout---------------------#
 			BoxLayout:
-				size_hint: (0.8,1)
-				canvas:
-					Color:
-						rgb: C("#00ffff")
-					Rectangle:
-						pos: self.pos
-						size: self.size
+				size_hint: (0.83,1)
+				#canvas:
+				#	Color:
+						#rgb: C("#00ffff")
+				#	Rectangle:
+				#		pos: self.pos
+				#		size: self.size
 				ScreenManager:
 					id:scrManager
 
@@ -1693,12 +1700,12 @@ ScreenManager:
 							spacing:8
 							padding:8
 							orientation: 'vertical'
-							canvas:
-								Color:
-									rgb: C("#0054ff")
-								Rectangle:
-									pos: self.pos
-									size: self.size
+							#canvas:
+							#	Color:
+							#		rgb: C("#0054ff")
+							#	Rectangle:
+							#		pos: self.pos
+							#		size: self.size
 							#------------------Users Data types Label------------------#
 							GridLayout:
 								rows: 1
@@ -1707,7 +1714,7 @@ ScreenManager:
 								size: (0,40)
 								canvas:
 									Color:
-										rgb: C("#000000")
+										rgba:app.theme_cls.primary_color
 									Rectangle:
 										pos: self.pos
 										size: self.size
@@ -1779,11 +1786,11 @@ ScreenManager:
 									background_color:(0,0,0,0)
 									text:"+"
 									font_size:30
-									color:0,0,0,1
+									color:1,1,1,1
 									background_normal:""
 									canvas.before:
 										Color:
-											rgba:(1,1,0,1)
+											rgba:app.theme_cls.primary_color
 										Ellipse:
 											size:self.size
 											pos:self.pos
@@ -1806,12 +1813,12 @@ ScreenManager:
 								icon: "playlist-play"
 								BoxLayout:							
 									orientation: 'vertical'
-									canvas:
-										Color:
-											rgba: (1, 1, 1, 1)
-										Rectangle:
-											size:self.size 
-											pos:self.pos
+									#canvas:
+									#	Color:
+									#		rgba: (1, 1, 1, 1)
+									#	Rectangle:
+									#		size:self.size 
+									#		pos:self.pos
 									
 									MDCard:					
 										size_hint: (1,.2)
@@ -1877,19 +1884,19 @@ ScreenManager:
 								icon: "movie"
 								BoxLayout:
 									orientation: 'vertical'
-									canvas:
-										Color:
-											rgba: (1, 1, 1, 1)
-										Rectangle:
-											pos:self.pos
-											size:self.size
+									#canvas:
+									#	Color:
+									#		rgba: (1, 1, 1, 1)
+									#	Rectangle:
+									#		pos:self.pos
+									#		size:self.size
 									MDCard:						
 										size_hint: (1,.2)
 										canvas:
 											Color:
 												rgba: (0, 1, 1, 1)
 											Rectangle:
-												pos: (self.x, self.y)
+												pos: self.pos
 												size: self.size
 										Label:
 											text:"Delete Batch"
@@ -1985,12 +1992,12 @@ ScreenManager:
 								text:"Batch Allocation"
 								BoxLayout:
 									orientation: 'vertical'
-									canvas:
-										Color:
-											rgba:1,1,1,1
-										Rectangle:
-											size:self.size
-											pos:self.pos	
+									#canvas:
+									#	Color:
+									#		rgba:1,1,1,1
+									#	Rectangle:
+									#		size:self.size
+									#		pos:self.pos	
 									MDCard:
 										size_hint: (1,.2)
 										elevation_normal:20
@@ -2012,12 +2019,12 @@ ScreenManager:
 										BoxLayout:
 											padding: 10
 											orientation: 'vertical'
-											canvas:
-												Color:
-													rgba:1,1,1,1
-												Rectangle:
-													size:self.size 
-													pos:self.pos
+											#canvas:
+											#	Color:
+											#		rgba:1,1,1,1
+											#	Rectangle:
+											#		size:self.size 
+											#		pos:self.pos
 											GridLayout:
 												size_hint: (1,.15)
 												padding: 5
@@ -2056,7 +2063,7 @@ ScreenManager:
 									BoxLayout:
 										size_hint: (1,.25)
 
-
+					#----------------Manage Admin Setting--------------#
 					Screen:
 						name:"adminSetting"
 						#BoxLayout:
@@ -2091,6 +2098,30 @@ ScreenManager:
 									elevation_normal: 10
 									opposite_colors: True
 									pos_hint: {'x':.5,'y':0.5}
+
+					#---------------Manage App setting-----------------##
+					Screen:
+						name:"appSetting"
+						BoxLayout:
+							orientation: 'vertical'
+							size_hint_y: None
+							height:dp(80)
+							center_y: self.parent.center_y
+							MDRaisedButton:
+								size_hint: None, None
+								size: 3 * dp(48), dp(48)
+								center_x: self.parent.center_x
+								text: 'Change theme'
+								on_release: root.theme_picker_open()
+								opposite_colors: True
+								pos_hint: {'center_x': .5}
+							MDLabel:
+								text:
+								    "Current: " + app.theme_cls.theme_style\
+								    + ", " + app.theme_cls.primary_palette
+								theme_text_color: 'Primary'
+								pos_hint: {'center_x': .5}
+								halign: 'center'
 
 
 
@@ -2134,7 +2165,7 @@ ScreenManager:
 			size_hint: (1,0.07)
 			canvas:
 				Color:
-					rgba: (0, 0, 1, 1)
+					rgba:app.theme_cls.primary_color
 				Rectangle:
 					pos: (self.x, self.y)
 					size: self.size
@@ -2174,7 +2205,7 @@ ScreenManager:
 			size_hint: (1,0.63)
 			canvas:
 				Color:
-					rgba: (1, 0, 1, 1)
+					rgba:(0.1,0.1,0.1,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
 				Rectangle:
 					pos: (self.x, self.y)
 					size: self.size
@@ -2267,41 +2298,6 @@ ScreenManager:
 		prop: "cors4"
 		text:"PHD(ECE)"
 		on_release: root.select(self)
-
-<SemesterDrop>:
-	DropBtn:
-		prop: "sems1"
-		text:"Ist Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems2"
-		text:"2nd Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems3"
-		text:"3rd Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems4"
-		text:"4th Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems5"
-		text:"5th Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems6"
-		text:"6th Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems7"
-		text:"7th Sem"
-		on_release: root.select(self)
-	DropBtn:
-		prop: "sems8"
-		text:"8th Sem"
-		on_release: root.select(self)
-
 
 
 
