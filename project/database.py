@@ -11,20 +11,19 @@ tmStmp=  "{}{}{}".format(tm.tm_mday,tm.tm_mon,tm.tm_year)
 
 class Database():
 
-	if not os.path.exists("database/"):
-		os.makedirs("database/")
+	def __init__(self):
+		if not os.path.exists("database/"):
+			os.makedirs("database/")
 
-	# .db file
-	db= ""
+		# .db file
+		self.db= ""
 
 	#Insert into database
 	def insert_into_database(self, tableName , conn, data):
 		if conn is not None:
 			try:
 				c= conn.execute("select * from {}".format(tableName))
-				fields= tuple([des[0] for des in c.description][1:])
-				print(fields)
-				print(data)
+				fields= tuple([des[0] for des in c.description][:])
 				cur= conn.cursor()
 				cur.execute(
 					"""
@@ -71,15 +70,15 @@ class Database():
 
 
 	#Search in the database
-	def search_from_database(self,tableName, conn, prop, value):
+	def search_from_database(self,tableName, conn, prop, value, order_by= "reg"):
 		if conn is not None:
 			try:
 				cur= conn.cursor()
 				filtered_list= cur.execute(
 						"""
-							SELECT * FROM {} WHERE {} LIKE ? ORDER BY id;
-						""".format(tableName, prop),
-						(value+'%',)
+							SELECT * FROM {} WHERE {} LIKE ? ORDER BY {};
+						""".format(tableName, prop, order_by),
+						(str(value)+'%',)
 					).fetchall()
 
 				return filtered_list
@@ -90,13 +89,13 @@ class Database():
 
 
 	#connect database
-	def connect_database(self):
+	def connect_database(self, db_file):
 		try:
-			conn= sqlite3.connect(self.db)
+			conn= sqlite3.connect("database/"+db_file)
 			return conn
 
 		except Error as e:
-			print("Error in databse: {}".format(e))
+			print("Error in database: {}".format(e))
 
 		return None
 
@@ -115,36 +114,37 @@ class Database():
 		else: print("conn is none")
 
 	def findTables(self, db_file):
-		self.db= "database/"+db_file
-		conn= self.connect_database()
+		#self.db= "database/"+db_file
+		conn= self.connect_database(db_file)
 		if conn is not None:
 			cur= conn.cursor()
 			cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
 			return [each[0] for each in cur.fetchall()]
-		conn.close()
+		#conn.close()
 
 		
-	def readFile(self, db_file, table, tableName, file_name ):
+	def readFile(self, db_file, table, tableName, file_name, **kwargs):
 
 		table= table.format(tableName)
 
 		wb= xlrd.open_workbook(file_name)
 		sheet= wb.sheet_by_index(0)
-		self.db= "database/"+db_file
-		conn= self.connect_database()
+		#self.db= "database/"+db_file
+		conn= self.connect_database(db_file)
 
 		if conn is not None:
 			self.create_table(table,conn)
 
 			for i in range(1,sheet.nrows):
-				data= (sheet.cell_value(i,0),sheet.cell_value(i,1),sheet.cell_value(i,2))
+				data= (sheet.cell_value(i,1), sheet.cell_value(i,2), kwargs["course"], kwargs["stream"],\
+					kwargs["fromYear"]+"-"+kwargs["toYear"], kwargs["fee"])
 				self.insert_into_database(tableName,conn, data)
 
 	def addData(self, db_file, table, tableName, data):
 
 		table= table.format(tableName)
-		self.db= self.db= "database/"+db_file
-		conn= self.connect_database()
+		#self.db= self.db= "database/"+db_file
+		conn= self.connect_database(db_file)
 
 		if conn is not None:
 			self.create_table(table, conn)
@@ -152,8 +152,8 @@ class Database():
 
 	def extractAllData(self, db_file, tableName):
 
-		self.db= "database/"+db_file
-		conn= self.connect_database()
+		#self.db= "database/"+db_file
+		conn= self.connect_database(db_file)
 
 		if conn is not None:
 			cur= conn.execute("SELECT * FROM {}".format(tableName))
