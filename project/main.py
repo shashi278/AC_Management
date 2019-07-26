@@ -21,29 +21,29 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty, NumericProperty
 from kivy.core.window import Window, WindowBase
 from kivy.animation import Animation
-from kivymd.theming import ThemeManager
-from kivymd.pickers import MDThemePicker
-from kivymd.button import MDRaisedButton
-from textfields import MDTextField
-import xlrd
-
-import os
-from os.path import sep, expanduser, isdir, dirname
+from kivy.clock import Clock
+from kivy.metrics import dp, sp
 from kivy.garden.filebrowser import FileBrowser
 from kivy.utils import platform
 
-from database import Database
+from kivymd.theming import ThemeManager
+from kivymd.pickers import MDThemePicker
+from kivymd.button import MDRaisedButton
+from kivymd.textfields import MDTextField
+
 import re
+import xlrd
+import os
+from os.path import sep, expanduser, isdir, dirname
+
+from database import Database
 
 usernameHash= ''
 passwordHash= ''
 
-###########################Global variables##########################
-yearNameList=["Ist Year","2nd Year","3rd Year","4th Year"]
-txt=[]
-#####################################################################
 class InfoPopup(ModalView):
 	pass
+
 class UserInfoEdit(ModalView):
 	pass
 
@@ -52,9 +52,9 @@ class UpdateStudentInfo(ModalView):
 
 class DeleteWarnPopup(ModalView):
 	def onHitConfirm(self):
-		#data base part
-		#self.ids.label.text="Are you sure to delete year "++" and batch "+
 		pass
+
+
 class CircularToggleButton(BoxLayout,ToggleButton):
 	pass
 
@@ -65,15 +65,13 @@ class DropBtn(MDRaisedButton):
 
 #dropDown class for Session
 class SessionDrop(DropDown):
-
-	def on_open(self):
-		pass
-
-	def on_dismiss(self):
-		pass
+	pass
 
 #dropDown class for Course&Stream
 class CourseDrop(DropDown):
+	pass
+
+class StreamDrop(DropDown):
 	pass
 
 #dropDown class for year
@@ -83,8 +81,6 @@ class YearDrop(DropDown):
 
 #sidenav class
 class SideNav(ModalView,Database):
-	#SessionBtn=ObjectProperty()
-	#CourseBtn=ObjectProperty()
 	def openSessionList(self,instance):
 		dropdown= SessionDrop()
 		dropdown.open(instance)
@@ -124,59 +120,14 @@ class SideNav(ModalView,Database):
 		if(btn.text=="Current Session"):
 			self.ids.yearBtn.text=yearNameList[0]
 		if(btn.text=="All"):
-			self.ids.yearBtn.text=txt[0]       #txt is global variable(delclared at on_start) for instant action of year btn
-		#UserScreen().ids.batchLabel.text=self.ids.courseBtn.text+"\nBatch:"+self.ids.yearBtn.text
-		#print(UserScreen().ids.batchLabel.text)
-		#print(self.ids.courseBtn.text+"\nBatch:"+self.ids.yearBtn.text)
+			self.ids.yearBtn.text=txt[0]
 
 #popups class
 class LoginPopup(ModalView, Database):
-	#loginTitle= ObjectProperty()
-
-
-	'''
-	underprocess for keydown login
-
-	def __init__(self, **kwargs):
-		super(LoginPopup,self).__init__(**kwargs)
-		self._keyboard= Window.request_keyboard(self._on_keyboard_close, self)
-		#self._keyboard.bind(on_key_down= self._on_keyboard_down)
-
-	def _on_keyboard_close(self):
-		self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-		#self._keyboard.release()
-		self.keyboard=None
-		print("here")
-
-	def _on_keyboard_down(self, keyboard, keycode, text, modifier):
-		#print("herererere")
-		print(keycode)
-		if(keycode[1]=='enter'):
-			self.login()
-		return True
-
-	def login(self):
-		print("Login Success")
-		#self._keyboard.release()
-		print(self._keyboard.target)
-		#self.keyboard.unbind(on_key_down=self.on_keyboard_down)
-
-	def on_dismiss(self):
-		#del self
-		#self._keyboard.target=None
-		self._on_keyboard_close()
-
-	def on_open(self):
-		self._keyboard.bind(on_key_down=self._on_keyboard_down)
-
-	'''
 
 	def login(self, username, password):
 		self.username= username
 		self.password= password
-
-		#print("username: ", self.username)
-		#print("password: ", self.password)
 
 		if(self.username==usernameHash and self.password==passwordHash):
 			self.ids.warningInfo.text=""
@@ -192,12 +143,32 @@ class LoginPopup(ModalView, Database):
 		field.focus = True
 		button.icon = 'eye' if button.icon == 'eye-off' else 'eye-off'
 
+class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
+	def __init__(self, **kwargs):
+		super(ListItemLayout, self).__init__(**kwargs)
+
+	def on_touch_down(self, touch):
+
+		collide_point= self.collide_point(touch.x, touch.y)
+		if collide_point:
+			touch.grab(self)
+			self.ripple_show(touch)
+			return True
+		return False
+
+	def on_touch_up(self, touch):
+		if touch.grab_current is self:
+			self.parent.parent.parent.parent.parent.parent.parent.parent.manager.ids.profilePage.reg_no= \
+			self.parent.ids.lbl1.text
+			touch.ungrab(self)
+			self.ripple_fade()
+			return True
+		return False
 
 #ScreenManager Class
 class ScreenManager(ScreenManager):
 	pass
-
 
 #HomeScreen Class
 class HomeScreen(Screen):
@@ -209,10 +180,33 @@ class HomeScreen(Screen):
 		lp.ids.loginTitle.text= "{} Login".format(title)
 		lp.open()
 
-
-
 #UserScreen
 class UserScreen(Screen,Database):
+
+	def onStartUserScr(self):
+
+		#should be fixed inside MDIconButton in md library itself
+		self.ids.hamburger.ids.lbl_txt.text_size= (sp(80), sp(80))
+		self.ids.hamburger.ids.lbl_txt.font_size= sp(60)
+
+		self.ids.search.text=''
+
+		#--------------Update Student list---------------------#
+		self.ids.rv.data=[]
+		try:
+			data_list= self.extractAllData("student_main.db", "General_record")
+			for counter, each in enumerate(data_list,1):
+				x={
+				"sno": counter,
+				"reg": each[0],
+				"name": each[1],
+				"course": each[2],
+				"stream": each[3],
+				"batch": each[4]
+				}
+				self.ids.rv.data.append(x)
+		except:
+			pass
 
 	def openSemesterList(self,instance):
 		semesterBtn=self.ids.semesterBtn
@@ -246,6 +240,126 @@ class UserScreen(Screen,Database):
 		sn= SideNav()
 		sn.open()
 
+	def search(self, text):
+		print(text)
+		if not text:
+			self.onStartUserScr()
+			return
+
+		filtered_list= []
+		conn= self.connect_database("student_main.db")
+
+		try:
+			text= int(text)
+			prop_list= ["reg",] if len(str(text))<4 else ["reg", "batch"]
+
+		except:
+			prop_list=["stream", "course", "name", "batch"]
+
+		for prop in prop_list:
+			filtered_list.extend(self.search_from_database("General_record", conn, prop, text))
+		
+		self.populate_on_search( sorted(list(set(filtered_list))) )
+
+
+
+
+	def populate_on_search(self, filtered_list):
+		self.ids.rv.data=[]
+
+		for counter, each in enumerate(filtered_list,1):
+			x={
+				"sno": counter,
+				"reg": each[0],
+				"name": each[1],
+				"course": each[2],
+				"stream": each[3],
+				"batch": each[4]
+				}
+			self.ids.rv.data.append(x)
+
+#ProfilePage
+class ProfilePage(Screen, Database):
+
+	reg_no=0
+
+	def on_enter(self, *args):
+		Clock.schedule_interval(self.set_button_width, 0)
+		self.extract_data("student_main.db", "General_record")
+
+		Clock.schedule_interval(self.set_name_info, 0)
+		Clock.schedule_interval(self.set_roll_info, 0)
+		Clock.schedule_once(self.schedule,0.5)
+
+		Animation(opacity=1, d=.5).start(self.ids.box)
+
+	def schedule(self, interval):
+		Clock.schedule_interval(self.set_course_info, 0.01)
+		Clock.schedule_interval(self.set_stream_info, 0.01)
+		Clock.schedule_interval(self.set_batch_info, 0.01)
+		Clock.schedule_interval(self.set_fee_info, 0.01)
+
+	def on_leave(self, *args):
+		self.ids.name.text=''
+		self.ids.roll.text=''
+		self.ids.course.info_name=''
+		self.ids.stream.info_name=''
+		self.ids.batch.info_name=''
+		self.ids.fee.info_name=''
+
+	def set_name_info(self, interval):
+		try:
+			self.ids.name.text+=next(self.n)
+		except StopIteration:
+			Clock.unschedule(self.set_name_info)
+
+	def set_roll_info(self, interval):
+		try:
+			self.ids.roll.text += next(self.r)
+		except StopIteration:
+			Clock.unschedule(self.set_roll_info)
+
+	def set_course_info(self, interval):
+		try:
+			self.ids.course.info_name+=next(self.c)
+		except StopIteration:
+			Clock.unschedule(self.set_course_info)
+
+	def set_stream_info(self, interval):
+		try:
+			self.ids.stream.info_name+=next(self.s)
+		except StopIteration:
+			Clock.unschedule(self.set_stream_info)
+
+	def set_batch_info(self, interval):
+		try:
+			self.ids.batch.info_name+=next(self.b)
+		except StopIteration:
+			Clock.unschedule(self.set_batch_info)
+
+	def set_fee_info(self, interval):
+		try:
+			self.ids.fee.info_name+=next(self.f)
+		except StopIteration:
+			Clock.unschedule(self.set_fee_info)
+
+	def set_button_width(self, interval):
+		self.ids.button.width = Window.width - (dp(50) + self.ids.button.height)
+
+	def extract_data(self, db_name, table_name):
+		conn= self.connect_database("student_main.db")
+
+		try:
+			data_tuple= self.search_from_database(table_name, conn, "reg", self.reg_no)[0]
+			self.r= iter(list("Registration Number: {}".format(data_tuple[0])))
+			self.n= iter(list(data_tuple[1]))
+			self.b= iter(list(data_tuple[4]))
+			self.c= iter(list(data_tuple[2]))
+			self.s= iter(list(data_tuple[3]))
+			self.f= iter(list(str(data_tuple[5])))
+		except:
+			pass
+
 
 
 #AdminScreen
@@ -264,8 +378,6 @@ class AdminScreen(Screen, Database):
 			"password": each[4]
 			}
 			self.ids.rv.data.insert(0,x)
-
-		#print(self.ids.rv.data)
 		#--------------------------------------------#
 
 	def change_screen(self, instance):
@@ -287,7 +399,8 @@ class AdminScreen(Screen, Database):
 		usr_email=TextInput(size_hint=(.2,1),hint_text="E-mail id",write_tab=False)
 		usr_username=TextInput(size_hint=(.2,1),hint_text="Username",write_tab=False)
 		usr_password=TextInput(size_hint=(.2,1),hint_text="Password")
-		usr_submit=MDRaisedButton(size_hint=(.2,1),text="Submit",on_release=lambda x: self.Add_User(usr_name.text,usr_email.text,usr_username.text,usr_password.text))
+		usr_submit=MDRaisedButton(size_hint=(.2,1),text="Submit",on_release=lambda x: \
+			self.Add_User(usr_name.text,usr_email.text,usr_username.text,usr_password.text))
 
 		target.add_widget(usr_name)
 		target.add_widget(usr_email)
@@ -318,24 +431,33 @@ class AdminScreen(Screen, Database):
 				"""
 		data= (name, email, username, password)
 		self.addData("user_all.db", table, "users", data)
-	def connectFileSelector(self, fromYear, toYear,btntxt):
-		if(fromYear=="" or toYear=="" ):
+
+
+	def connectFileSelector(self, fromYear, toYear, course, stream, fee):
+		if(fromYear=="" or toYear=="" or fee==""):
 			op=InfoPopup()
-			op.ids.label.text="Please fill All required Fields !"
+			op.ids.label.text="Please fill in all required fields."
 			op.open()
-		elif(btntxt=="Select Course"):
+
+		elif(course=="Select Course"):
 			op=InfoPopup()
-			op.ids.label.text="Please Select Course !"
+			op.ids.label.text="Please Select Course."
+			op.open()
+		elif(stream=="Select Stream"):
+			op=InfoPopup()
+			op.ids.label.text="Please Select Stream."
 			op.open()
 		else:
-			self.open_FileSelector(fromYear,toYear)
+			self.fields= {
+						"fromYear": fromYear,
+						"toYear": toYear,
+						"course": course,
+						"stream": stream,
+						"fee": fee
+						}	
+			self.open_FileSelector()
 
-	def open_FileSelector(self, fromYear, toYear):
-
-		#global fromYear
-		#fromYear= fromYear
-
-		self.table_name= "year_{}_{}".format(fromYear,toYear)
+	def open_FileSelector(self):
 
 		if platform == 'win':
 			user_path = dirname(expanduser('~')) + sep + 'Documents'
@@ -346,7 +468,7 @@ class AdminScreen(Screen, Database):
 							on_canceled=self._fbrowser_canceled)
 		global fpopup
 		fpopup = Popup(content=self._fbrowser,title_align="center",title="Select File",
-						size_hint=(0.7, 0.9), auto_dismiss=True)
+						size_hint=(0.7, 0.9), auto_dismiss=False)
 		fpopup.open()
 
 	def _fbrowser_canceled(self, instance):
@@ -358,16 +480,10 @@ class AdminScreen(Screen, Database):
 		 selected_path= instance.selection[0]
 		 fpopup.dismiss()
 
-		 table=	"""
-					CREATE TABLE IF NOT EXISTS {} (
-					id INTEGER PRIMARY KEY,
-					roll_no VARCHAR NOT NULL,
-					reg_no INT NOT NULL,
-					name VARCHAR NOT NULL
-					)
-				"""
-
-		 self.readFile("student_main.db", table, self.table_name, selected_path)
+		 with open("general_record.sql") as table:
+		 	self.readFile("student_main.db", table.read(), "General_record", selected_path, \
+		 		fromYear= self.fields["fromYear"], toYear= self.fields["toYear"], course= self.fields["course"],\
+		 		stream= self.fields["stream"], fee= self.fields["fee"])
 		 
 
 	def openEditPopup(self):					#for edit user information open popup
@@ -386,6 +502,11 @@ class AdminScreen(Screen, Database):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
 		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn3))
+
+	def openStreamList(self,instance):
+		dropdown= StreamDrop()
+		dropdown.open(instance)
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, (self.ids.streamBtn)))
 
 	def openYearList(self,instance):
 		dropdown= YearDrop()
@@ -439,23 +560,10 @@ class AdminScreen(Screen, Database):
 			DeleteWarnPopup().open()
 
 #Main App
-
 class AccountManagementSystem(App,Database):
 	theme_cls = ThemeManager()
-	theme_cls.primary_palette = 'Red'
+	theme_cls.primary_palette = 'Blue'
 	theme_cls.theme_style='Light'
-
-	#red_cls=ThemeManager()
-	#red_cls.primary_palette = 'Red'
-
-	#green_cls=ThemeManager()
-	#green_cls.primary_palette = 'Green'
-
-	def on_start(self):	
-		table_list= self.findTables("student_main.db")
-		for name in table_list:
-			years= re.search(".*_(\\d+)_(\\d+)", name)
-			txt.append("{}-{}".format(years.group(1), years.group(2)))
 
 	def build(self):
 		return Builder.load_file("gui.kv")
@@ -468,10 +576,5 @@ if __name__ == '__main__':
 	#Window.size=(900,700)
 	Window.minimum_width= 900
 	Window.minimum_height=700
-	print("window size:",Window.size)
-	print(Window.position)
 
 	AccountManagementSystem().run()
-
-
-
