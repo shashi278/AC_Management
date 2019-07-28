@@ -292,9 +292,6 @@
             pos: self.pos
             size: self.size
 
-    on_touch_up:
-    	app.root.transition= RiseInTransition()
-    	app.root.current= "profilepage"
 
 #---------------used in profile page----------#
 <ListItemLayoutProfile@BoxLayout>:
@@ -538,7 +535,7 @@
 	AnchorLayout:
 		canvas:
 			Color:
-				rgba: (.8, .8, .8, 1)
+				rgba: (1,1,1,1)
 			RoundedRectangle:
 				size:self.size
 				pos: self.pos
@@ -1631,15 +1628,15 @@ ScreenManager:
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Course"
-														on_release:root.openCourseList(self)
+														on_release:root.openCourseList1(self)
 													MDRaisedButton:
 														size_hint: None, None
 														size: 100, 50
-														id:streamBtn
+														id:streamBtn1
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Stream"
-														on_release:root.openStreamList(self)
+														on_release:root.openStreamList1(self)
 											BoxLayout:
 												MDRaisedButton:
 													size_hint: (1,.25)
@@ -1715,19 +1712,19 @@ ScreenManager:
 													MDRaisedButton:
 														size_hint: None, None
 														size: 100, 50
-														id:courseBtn1
+														id:courseBtn2
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Course"
-														on_release:root.openCourseList(self)
+														on_release:root.openCourseList2(self)
 													MDRaisedButton:
 														size_hint: None, None
 														size: 100, 50
-														id:streamBtn
+														id:streamBtn2
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Stream"
-														on_release:root.openStreamList(self)
+														on_release:root.openStreamList2(self)
 											BoxLayout:
 												MDRaisedButton:
 													size_hint: (1,.25)
@@ -1780,34 +1777,24 @@ ScreenManager:
 														self.text =self.text[:4] if len(self.text)>4 else self.text
 
 											AnchorLayout:
-												spacing: 50
+												canvas:
+													Color:
+														rgba: (0, 1, 1, 1)
+													Rectangle:
+														size:self.size 
+														pos:self.pos
 												BoxLayout:
 													spacing: 50
 													size_hint: None, None
 													width: self.minimum_width
 													height: self.minimum_height
 
-
-													MDRaisedButton:
-														size_hint: None, None
-														size: 100, 50
-														id:courseBtn1
-														elevation_normal:10
-														opposite_colors: True
-														text:"Select Course"
-														on_release:root.openCourseList(self)
-													MDRaisedButton:
-														size_hint: None, None
-														size: 100, 50
-														id:streamBtn
-														elevation_normal:10
-														opposite_colors: True
-														text:"Select Stream"
-														on_release:root.openStreamList(self)
 											BoxLayout:
+												size_hint_y: .17
 												MDRaisedButton:
-													size_hint: (1,.25)
-													text: 'Delete Batch'
+													id:update
+													size_hint: (1,1)
+													text: 'Update'
 													elevation_normal: 10
 													opposite_colors: True
 													on_release:
@@ -1820,15 +1807,6 @@ ScreenManager:
 					#----------------Manage Admin Setting--------------#
 					Screen:
 						name:"adminSetting"
-						#BoxLayout:
-						#	canvas:
-						#		Color:
-						#			rgb: C("#0464ff")
-						#		Rectangle:
-						#			pos: self.pos
-						#			size: self.size
-						#	Label:
-						#		text:"Admin Setting"
 						MDTabs:
 							id: tab_panel
 							tab_display_mode:'text'
