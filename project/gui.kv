@@ -292,9 +292,10 @@
             pos: self.pos
             size: self.size
 
-    on_touch_up:
-    	app.root.transition= RiseInTransition()
-    	app.root.current= "profilepage"
+    #on_touch_down:
+    	#print("touched down")
+    #	app.root.transition= RiseInTransition()
+    #	app.root.current= "profilepage"
 
 #---------------used in profile page----------#
 <ListItemLayoutProfile@BoxLayout>:
@@ -306,7 +307,7 @@
             pos: self.pos
             size: self.size
 
-    on_touch_up: None
+    #on_touch_up: None
 
 
 <LabelForList@Label>:
@@ -429,6 +430,10 @@
 	#-------S. No. item--------#
 	ListItemLayout:
 		size_hint:(0.05,1)
+		#on_touch_down:
+		#	print("touched downn")
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl0
 			text: str(root.sno)
@@ -436,37 +441,56 @@
 	#---------reg. no.-----------#
 	ListItemLayout:
 		size_hint:(0.1,1)
+		#on_touch_down:
+		#	print("touched downn")
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl1
 			text: str(root.reg)
+		
 
 	#-------name item--------#
 	ListItemLayout:
 		size_hint:(0.2,1)
+		#on_touch_down:
+		#	print("touched downn")
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl2
 			text: root.name
+		
 
 	#-------course item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl3
 			text: root.course
+		
 
 	#-------stream item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl4
 			text: root.stream
+		
 
 	#-------batch item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl5
 			text: root.batch
+		
 
 <AdminRow@BoxLayout>:
 	canvas.before:
@@ -1044,7 +1068,7 @@ ScreenManager:
 					icon: "menu"
 					theme_text_color: "Custom"
 					text_color: [1,1,1,1]
-					size: sp(90), sp(90)
+					icon_size: 55
 					on_release:
 						root.open_sideNav()
 
