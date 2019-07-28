@@ -9,7 +9,7 @@
 #imports here
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, RiseInTransition
 from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
@@ -147,11 +147,13 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 	def __init__(self, **kwargs):
 		super(ListItemLayout, self).__init__(**kwargs)
+		
 
 	def on_touch_down(self, touch):
-
 		collide_point= self.collide_point(touch.x, touch.y)
 		if collide_point:
+			#print("touched down")
+			self.root= self.parent.parent.parent.parent.parent.parent.parent.parent.manager
 			touch.grab(self)
 			self.ripple_show(touch)
 			return True
@@ -159,10 +161,12 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 	def on_touch_up(self, touch):
 		if touch.grab_current is self:
-			self.parent.parent.parent.parent.parent.parent.parent.parent.manager.ids.profilePage.reg_no= \
-			self.parent.ids.lbl1.text
+			#print("touched up")
 			touch.ungrab(self)
 			self.ripple_fade()
+			self.root.ids.profilePage.reg_no= self.parent.ids.lbl1.text
+			self.root.transition= RiseInTransition()
+			self.root.current= "profilepage"
 			return True
 		return False
 
@@ -185,9 +189,7 @@ class UserScreen(Screen,Database):
 
 	def onStartUserScr(self):
 
-		#should be fixed inside MDIconButton in md library itself
-		self.ids.hamburger.ids.lbl_txt.text_size= (sp(80), sp(80))
-		self.ids.hamburger.ids.lbl_txt.font_size= sp(60)
+		#self.ids.hamburger.ids.lbl_text.text
 
 		self.ids.search.text=''
 
@@ -241,7 +243,6 @@ class UserScreen(Screen,Database):
 		sn.open()
 
 	def search(self, text):
-		print(text)
 		if not text:
 			self.onStartUserScr()
 			return
