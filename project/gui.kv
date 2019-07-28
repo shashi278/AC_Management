@@ -304,7 +304,6 @@
             size: self.size
 
 
-
 <LabelForList@Label>:
 	font_size:"20dp"
 	bold: True
@@ -432,20 +431,25 @@
 	#---------reg. no.-----------#
 	ListItemLayout:
 		size_hint:(0.1,1)
+		#on_touch_down:
+		#	print("touched downn")
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl1
 			text: str(root.reg)
-
+      
 	#-------name item--------#
 	ListItemLayout:
 		size_hint:(0.2,1)
 		LabelForList:
 			id: lbl2
 			text: root.name
-
 	#-------course item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
+		#on_touch_up:
+    	#	print("touched upp")
 		LabelForList:
 			id: lbl3
 			text: root.course
@@ -594,7 +598,6 @@
 				elevation_normal: 8
 				md_bg_color: app.theme_cls.primary_color
 				on_release:root.dismiss()
-
 
 
 #root of the app
@@ -770,6 +773,7 @@ ScreenManager:
                                 height: self.minimum_height
                                 orientation: "vertical"
                                 spacing: dp(5)
+
         MDFloatingActionButton:
 	        icon: "plus"
 	        md_bg_color: app.theme_cls.primary_color
@@ -782,11 +786,9 @@ ScreenManager:
 <HomeScreen>:
 
 	name:"homeScreen"
-
-	#background: "media/images/image.png"
 	AnchorLayout:
 		Video:
-            #source: 'Moving_Floor_V1_01.mp4'
+            #source: 'media/videos/Moving_Floor.mp4'
             size_hint: (None, None)
             size:1400,800
             play:True
@@ -794,20 +796,6 @@ ScreenManager:
 
 		BoxLayout:
 			orientation: 'vertical'
-
-			#background: "media/images/but_blue_down.png"
-			#background_image: "media/images/image.png"
-
-			#canvas.before:
-				#Color:
-					#rgba:(1,1,1,0)
-					#2E4053
-
-				#Rectangle:
-				#	pos: self.pos
-				#	size: self.size
-				#	source:"media/images/back5.jpg"
-
 			BoxLayout:
 				size_hint: (1,0.55)
 				orientation: 'vertical'
@@ -861,40 +849,15 @@ ScreenManager:
 				orientation: 'vertical'
 				size_hint: (1,0.45)
 
-				#canvas:
-				#	Color:
-				#		rgb: C("#2CAADD")
-				#	Rectangle:
-				#		pos: self.pos
-				#		size: self.size
-
-				#contains main buttons------------------------------
+				#contains main buttons----------
 				BoxLayout:
 					size_hint: (1,0.4)
-					#canvas:
-					#	Color:
-					#		rgb: C("#2CAADD")
-					#	Rectangle:
-					#		pos: self.pos
-					#		size: self.size
-
 					AnchorLayout:
-
 						anchor_x: 'center'
 						anchor_y: 'center'
-
-						#canvas:
-						#	Color:
-						#		rgb: C("#f39c12")
-						#		#edbb99
-						#	Rectangle:
-						#		pos: self.pos
-						#		size: self.size
-
 						Button:
 							size_hint: None, None
 							size: 125,145
-							#text: "User"
 							border: (0, 0, 0, 0)
 							background_normal: 'media/images/multi_user3.png'
 							background_down: 'media/images/multi_user3_down.png'
@@ -906,17 +869,9 @@ ScreenManager:
 						anchor_x: 'center'
 						anchor_y: 'center'
 
-						#canvas:
-						#	Color:
-						#		rgb: C("#f39c12")
-						#	Rectangle:
-						#		pos: self.pos
-						#		size: self.size
-
 						Button:
 							size_hint: None, None
 							size: 120,120
-							#text: "User"
 							border: (0, 0, 0, 0)
 							background_normal: 'media/images/admin3.png'
 							background_down: 'media/images/admin3_down.png'
@@ -927,12 +882,6 @@ ScreenManager:
 				##-------------labels------------------------###############
 				BoxLayout:
 					size_hint:1,.2
-					#canvas:
-					#	Color:
-					#		rgb: C("#a0b0c0")
-					#	Rectangle:
-					#		pos: self.pos
-					#		size: self.size
 
 					AnchorLayout:
 						anchor_x: "center"
@@ -960,12 +909,6 @@ ScreenManager:
 				#blankkkkkkk-------------__#######
 				BoxLayout:
 					size_hint: (1,0.4)
-					#canvas:
-					#	Color:
-					#		rgb: C("#000000")
-					#	Rectangle:
-					#		pos: self.pos
-					#		size: self.size
 
 
 
@@ -1917,8 +1860,6 @@ ScreenManager:
 				Rectangle:
 					pos: (self.x, self.y)
 					size: self.size
-			
-
 
 
 #-------------------------Drop Downs Buttons--------------------------#

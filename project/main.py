@@ -9,7 +9,7 @@
 #imports here
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen,RiseInTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, RiseInTransition
 from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
@@ -85,6 +85,7 @@ class SideNav(ModalView,Database):
 		
 class AddDataLayout(ModalView,Database):
 	pass
+
 #popups class
 class LoginPopup(ModalView, Database):
 
@@ -154,7 +155,7 @@ class UserScreen(Screen,Database):
 		#should be fixed inside MDIconButton in md library itself
 		self.ids.hamburger.ids.lbl_txt.text_size= (sp(80), sp(80))
 		self.ids.hamburger.ids.lbl_txt.font_size= sp(60)
-
+    
 		self.ids.search.text=''
 
 		#--------------Update Student list---------------------#
@@ -207,7 +208,6 @@ class UserScreen(Screen,Database):
 		sn.open()
 
 	def search(self, text):
-		print(text)
 		if not text:
 			self.onStartUserScr()
 			return
@@ -226,8 +226,6 @@ class UserScreen(Screen,Database):
 			filtered_list.extend(self.search_from_database("General_record", conn, prop, text))
 		
 		self.populate_on_search( sorted(list(set(filtered_list))) )
-
-
 
 
 	def populate_on_search(self, filtered_list):
@@ -362,7 +360,6 @@ class ProfilePage(Screen, Database):
 				d=0.3
 			)
 		anim.start(instance)
-
 
 
 
@@ -502,7 +499,6 @@ class AdminScreen(Screen, Database):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
 		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn2))
-	
 
 	def openStreamList1(self,instance):
 		dropdown= StreamDrop()
