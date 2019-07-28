@@ -81,46 +81,10 @@ class YearDrop(DropDown):
 
 #sidenav class
 class SideNav(ModalView,Database):
-	def openSessionList(self,instance):
-		dropdown= SessionDrop()
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance, btn,self.ids.sessionBtn))
-
-	def openCourseList(self,instance):
-		dropdown= CourseDrop()
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn))
-
-	def openYearList(self,instance):
-		dropdown= YearDrop()
+	pass
 		
-		if(self.ids.sessionBtn.text=="Current Session"):
-			for name in yearNameList:			#yearNameList global variable
-				dropBtn= DropBtn(text=name)
-				dropBtn.bind(on_release=lambda dropBtn: dropdown.select(dropBtn))
-				dropdown.add_widget(dropBtn)
-
-		if(self.ids.sessionBtn.text=="All"):
-			table_list= self.findTables("student_main.db")
-			for name in table_list:
-				years= re.search(".*_(\\d+)_(\\d+)", name)
-				txt1=("{}-{}".format(years.group(1), years.group(2)))
-				dropBtn= DropBtn(text=txt1)
-				dropBtn.bind(on_release=lambda dropBtn: dropdown.select(dropBtn))
-				dropdown.add_widget(dropBtn)
-
-
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.yearBtn))
-		
-
-	def onSelect(self, inst, btn, mainBtn):
-		mainBtn.text= btn.text
-		print("Button text=",btn.text)
-		if(btn.text=="Current Session"):
-			self.ids.yearBtn.text=yearNameList[0]
-		if(btn.text=="All"):
-			self.ids.yearBtn.text=txt[0]
+class AddDataLayout(ModalView,Database):
+	pass
 
 #popups class
 class LoginPopup(ModalView, Database):
@@ -147,7 +111,6 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 	def __init__(self, **kwargs):
 		super(ListItemLayout, self).__init__(**kwargs)
-		
 
 	def on_touch_down(self, touch):
 		collide_point= self.collide_point(touch.x, touch.y)
@@ -189,8 +152,10 @@ class UserScreen(Screen,Database):
 
 	def onStartUserScr(self):
 
-		#self.ids.hamburger.ids.lbl_text.text
-
+		#should be fixed inside MDIconButton in md library itself
+		self.ids.hamburger.ids.lbl_txt.text_size= (sp(80), sp(80))
+		self.ids.hamburger.ids.lbl_txt.font_size= sp(60)
+    
 		self.ids.search.text=''
 
 		#--------------Update Student list---------------------#
@@ -261,8 +226,6 @@ class UserScreen(Screen,Database):
 			filtered_list.extend(self.search_from_database("General_record", conn, prop, text))
 		
 		self.populate_on_search( sorted(list(set(filtered_list))) )
-
-
 
 
 	def populate_on_search(self, filtered_list):
@@ -358,8 +321,45 @@ class ProfilePage(Screen, Database):
 			self.c= iter(list(data_tuple[2]))
 			self.s= iter(list(data_tuple[3]))
 			self.f= iter(list(str(data_tuple[5])))
+			self.totalFee= data_tuple[5]
+			
 		except:
 			pass
+
+	def open_addDataLayout(self):
+		AddDataLayout().open()
+
+
+	def addFeeData(self,ins):
+		if(ins.ids.rem.text==""):
+			ins.ids.rem.text="NA"
+		if(ins.ids.late.text==""):
+			ins.ids.late.text="0"
+		self.ids.rv.data.append({"sem":ins.ids.sem.text,\
+									"paid": "₹ "+ins.ids.paid.text, \
+									"due": "₹ "+str(self.totalFee-int(ins.ids.paid.text)), \
+									"late": "₹ "+ins.ids.late.text,\
+									"date":ins.ids.date.text, \
+									"remarks":ins.ids.rem.text})
+
+
+
+	def anim_in(self, instance):
+		
+		anim= Animation(
+				pos_hint={'y':-.3},
+				t='in_cubic',
+				d=0.3
+			)
+		anim.start(instance)
+
+	def anim_out(self, instance):
+		anim= Animation(
+				pos_hint={'y':0},
+				t='out_cubic',
+				d=0.3
+			)
+		anim.start(instance)
 
 
 
@@ -491,49 +491,25 @@ class AdminScreen(Screen, Database):
 		UserInfoEdit().open()
 
 	#-----------------------select Cousrse---------------------------------------------#
-	def openCourseList(self,instance):
-		dropdown= CourseDrop()
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, (self.ids.courseBtn1)))
 	def openCourseList1(self,instance):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn2))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn1))
 	def openCourseList2(self,instance):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn3))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn2))
 
-	def openStreamList(self,instance):
+	def openStreamList1(self,instance):
 		dropdown= StreamDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, (self.ids.streamBtn)))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.streamBtn1))
 
-	def openYearList(self,instance):
-		dropdown= YearDrop()
-		table_list= self.findTables("student_main.db")
-		for name in table_list:
-			years= re.search(".*_(\\d+)_(\\d+)", name)
-			txt1=("{}-{}".format(years.group(1), years.group(2)))
-			dropBtn= DropBtn(text=txt1)
-			dropBtn.bind(on_release=lambda dropBtn: dropdown.select(dropBtn))
-			dropdown.add_widget(dropBtn)
-
+	def openStreamList2(self,instance):
+		dropdown= StreamDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.yearBtn))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.streamBtn2))
 
-	def openYearList1(self,instance):
-		dropdown= YearDrop()
-		table_list= self.findTables("student_main.db")
-		for name in table_list:
-			years= re.search(".*_(\\d+)_(\\d+)", name)
-			txt1=("{}-{}".format(years.group(1), years.group(2)))
-			dropBtn= DropBtn(text=txt1)
-			dropBtn.bind(on_release=lambda dropBtn: dropdown.select(dropBtn))
-			dropdown.add_widget(dropBtn)
-
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.yearBtn1))
 
 	def onSelect(self, inst, btn, mainBtn):
 		mainBtn.text= btn.text
@@ -563,8 +539,9 @@ class AdminScreen(Screen, Database):
 #Main App
 class AccountManagementSystem(App,Database):
 	theme_cls = ThemeManager()
-	theme_cls.primary_palette = 'Blue'
-	theme_cls.theme_style='Light'
+	#theme_cls.primary_palette = 'Blue'
+	#theme_cls.theme_style='Light'
+	#theme_cls.accent_hue= "500"
 
 	def build(self):
 		return Builder.load_file("gui.kv")
