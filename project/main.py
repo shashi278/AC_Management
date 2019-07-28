@@ -9,7 +9,7 @@
 #imports here
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen,RiseInTransition
 from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
@@ -112,9 +112,10 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 		super(ListItemLayout, self).__init__(**kwargs)
 
 	def on_touch_down(self, touch):
-
 		collide_point= self.collide_point(touch.x, touch.y)
 		if collide_point:
+			#print("touched down")
+			self.root= self.parent.parent.parent.parent.parent.parent.parent.parent.manager
 			touch.grab(self)
 			self.ripple_show(touch)
 			return True
@@ -122,10 +123,12 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 	def on_touch_up(self, touch):
 		if touch.grab_current is self:
-			self.parent.parent.parent.parent.parent.parent.parent.parent.manager.ids.profilePage.reg_no= \
-			self.parent.ids.lbl1.text
+			#print("touched up")
 			touch.ungrab(self)
 			self.ripple_fade()
+			self.root.ids.profilePage.reg_no= self.parent.ids.lbl1.text
+			self.root.transition= RiseInTransition()
+			self.root.current= "profilepage"
 			return True
 		return False
 
@@ -491,49 +494,26 @@ class AdminScreen(Screen, Database):
 		UserInfoEdit().open()
 
 	#-----------------------select Cousrse---------------------------------------------#
-	def openCourseList(self,instance):
-		dropdown= CourseDrop()
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, (self.ids.courseBtn1)))
 	def openCourseList1(self,instance):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn2))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn1))
 	def openCourseList2(self,instance):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn3))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn2))
+	
 
-	def openStreamList(self,instance):
+	def openStreamList1(self,instance):
 		dropdown= StreamDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, (self.ids.streamBtn)))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.streamBtn1))
 
-	def openYearList(self,instance):
-		dropdown= YearDrop()
-		table_list= self.findTables("student_main.db")
-		for name in table_list:
-			years= re.search(".*_(\\d+)_(\\d+)", name)
-			txt1=("{}-{}".format(years.group(1), years.group(2)))
-			dropBtn= DropBtn(text=txt1)
-			dropBtn.bind(on_release=lambda dropBtn: dropdown.select(dropBtn))
-			dropdown.add_widget(dropBtn)
-
+	def openStreamList2(self,instance):
+		dropdown= StreamDrop()
 		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.yearBtn))
+		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.streamBtn2))
 
-	def openYearList1(self,instance):
-		dropdown= YearDrop()
-		table_list= self.findTables("student_main.db")
-		for name in table_list:
-			years= re.search(".*_(\\d+)_(\\d+)", name)
-			txt1=("{}-{}".format(years.group(1), years.group(2)))
-			dropBtn= DropBtn(text=txt1)
-			dropBtn.bind(on_release=lambda dropBtn: dropdown.select(dropBtn))
-			dropdown.add_widget(dropBtn)
-
-		dropdown.open(instance)
-		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.yearBtn1))
 
 	def onSelect(self, inst, btn, mainBtn):
 		mainBtn.text= btn.text
@@ -563,8 +543,9 @@ class AdminScreen(Screen, Database):
 #Main App
 class AccountManagementSystem(App,Database):
 	theme_cls = ThemeManager()
-	theme_cls.primary_palette = 'Blue'
-	theme_cls.theme_style='Light'
+	#theme_cls.primary_palette = 'Blue'
+	#theme_cls.theme_style='Light'
+	#theme_cls.accent_hue= "500"
 
 	def build(self):
 		return Builder.load_file("gui.kv")
