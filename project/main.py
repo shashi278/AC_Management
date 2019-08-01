@@ -1,9 +1,7 @@
-
 """
 	
 	Account Management System
 	Date: 24/02/2019
-
 """
 
 #imports here
@@ -84,7 +82,186 @@ class YearDrop(DropDown):
 #sidenav class
 class SideNav(ModalView,Database):
 	pass
+
+class DateInput(MDTextField):
+	#pat = re.compile('[^0-9]{2}[^-/][^0-9]{2}[^-/][^0-9]{4}')
+	#dd= re.compile("[^0-9]{2}")
+	#yy= re.compile("[^0-9]{4}")
+
+
+	dd= ''
+	mm= ''
+	yyyy= ''
+
+
+	"""
+	def insert_text(self, substring, from_undo=False):
+		'''
+		pat = self.pat
+
+		if '-' in self.text:
+			print(self.text)
+			s = re.sub(pat, '', self.text)
+			
+		else:
+			s = '-'.join([re.sub(pat, '', s) for s in self.text.split('-')])
+			print("s: "+s)
+
+		return super(DateInput, self).insert_text(s, from_undo=from_undo)
+		'''
+		#print("self.text: "+self.text)
+		try:
+			print("self.text: "+self.text)
+			print("substring: "+substring)
+			print("_cursor: {}".format(self.cursor))
+			print("cursor: "+str(self.cursor_index()))
+			#if len(self.text)<=2:
+			s= str(int(substring))
+
+			#if len(self.text)+1==1:
+				#pass
+			if len(self.text)+1 ==2:
+				#if self.cursor[0]==0:
+				#	s= s
+				#	self.cursor= (2,0)
+				#else:
+				#	s+="-"
+				self.text= self.text+s+"-"
+				s=''
+			if len(self.text)+1 ==3:
+				self.text= self.text+"-"
+				#s="-"
+				s=''
+			if len(self.text)+1 ==5:
+				#if self.cursor_index() ==3:
+				#	s= s
+				#else:
+				#	s+="-"
+				self.text= self.text+s+"-"
+				s=''
+
+			if len(self.text)+1 ==6:
+				s="-"
+			if len(self.text)+1 ==10:
+				s+=''
+			if len(self.text)+1>10: s=''
+
+			return super(DateInput, self).insert_text(s, from_undo=from_undo)
+
+		except:
+			return super(DateInput, self).insert_text('', from_undo=from_undo)
+			"""
+
+	def date_filter(self, substring, do_undo):
+		print(substring)
 		
+		try:
+			text= str(int(substring))
+			print("self.text: "+self.text+text)
+			print("cursor: {}".format(self.cursor[0]))
+			
+			if self.cursor[0] == 0:
+				if not len(self.text) :
+					self.dd= ''
+					self.dd+= text
+					return text
+				
+				elif self.text[0]=="-":
+					self.dd= text
+					return text
+
+				elif len(self.text)>=2 and self.text[1]=="-":
+					self.dd= text+self.dd[1]
+					return text
+
+				elif len(self.dd)==1:
+					self.dd= text+self.dd
+					self.text= self.text+"-"
+					self.cursor=(0,0)
+					return text
+
+				elif len(self.dd)> len(self.text):
+					self.dd= self.dd[0]+text
+					self.text= self.text+"-"
+					self.cursor=(0,0)
+					return text
+
+				#elif len(self.mm)==2 and len(self.yyyy)==4:
+					#if self.text[0]=='-':
+					return ''
+
+
+			if self.cursor[0] == 1:
+				if len(self.dd)==1 and len(self.text)==1:
+					self.dd+= text
+					return text+"-"
+				elif len(self.dd) > len(self.text):
+					self.dd= self.dd[0]+text
+					return text+"-"
+				else:
+					if self.text[1]=="-":
+						self.dd= self.dd[0]+text
+						return text
+					else:
+						return ''
+
+			if self.cursor[0]==2:
+				if len(self.text)==2:
+					return "-"
+				else:
+					return '-'
+
+			if self.cursor[0]==3:
+				if len(self.text)==3:
+					self.mm= ''
+					self.mm+= text
+					return text
+				elif len(self.mm)==2:
+					self.mm= text+self.mm[1]
+					return text
+				elif self.text[3]=="-":
+					self.mm= text
+					return text
+				elif len(self.mm)==1:
+					self.mm= text+self.mm
+					self.text= self.text+"-"
+					self.cursor=(3,0)
+					return text
+
+			if self.cursor[0]==4:
+				if len(self.text)==4:
+					if len(self.mm)==2:
+						self.mm= self.mm[0]+text
+					else:
+						self.mm+= text
+					return text+"-"
+				elif self.text[4]=="-":
+					self.mm= self.mm[0]+text
+					return text
+
+			if self.cursor[0]==5:
+				if len(self.text)==5:
+					return "-"
+				else:
+					return '-'
+
+			if self.cursor[0]>5 and len(self.text)!=10:
+				self.yyyy+= text
+				return text
+			else: return ''
+
+
+
+
+
+		except Exception as e:
+			print(e)
+			return ''
+
+
+
+
+
 class AddDataLayout(ModalView,Database):
 	def next_focus(self,text,ele):
 		if(ele=="dd" and len(text)==2):
