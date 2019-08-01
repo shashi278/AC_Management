@@ -527,8 +527,6 @@
 #-------------------------Add Data Layout------------------------------------#
 <InputFields@MDTextField>:
 	write_tab:False
-	on_text:
-		self.text= self.text.strip()
 
 <AddDataLayout>:
 	size_hint: (1, .2)
@@ -558,31 +556,41 @@
 				input_filter:"int"
 				id:sem
 				hint_text: "Semester"
+				on_text:
+					self.text= self.text.strip()
 
 			InputFields:
 				input_filter:"int"
 				id:paid
 				hint_text: "Paid"
+				on_text:
+					self.text= self.text.strip()
 
 			InputFields:
 				input_filter:"int"
 				id:late
 				hint_text: "Late"
+				on_text:
+					self.text= self.text.strip()
 
-			InputFields:
+			DateInput:
+				input_filter: self.date_filter
+				write_tab:False
 				id:date
 				hint_text: "Date(DD/MM/YYYY)"
+				#on_text:
+					#self.date_filter(self, self.text.strip())
 
 			InputFields:
 				id:tid
 				hint_text: "Transaction id"
+				on_text:
+					self.text= self.text.strip()
 
 			InputFields:
 				id:rem
 				hint_text: "Remarks"
 				multiline: True
-				on_text:
-					self.text = self.text
 
 			MDFloatingActionButton:
 				icon: 'check'
@@ -782,7 +790,7 @@ ScreenManager:
 	        on_release:root.open_addDataLayout()
 
 
-#--------------------------HomeScreen-----------------------------------------#####
+#--------------------------HomeScreen-----------------------------------------###
 <HomeScreen>:
 
 	name:"homeScreen"
@@ -912,7 +920,7 @@ ScreenManager:
 
 
 
-####--------------------------Login Popup Class------------------------------------##############
+####--------------------------Login Popup Class------------------------------------####
 
 <LoginPopup>:
 	
@@ -1031,15 +1039,19 @@ ScreenManager:
 								id: username_
 								size_hint: (1, 1)
 								hint_text:"Username"
-								icon_left: 'account-box'
 								icon_type:'left'
+								icon_left: 'account-box'
 								on_text_validate:
 									x= root.login(root.ids.username_.text, root.ids.password_.text,)
-									if (x and root.ids.loginTitle.text=="User Login"): app.root.current= "userScreen"
-									if x and root.ids.loginTitle.text=="User Login": app.root.ids.userScreen.onStartUserScr()
+									if (x and root.ids.loginTitle.text=="User Login"):\
+									app.root.transition= SlideTransition(direction="right");\
+									app.root.current= "userScreen";\
+									app.root.ids.userScreen.onStartUserScr()
 
-									if (x and root.ids.loginTitle.text=="Admin Login"): app.root.current= "adminScreen"
-									if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
+									if (x and root.ids.loginTitle.text=="Admin Login"):\
+									app.root.transition= SlideTransition(direction="left");\
+									app.root.current= "adminScreen";\
+									app.root.ids.adminScreen.onStartAdminScr()
 
 				#-------------------password---------------------------#
 				AnchorLayout:
@@ -1077,16 +1089,20 @@ ScreenManager:
 								hint_text:"Password"
 								icon_left: 'key-variant'
 								icon_right: 'eye-off'
-								icon_right_dasabled: False
 								password: True
 								icon_callback: root.show_password
+
 								on_text_validate:
 									x= root.login(root.ids.username_.text, root.ids.password_.text,)
-									if (x and root.ids.loginTitle.text=="User Login"): app.root.current= "userScreen"
-									if x and root.ids.loginTitle.text=="User Login": app.root.ids.userScreen.onStartUserScr()
+									if (x and root.ids.loginTitle.text=="User Login"):\
+									app.root.transition= SlideTransition(direction="right");\
+									app.root.current= "userScreen";\
+									app.root.ids.userScreen.onStartUserScr()
 
-									if (x and root.ids.loginTitle.text=="Admin Login"): app.root.current= "adminScreen"
-									if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
+									if (x and root.ids.loginTitle.text=="Admin Login"):\
+									app.root.transition= SlideTransition(direction="left");\
+									app.root.current= "adminScreen";\
+									app.root.ids.adminScreen.onStartAdminScr()
 								
 				#-------------------Contains login button and fotgot password----------------------------------#
 				BoxLayout:
@@ -1116,11 +1132,15 @@ ScreenManager:
 							text: "Login"
 							on_release:
 								x= root.login(root.ids.username_.text, root.ids.password_.text,)
-								if (x and root.ids.loginTitle.text=="User Login"): app.root.current= "userScreen"
-								if x and root.ids.loginTitle.text=="User Login": app.root.ids.userScreen.onStartUserScr()
+								if (x and root.ids.loginTitle.text=="User Login"):\
+								app.root.transition= SlideTransition(direction="right");\
+								app.root.current= "userScreen";\
+								app.root.ids.userScreen.onStartUserScr()
 
-								if (x and root.ids.loginTitle.text=="Admin Login"): app.root.current= "adminScreen"
-								if x and root.ids.loginTitle.text=="Admin Login": app.root.ids.adminScreen.onStartAdminScr()
+								if (x and root.ids.loginTitle.text=="Admin Login"):\
+								app.root.transition= SlideTransition(direction="left");\
+								app.root.current= "adminScreen";\
+								app.root.ids.adminScreen.onStartAdminScr()
 
 
 					#--------------forgot password area---------------------------#
@@ -1157,7 +1177,7 @@ ScreenManager:
 	BoxLayout:
 		orientation: 'vertical'
 
-		#---------------------------header Area--------------------------------------###########
+		#---------------------------header Area--------------------------------------###
 		BoxLayout:
 			size_hint: (1, 0.1)
 			canvas:
@@ -1182,8 +1202,8 @@ ScreenManager:
 
 
 		#--------Semester Dropdown (This will be deleted in future due to tabbed panels)------------#
-			AnchorLayout:
-				size_hint: (0.15, 1)
+			#AnchorLayout:
+			#	size_hint: (0.15, 1)
 
 			#-----------------file info area-----------------------##
 			BoxLayout:
@@ -1355,7 +1375,7 @@ ScreenManager:
 						group: "utilBtns"
 						background_normal: 'media/images/adminsett.png'
 						on_state: root.change_screen(self)
-					#--------Appsetting btn in initial down state
+					#--------App setting btn in initial down state
 					ToggleButton:
 						text:"App Setting" if self.state=="down" else ""
 						font_size:25
@@ -1365,7 +1385,8 @@ ScreenManager:
 
 				AnchorLayout:
 					size_hint: (1,0.2)
-					
+					#---------------------logout layout----------#########
+
 					BoxLayout:
 						size_hint: (1,None)
 						height:"50dp"
@@ -1380,6 +1401,7 @@ ScreenManager:
 								color:(0,0,0,1)
 								bold: True
 								on_release:
+									app.root.transition= SlideTransition(direction="right")
 									app.root.current="homeScreen"
 						BoxLayout:
 							size_hint: (.3, 1)
@@ -1389,6 +1411,7 @@ ScreenManager:
 								#text:"Home"
 								background_normal: 'media/images/logout-button1.png'
 								on_release:
+									app.root.transition= SlideTransition(direction="right")
 									app.root.current="homeScreen"
 
 			#------------Working Layout---------------------#
@@ -1847,6 +1870,7 @@ ScreenManager:
 				MDIconButton:
 					icon:"power"
 					on_release:
+						app.root.transition= SlideTransition(direction="left")
 						app.root.current='homeScreen'
 						root.dismiss()
 
