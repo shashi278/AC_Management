@@ -9,7 +9,7 @@
 #imports here
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, RiseInTransition
+from kivy.uix.screenmanager import ScreenManager, Screen,RiseInTransition
 from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
@@ -18,7 +18,8 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.behaviors.touchripple import TouchRippleBehavior
 from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import ObjectProperty, NumericProperty
+from kivy.properties import ObjectProperty, NumericProperty, StringProperty
+
 from kivy.core.window import Window, WindowBase
 from kivy.animation import Animation
 from kivy.clock import Clock
@@ -35,6 +36,7 @@ import re
 import xlrd
 import os
 from os.path import sep, expanduser, isdir, dirname
+from random import choice
 
 from database import Database
 
@@ -84,7 +86,13 @@ class SideNav(ModalView,Database):
 	pass
 		
 class AddDataLayout(ModalView,Database):
-	pass
+	def next_focus(self,text,ele):
+		if(ele=="dd" and len(text)==2):
+			self.ids.date.ids.mm.focus=True
+		if(ele=="mm" and len(text)==2):
+			self.ids.date.ids.yy.focus=True
+		
+
 
 #popups class
 class LoginPopup(ModalView, Database):
@@ -103,6 +111,7 @@ class LoginPopup(ModalView, Database):
 			return False
 
 	def show_password(self, field, button):
+		print(button.icon)
 		field.password = not field.password
 		field.focus = True
 		button.icon = 'eye' if button.icon == 'eye-off' else 'eye-off'
@@ -155,7 +164,7 @@ class UserScreen(Screen,Database):
 		#should be fixed inside MDIconButton in md library itself
 		self.ids.hamburger.ids.lbl_txt.text_size= (sp(80), sp(80))
 		self.ids.hamburger.ids.lbl_txt.font_size= sp(60)
-    
+
 		self.ids.search.text=''
 
 		#--------------Update Student list---------------------#
@@ -208,6 +217,7 @@ class UserScreen(Screen,Database):
 		sn.open()
 
 	def search(self, text):
+		print(text)
 		if not text:
 			self.onStartUserScr()
 			return
@@ -228,6 +238,8 @@ class UserScreen(Screen,Database):
 		self.populate_on_search( sorted(list(set(filtered_list))) )
 
 
+
+
 	def populate_on_search(self, filtered_list):
 		self.ids.rv.data=[]
 
@@ -245,9 +257,14 @@ class UserScreen(Screen,Database):
 #ProfilePage
 class ProfilePage(Screen, Database):
 
+
 	reg_no=0
+	color= StringProperty('')
+	colors= ["#C0392B", "#E74C3C", "#9B59B6", "#8E44AD","#2980B9",\
+	"#3498DB", "#1ABC9C","#16A085","#27AE60","#2ECC71","#D4AC0D","#F39C12","#E67E22","#D35400"]
 
 	def on_enter(self, *args):
+		self.color= choice(self.colors)
 		Clock.schedule_interval(self.set_button_width, 0)
 		self.extract_data("student_main.db", "General_record")
 
@@ -340,6 +357,7 @@ class ProfilePage(Screen, Database):
 									"due": "₹ "+str(self.totalFee-int(ins.ids.paid.text)), \
 									"late": "₹ "+ins.ids.late.text,\
 									"date":ins.ids.date.text, \
+									"tid":ins.ids.tid.text, \
 									"remarks":ins.ids.rem.text})
 
 
@@ -363,11 +381,16 @@ class ProfilePage(Screen, Database):
 
 
 
+
 #AdminScreen
 class AdminScreen(Screen, Database):
 	pc_userName= os.getlogin()
 
 	def onStartAdminScr(self):
+
+		self.ids.logoutbtn.ids.lbl_txt.text_size= (sp(80), sp(80))
+		self.ids.logoutbtn.ids.lbl_txt.font_size= sp(40)
+
 		#--------------Update User info Data List ---------------------#
 		self.ids.rv.data=[]
 		data_list= self.extractAllData("user_all.db", "users")
@@ -499,6 +522,7 @@ class AdminScreen(Screen, Database):
 		dropdown= CourseDrop()
 		dropdown.open(instance)
 		dropdown.bind(on_select=lambda instance, btn: self.onSelect(instance,btn, self.ids.courseBtn2))
+	
 
 	def openStreamList1(self,instance):
 		dropdown= StreamDrop()
