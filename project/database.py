@@ -5,6 +5,7 @@ import xlrd
 import time
 from time import strftime
 import os
+from datetime import datetime
 
 tm= time.localtime()
 tmStmp=  "{}{}{}".format(tm.tm_mday,tm.tm_mon,tm.tm_year)
@@ -20,6 +21,7 @@ class Database():
 
 	#Insert into database
 	def insert_into_database(self, tableName , conn, data):
+		
 		if conn is not None:
 			try:
 				c= conn.execute("select * from {}".format(tableName))
@@ -32,37 +34,39 @@ class Database():
 					""".format(tableName, fields, data)
 					)
 				conn.commit()
+				return True
 			except Error as e:
 				print("Error in data insertion: {}".format(e))
-
+		return None
+		
 
 	#Update Database
-	def update_database(self, tableName, conn, index, field, field_val):
+	def update_database(self, tableName, conn, field, field_val, ref, index):
 		if conn is not None:
 			try:
 				cur= conn.cursor()
 				cur.execute(
 						"""
 						UPDATE {}
-						SET {}= ? WHERE id= ?
-						""".format(tableName, field),
-						(field_val, index)
+						SET {}= ? WHERE {}= ?
+						""".format(tableName, field, ref),
+						(field_val,index)
 					)
 				conn.commit()
 
-			except:
+			except Exception as e:
 				print("Error in updating data: {}".format(e))
 
 
 	#Delete from Database
-	def delete_from_database(self,tableName, conn, index):
+	def delete_from_database(self,tableName, conn, index, ref):
 		if conn is not None:
 			try:
 				cur= conn.cursor()
 				cur.execute(
 						"""
-						DELETE FROM {} WHERE id= ?
-						""".format(tableName), (index,)
+						DELETE FROM {} WHERE {}= ?
+						""".format(tableName,ref), (index,)
 					)
 				conn.commit()
 			except Error as e:
@@ -114,7 +118,6 @@ class Database():
 		else: print("conn is none")
 
 	def findTables(self, db_file):
-		#self.db= "database/"+db_file
 		conn= self.connect_database(db_file)
 		if conn is not None:
 			cur= conn.cursor()
@@ -123,41 +126,42 @@ class Database():
 		#conn.close()
 
 		
-	def readFile(self, db_file, table, tableName, file_name, **kwargs):
+	def readFile(self, db_file, table, tableName, file_name, show_progress=False):
 
 		table= table.format(tableName)
 
 		wb= xlrd.open_workbook(file_name)
 		sheet= wb.sheet_by_index(0)
-		#self.db= "database/"+db_file
+		rows= sheet.nrows
+
 		conn= self.connect_database(db_file)
 
 		if conn is not None:
 			self.create_table(table,conn)
 
-			for i in range(1,sheet.nrows):
+			for i in range(1,rows):
 				data= (sheet.cell_value(i,1), sheet.cell_value(i,2), kwargs["course"], kwargs["stream"],\
 					kwargs["fromYear"]+"-"+kwargs["toYear"], kwargs["fee"])
-				self.insert_into_database(tableName,conn, data)
+				
+				self.insert_into_database(tableName, conn, data)
+				
 
 	def addData(self, db_file, table, tableName, data):
 
 		table= table.format(tableName)
-		#self.db= self.db= "database/"+db_file
 		conn= self.connect_database(db_file)
 
 		if conn is not None:
 			self.create_table(table, conn)
 			self.insert_into_database(tableName, conn, data)
 
-	def extractAllData(self, db_file, tableName):
-
-		#self.db= "database/"+db_file
+	def extractAllData(self, db_file, tableName, order_by="reg"):
 		conn= self.connect_database(db_file)
 
 		if conn is not None:
-			cur= conn.execute("SELECT * FROM {}".format(tableName))
+			cur= conn.execute("SELECT * FROM {} ORDER BY {}".format(tableName, order_by))
 			return cur.fetchall()
+		return None
 
 
 
