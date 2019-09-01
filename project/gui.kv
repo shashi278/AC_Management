@@ -71,7 +71,7 @@
 				on_release:root.dismiss()
 
 
-#for edit name,email,password and Username
+#for editing name,email,password and Username
 <UserInfoEdit>:
 	size_hint: (0.4, 0.65)
 	auto_dismiss: True
@@ -241,6 +241,10 @@
 					size_hint: (.5,.5)
 					on_release:root.dismiss()
 
+#popup to progress
+<ProgressPop>:
+	size_hint: 0.8, 0.2
+	auto_dismiss: False
 
 #-------------Custom Buttons-----------------------#
 <DropBtn>:
@@ -285,136 +289,187 @@
 #---------------being used in 'Row' Class------------#
 <ListItemLayout>:
 	text: ''
-    canvas.before:
-        Color:
-            rgba: (0,0,0,0)#(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
+	canvas.before:
+		Color:
+			rgba: (0,0,0,0)#(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
+		RoundedRectangle:
+			pos: self.pos
+			size: self.size
 
 
 #---------------used in profile page----------#
-<ListItemLayoutProfile@BoxLayout>:
+<ListItemLayoutProfile@AnchorLayout>:
 	text: ''
-    canvas.before:
-        Color:
-            rgba: (0,0,0,0) #(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
+	canvas.before:
+		Color:
+			rgba: (0,0,0,0) #(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
+		RoundedRectangle:
+			pos: self.pos
+			size: self.size
 
+<TextInputForList>:
+	font_size:"17dp"
+	icon_type:"without"
+	size_hint_x: 1
+	active_color: [0,0,0,.9]
+	normal_color: [.2,.2,.2,1]
+	foreground_color: [1,1,1,1]
+	write_tab: False
 
-
-<LabelForList@Label>:
+<LabelForList>:
 	font_size:"20dp"
 	bold: True
 	color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
 
 #---------------being used in Profile Page--------#
-<Rowinfo@BoxLayout>:
-    canvas.before:
-        Color:
-            rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            
-    spacing: "10dp"
-    sem:''
-    paid: ''
-    due: ''
-    late:""
-    tid:""
-    date:''
-    remarks:''
+<Rowinfo>:
+	color: [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A")
+
+	canvas.before:
+		Color:
+			rgba: self.color 
+		RoundedRectangle:
+			pos: self.pos
+			size: self.size		
+	spacing: "10dp"
+
+	sem:''
+	paid: ''
+	due: ''
+	late:""
+	date:''
+	tid:""
+	remarks:''
    
-    #-------paid item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.10,1)
-        LabelForList:
-            id: lbl0
-            text: root.sem
-            font_size:"20dp"
-            bold: True
-    #-------paid item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.13,1)
-        LabelForList:
-            id: lbl1
-            text: root.paid
-            font_size:"20dp"
-            bold: True
-    #-------due item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.13,1)
-        LabelForList:
-            id: lbl2
-            text: root.due
-            font_size:"20dp"
-            bold: True
-    #-------due item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.13,1)
-        LabelForList:
-            id: lbl3
-            text: root.late
-            font_size:"20dp"
-            bold: True
-    #-------due item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.13,1)
-        LabelForList:
-            id: lbl4
-            text: root.date
-            font_size:"20dp"
-            bold: True
-    #-------Tid item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.15,1)
-        LabelForList:
-            id: lbl5
-            text: root.tid
-            font_size:"20dp"
-            bold: True
-    #-------due item--------#
-    ListItemLayoutProfile:
-        size_hint:(0.23,1)
-        LabelForList:
-            id: lbl6
-            text: root.remarks
-            font_size:"20dp"
-            bold: True
+	#-------paid item--------#
+	ListItemLayoutProfile:
+		id: item1
+		size_hint:(0.10,1)
+		LabelForList:
+			id: lbl1
+			text: root.sem
+			
+	#-------paid item--------#
+	ListItemLayoutProfile:
+		id: item2
+		size_hint:(0.13,1)
+		LabelForList:
+			id: lbl2
+			text: root.paid
+			
+	#-------due item--------#
+	ListItemLayoutProfile:
+		id: item3
+		size_hint:(0.13,1)
+		LabelForList:
+			id: lbl3
+			text: root.due
+			
+	#-------late item--------#
+	ListItemLayoutProfile:
+		id: item4
+		size_hint:(0.13,1)
+		LabelForList:
+			id: lbl4
+			text: root.late
+			
+	#-------date item--------#
+	ListItemLayoutProfile:
+		id: item5
+		size_hint:(0.13,1)
+		LabelForList:
+			id: lbl5
+			text: root.date
+			
+	#-------Tid item--------#
+	ListItemLayoutProfile:
+		id: item6
+		size_hint:(0.15,1)
+		LabelForList:
+			id: lbl6
+			text: root.tid
+			
+	#-------remarks item--------#
+	ListItemLayoutProfile:
+		id: item7
+		size_hint:(0.23,1)
+		LabelForList:
+			id: lbl7
+			text: root.remarks
+			
+	BoxLayout:
+		size_hint: 0.06,1
+
+		HoverLayout:
+			on_enter:
+				btn1.text_color= [1,1,1]
+				btn1.md_bg_color= [.5,.5,.5,.5]
+			on_leave:
+				btn1.text_color=[.4,.4,.4]
+				btn1.md_bg_color= [.5,.5,.5,0]
+
+			AnchorLayout:
+				MDIconButton:
+					id: btn1
+					icon: "pencil"
+					theme_text_color: "Custom"
+					md_bg_color:[.5,.5,.5,0]
+					text_color: [.4,.4,.4]
+					on_release:
+						#root.verify_prev(root, self.icon, app)
+						root.edit(root, self.icon, app)
+						self.icon= "check" if self.icon=="pencil" else "pencil"
+						
+
+		HoverLayout:
+			on_enter:
+				btn2.text_color=[1,0,0]
+				btn2.md_bg_color= [.5,.5,.5,.5]
+			on_leave:
+				btn2.text_color=[.4,0,0]
+				btn2.md_bg_color= [.5,.5,.5,0]
+
+			AnchorLayout:
+				MDIconButton:
+					id: btn2
+					icon: "delete-forever"
+					theme_text_color: "Custom"
+					md_bg_color: [.5,.5,.5,0]
+					text_color: [.6,0,0]
+					on_release:
+						root.delete(root.ids.btn1.icon)
 
 <LabelAccountPage@Label>
-    size_hint: None, None
-    size: self.texture_size
-    pos_hint: {'center_x': .5}
+	size_hint: None, None
+	size: self.texture_size
+	pos_hint: {'center_x': .5}
 
 <BoxMinimumHeight@BoxLayout>
-    size_hint_y: None
-    height: self.minimum_height
+	size_hint_y: None
+	height: self.minimum_height
 
 <StudentInfoHeader@BoxLayout>:
-    info_title: ''
-    info_name: ''
-    
-    AnchorLayout:
-        anchor_x: "right"
-        Label:
-            size_hint: None, None
-            size: self.texture_size
-            text: root.info_title
-            bold: True
-            font_size: sp(15)
-    AnchorLayout:
-        anchor_x: "left"
-        Label:
-            text: root.info_name
-            size_hint: None, None
-            size: self.texture_size
+	info_title: ''
+	info_name: ''
+	
+	AnchorLayout:
+		anchor_x: "right"
+		Label:
+			size_hint: None, None
+			size: self.texture_size
+			text: root.info_title
+			bold: True
+			font_size: sp(15)
+	AnchorLayout:
+		anchor_x: "left"
+		Label:
+			text: root.info_name
+			size_hint: None, None
+			size: self.texture_size
 	
 
 ##--------------------List Items' Layout---------------------------------------###########
+#being used in user screen
 <Row@BoxLayout>:
 	canvas.before:
 		Color:
@@ -578,6 +633,7 @@
 <InputFields@MDTextField>:
 	write_tab:False
 
+
 <AddDataLayout>:
 	size_hint: (1, .2)
 	pos_hint: {'y': -0.3}
@@ -607,8 +663,12 @@
 				input_filter:"int"
 				id:sem
 				hint_text: "Semester"
+				focus: True
 				on_text:
 					self.text= self.text.strip()
+				on_text_validate:
+					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
+					app.root.ids.profilePage.addFeeData(root); root.dismiss()
 
 			InputFields:
 				size_hint_x: .45
@@ -617,6 +677,9 @@
 				hint_text: "Paid"
 				on_text:
 					self.text= self.text.strip()
+				on_text_validate:
+					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
+					app.root.ids.profilePage.addFeeData(root); root.dismiss()
 
 			InputFields:
 				size_hint_x: .45
@@ -625,6 +688,9 @@
 				hint_text: "Late"
 				on_text:
 					self.text= self.text.strip()
+				on_text_validate:
+					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
+					app.root.ids.profilePage.addFeeData(root); root.dismiss()
 
 			DateField:
 				size_hint_x: .6
@@ -637,6 +703,9 @@
 				hint_text: "Transaction id"
 				on_text:
 					self.text= self.text.strip()
+				on_text_validate:
+					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
+					app.root.ids.profilePage.addFeeData(root); root.dismiss()
 
 			InputFields:
 				id:rem
@@ -675,177 +744,180 @@ ScreenManager:
 #-------------------ProfilePage---------------------#
 <ProfilePage>:
 	name: 'profilepage'
-    FloatLayout:
-        canvas:
-            Color:
-                rgba: C(root.color)   #0,0,0,.8
-            Rectangle:
-                size: self.size
-                pos: self.pos
+	FloatLayout:
+		canvas:
+			Color:
+				rgba: C(root.color)
+			Rectangle:
+				size: self.size
+				pos: self.pos
 
-        BoxLayout:
-            orientation: 'vertical'
-            spacing: dp(5)
+		BoxLayout:
+			orientation: 'vertical'
+			spacing: dp(5)
 
-            BoxMinimumHeight:
-            	padding:0,2,0,0
+			BoxMinimumHeight:
+				padding:0,2,0,0
 
-            	Widget:
-            		size_hint: None, 1
-            		width: 20
+				Widget:
+					size_hint: None, 1
+					width: 20
 
-		        MDIconButton:
-	        		size_hint: None, None
-	        		size: 50,50
-	        		icon: 'arrow-left'
-	        		md_bg_color: app.theme_cls.primary_color
-	        		theme_text_color: "Custom"
-	        		text_color: [1,1,1,1]
-		        	on_release:
-		        		app.root.transition= FallOutTransition()
-		        		app.root.current= "userScreen"
-	        	
+				MDIconButton:
+					size_hint: None, None
+					size: 50,50
+					icon: 'arrow-left'
+					md_bg_color: app.theme_cls.primary_color
+					theme_text_color: "Custom"
+					text_color: [1,1,1,1]
+					on_release:
+						if root.check_edits(root.ids.rv.children[0]): app.root.transition= FallOutTransition();app.root.current= "userScreen"
+				
 
-            BoxMinimumHeight:
-                orientation: 'vertical'
-                padding: 0, dp(15), 0, 0
-                spacing: dp(7)
-                pos_hint: {'top': 1}
-                Image:
-                    size_hint: None, None
-                    size: self.size
-                    source: 'media/images/user.png'
-                    pos_hint: {'center_x': .5}
-                LabelAccountPage:
-                    id: name
-                    halign: 'center'
-                    font_size: '30sp'
-                    bold: True
-                LabelAccountPage:
-                    id: roll
-                    halign: 'center'
-                    font_size: '18sp'
-                    
-            BoxLayout:
-                id: box
-                orientation: 'vertical'
-                spacing: dp(10)
-                padding: dp(10)
-                opacity: 0
-                canvas.before:
-                    Color:
-                        rgba:(1, 1, 1, .7) if app.theme_cls.theme_style=="Light" else C("#1B2631")
-                    RoundedRectangle:
-                    	radius: [10,10,0,0]
-                        size: self.size
-                        pos: self.pos
-                BoxMinimumHeight:
-                    spacing: dp(10)
-                    padding: 2, 0, 10, 0
-                    BoxLayout:
-                        canvas:
-                            Color:
-                                rgba: 0, 0, 0, .7
-                            RoundedRectangle:
-                                size: self.size
-                                pos: self.pos
-                        id: button
-                        size_hint_x: None
-                        size_hint_y:None
-                        height:40
-                        StudentInfoHeader:
-                            id: course
-                            info_title: "Course: "
-                        StudentInfoHeader:
-                            id: stream
-                            info_title: "Stream: "
-                        StudentInfoHeader:
-                            id: batch
-                            info_title: "Batch: "
-                        StudentInfoHeader:
-                            id: fee
-                            info_title: "Fee: "
-                            
-            
-                    MDIconButton:
-                    	id: printbtn
-                    	icon: "printer"
-                        size_hint: None, None
-                        size: 40,40
-                        opposite_colors: True
-                        md_bg_color: app.theme_cls.primary_color
-                        theme_text_color: 'Custom'
-                        text_color: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else [0,0,0,1]
-                        on_release:
-                        	print("Print data")
-                        	
-                BoxLayout:
-                    orientation:"vertical"
-                    spacing:2
-                    BoxLayout:
-                        size_hint_y:None
-                        height:40
-                        canvas:
-                            Color:
-                                rgba: 0, 0, 0, .7
-                            RoundedRectangle:
-                                size: self.size
-                                pos: self.pos
-                        BoxLayout:
-                            size_hint:.10,1
-                            Label:
-                                text:"Semester"
-                        BoxLayout:
-                            size_hint:.13,1
-                            Label:
-                                text:"Paid"
-                        BoxLayout:
-                            size_hint:.13,1
-                            Label:
-                                text:"Due"
-                        BoxLayout:
-                            size_hint:.13,1
-                            Label:
-                                text:"Late"
-                        BoxLayout:
-                            size_hint:.13,1
-                            Label:
-                                text:"Date"
-                        BoxLayout:
-                            size_hint:.15,1
-                            Label:
-                                text:"Trans.Id"
-                        BoxLayout:
-                            size_hint:.23,1
-                            Label:
-                                text:"Remarks"
-                    BoxLayout:
-                        canvas:
-                            Color:
-                                rgba:.6,.3,0.1,0
-                            RoundedRectangle:
-                                pos:self.pos
-                                size:self.size
-                        RecycleView:
-                            id: rv
-                            scroll_type: ['bars', 'content']
-                            scroll_wheel_distance: dp(80)
-                            bar_width: dp(7)
-                            viewclass: 'Rowinfo'
-                            data:[{"sem":"1","paid": "2432342", "due": "34242","late":"42334","date":"44-34-3434","tid":"QE232323","remarks":"jaldi do"},]
-                            RecycleBoxLayout:
-                                default_size: None, dp(56)
-                                default_size_hint: 1, None
-                                size_hint_y: None
-                                height: self.minimum_height
-                                orientation: "vertical"
-                                spacing: dp(5)
-        MDFloatingActionButton:
-	        icon: "plus"
-	        md_bg_color: app.theme_cls.primary_color
-	        x: root.width-dp(90)
-	        y: dp(30)
-	        on_release:root.open_addDataLayout()
+			BoxMinimumHeight:
+				orientation: 'vertical'
+				padding: 0, dp(15), 0, 0
+				spacing: dp(7)
+				pos_hint: {'top': 1}
+				Image:
+					size_hint: None, None
+					size: self.size
+					source: 'media/images/user.png'
+					pos_hint: {'center_x': .5}
+				LabelAccountPage:
+					id: name
+					halign: 'center'
+					font_size: '30sp'
+					bold: True
+				LabelAccountPage:
+					id: roll
+					halign: 'center'
+					font_size: '18sp'
+					
+			BoxLayout:
+				id: box
+				orientation: 'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				opacity: 0
+				canvas.before:
+					Color:
+						rgba:(1, 1, 1, .7) if app.theme_cls.theme_style=="Light" else C("#1B2631")
+					RoundedRectangle:
+						radius: [10,10,0,0]
+						size: self.size
+						pos: self.pos
+				BoxMinimumHeight:
+					spacing: dp(10)
+					padding: 2, 0, 10, 0
+					BoxLayout:
+						canvas:
+							Color:
+								rgba: 0, 0, 0, .7
+							RoundedRectangle:
+								size: self.size
+								pos: self.pos
+						id: button
+						size_hint_x: None
+						size_hint_y:None
+						height:40
+						StudentInfoHeader:
+							id: course
+							info_title: "Course: "
+						StudentInfoHeader:
+							id: stream
+							info_title: "Stream: "
+						StudentInfoHeader:
+							id: batch
+							info_title: "Batch: "
+						StudentInfoHeader:
+							id: fee
+							info_title: "Fee: "
+							
+			
+					MDIconButton:
+						id: printbtn
+						icon: "printer"
+						size_hint: None, None
+						size: 40,40
+						opposite_colors: True
+						md_bg_color: app.theme_cls.primary_color
+						theme_text_color: 'Custom'
+						text_color: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else [0,0,0,1]
+						on_release:
+							print("Print data")
+							
+				BoxLayout:
+					orientation:"vertical"
+					spacing:2
+					BoxLayout:
+						size_hint_y:None
+						height:40
+						canvas:
+							Color:
+								rgba: 0, 0, 0, .7
+							RoundedRectangle:
+								size: self.size
+								pos: self.pos
+						BoxLayout:
+							size_hint:.10,1
+							Label:
+								text:"Semester"
+						BoxLayout:
+							size_hint:.13,1
+							Label:
+								text:"Paid"
+						BoxLayout:
+							size_hint:.13,1
+							Label:
+								text:"Due"
+						BoxLayout:
+							size_hint:.13,1
+							Label:
+								text:"Late"
+						BoxLayout:
+							size_hint:.13,1
+							Label:
+								text:"Date"
+						BoxLayout:
+							size_hint:.15,1
+							Label:
+								text:"Trans.Id"
+						BoxLayout:
+							size_hint:.23,1
+							Label:
+								text:"Remarks"
+						BoxLayout:
+							size_hint:.06,1
+							
+					BoxLayout:
+						canvas:
+							Color:
+								rgba:.6,.3,0.1,0
+							RoundedRectangle:
+								pos:self.pos
+								size:self.size
+						RecycleView:
+							id: rv
+							scroll_type: ['bars', 'content']
+							scroll_wheel_distance: dp(80)
+							bar_width: dp(7)
+							viewclass: 'Rowinfo'
+							data:[]
+							RecycleBoxLayout:
+								id: rb
+								default_size: None, dp(56)
+								default_size_hint: 1, None
+								size_hint_y: None
+								height: self.minimum_height
+								orientation: "vertical"
+								spacing: dp(5)
+		MDFloatingActionButton:
+			icon: "plus"
+			md_bg_color: app.theme_cls.primary_color
+			x: root.width-dp(90)
+			y: dp(30)
+			on_release:root.open_addDataLayout()
 
 
 #--------------------------HomeScreen-----------------------------------------###
@@ -857,9 +929,6 @@ ScreenManager:
 		orientation: 'vertical'
 
 		canvas.before:
-			#Color:
-				#rgba:(1,0,1,1)
-				#2E4053
 
 			Rectangle:
 				pos: self.pos
@@ -919,35 +988,14 @@ ScreenManager:
 			orientation: 'vertical'
 			size_hint: (1,0.45)
 
-			#canvas:
-			#	Color:
-			#		rgb: C("#2CAADD")
-			#	Rectangle:
-			#		pos: self.pos
-			#		size: self.size
-
 			#contains main buttons------------------------------
 			BoxLayout:
 				size_hint: (1,0.4)
-				#canvas:
-				#	Color:
-				#		rgb: C("#2CAADD")
-				#	Rectangle:
-				#		pos: self.pos
-				#		size: self.size
 
 				AnchorLayout:
 
 					anchor_x: 'center'
 					anchor_y: 'center'
-
-					#canvas:
-					#	Color:
-					#		rgb: C("#f39c12")
-					#		#edbb99
-					#	Rectangle:
-					#		pos: self.pos
-					#		size: self.size
 
 					Button:
 						size_hint: None, None
@@ -964,13 +1012,6 @@ ScreenManager:
 					anchor_x: 'center'
 					anchor_y: 'center'
 
-					#canvas:
-					#	Color:
-					#		rgb: C("#f39c12")
-					#	Rectangle:
-					#		pos: self.pos
-					#		size: self.size
-
 					Button:
 						size_hint: None, None
 						size: 120,120
@@ -985,12 +1026,6 @@ ScreenManager:
 			##-------------labels------------------------###############
 			BoxLayout:
 				size_hint:1,.2
-				#canvas:
-				#	Color:
-				#		rgb: C("#a0b0c0")
-				#	Rectangle:
-				#		pos: self.pos
-				#		size: self.size
 
 				AnchorLayout:
 					anchor_x: "center"
@@ -1018,12 +1053,6 @@ ScreenManager:
 			#blankkkkkkk-------------__#######
 			BoxLayout:
 				size_hint: (1,0.4)
-				#canvas:
-				#	Color:
-				#		rgb: C("#000000")
-				#	Rectangle:
-				#		pos: self.pos
-				#		size: self.size
 
 
 
@@ -1043,7 +1072,7 @@ ScreenManager:
 		Rectangle:
 			pos: self.pos
 			size: self.size
-     
+	 
    #####-------------------Parent Boxlayout----------------------------######################
 
 	BoxLayout:
@@ -1307,11 +1336,6 @@ ScreenManager:
 					on_release:
 						root.open_sideNav()
 
-
-		#--------Semester Dropdown (This will be deleted in future due to tabbed panels)------------#
-			#AnchorLayout:
-			#	size_hint: (0.15, 1)
-
 			#-----------------file info area-----------------------##
 			BoxLayout:
 				size_hint: (0.5, 1)
@@ -1516,8 +1540,6 @@ ScreenManager:
 								id:logoutbtn
 								icon:"logout"
 								size: self.height, self.width
-								#text:"Home"
-								#background_normal: 'media/images/logout-button1.png'
 								on_release:
 									app.root.transition= SlideTransition(direction="right")
 									app.root.current="homeScreen"
@@ -1630,11 +1652,12 @@ ScreenManager:
 							tab_display_mode:'text'
 
 							MDTab:
+								
 								name: 'addBatch'
 								text: "Add Batch"
 								icon: "plus"
 
-								BoxLayout:							
+								BoxLayout:						
 									orientation: 'vertical'
 									
 									BoxLayout:					
@@ -1662,7 +1685,7 @@ ScreenManager:
 												spacing: 50
 
 												MDTextField:
-													id: fromYear
+													id: fromYear1
 													hint_text:"From Year"
 													input_filter: "int"
 													write_tab: False
@@ -1671,7 +1694,7 @@ ScreenManager:
 														self.text =self.text[:4] if len(self.text)>4 else self.text
 
 												MDTextField:
-													id: toYear
+													id: toYear1
 													hint_text:"To Year"
 													input_filter: "int"
 													write_tab: False
@@ -1680,11 +1703,11 @@ ScreenManager:
 														self.text =self.text[:4] if len(self.text)>4 else self.text
 
 												MDTextField:
+													id: fee1
 													hint_text:"Fee"
 													input_filter: "int"
 													write_tab: False
 													multiline: False
-													id: fee
 
 											AnchorLayout:
 												spacing: 50
@@ -1718,12 +1741,14 @@ ScreenManager:
 													elevation_normal: 10
 													opposite_colors: True
 													on_release:
-														root.connectFileSelector(root.ids.fromYear.text,root.ids.toYear.text,root.ids.courseBtn1.text,\
-														root.ids.streamBtn.text, root.ids.fee.text)
+														root.connectFileSelector(root.ids.fromYear1.text,\
+														root.ids.toYear1.text,root.ids.courseBtn1.text,\
+														root.ids.streamBtn1.text, root.ids.fee1.text)
 									BoxLayout:
 										size_hint: (1,.2)
 
 							MDTab:
+								id: deleteBatch
 								name: 'deleteBatch'
 								text: 'Delete Batch'
 								icon: "delete"
@@ -1750,14 +1775,12 @@ ScreenManager:
 										BoxLayout:
 											orientation: 'vertical'
 											size_hint: (.5,1)
-											#padding: 10
-											#spacing: dp(10)
 
 											BoxLayout:
 												spacing: 50
 
 												MDTextField:
-													id: fromYear
+													id: fromYear2
 													hint_text:"From Year"
 													input_filter: "int"
 													write_tab: False
@@ -1766,7 +1789,7 @@ ScreenManager:
 														self.text =self.text[:4] if len(self.text)>4 else self.text
 
 												MDTextField:
-													id: toYear
+													id: toYear2
 													hint_text:"To Year"
 													input_filter: "int"
 													write_tab: False
@@ -1806,12 +1829,14 @@ ScreenManager:
 													elevation_normal: 10
 													opposite_colors: True
 													on_release:
-														root.connectFileSelector(root.ids.fromYear.text,root.ids.toYear.text,root.ids.courseBtn1.text,\
-														root.ids.streamBtn.text, root.ids.fee.text)
+														root.connectFileSelector(root.ids.fromYear2.text,\
+														root.ids.toYear2.text,root.ids.courseBtn2.text,\
+														root.ids.streamBtn2.text)
 									BoxLayout:
 										size_hint: (1,.2)
 
 							MDTab:
+								id: updateStudent
 								name: 'updateStudent'
 								text: 'Update Student Details'
 								icon: "update"
@@ -1923,8 +1948,8 @@ ScreenManager:
 								pos_hint: {'center_x': .5}
 							MDLabel:
 								text:
-								    "Current: " + app.theme_cls.theme_style\
-								    + ", " + app.theme_cls.primary_palette
+									"Current: " + app.theme_cls.theme_style\
+									+ ", " + app.theme_cls.primary_palette
 								theme_text_color: 'Primary'
 								pos_hint: {'center_x': .5}
 								halign: 'center'
@@ -1953,9 +1978,9 @@ ScreenManager:
 
 
 			Image:
-	            source: 'media/images/user_logout_pic.png'
-	            size_hint: None, None
-	            size: 140,140
+				source: 'media/images/user_logout_pic.png'
+				size_hint: None, None
+				size: 140,140
 		#------------User name and Logout Button-------------#
 		BoxLayout:
 			size_hint: (1,0.1)
@@ -1985,7 +2010,6 @@ ScreenManager:
 
 		#---------Blank Space----------------------------#
 		BoxLayout:
-			#size_hint: (1,0.50)
 			canvas:
 				Color:
 					rgba: (1, 1, 1, 1)
