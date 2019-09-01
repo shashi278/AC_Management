@@ -16,33 +16,41 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.behaviors.touchripple import TouchRippleBehavior
 from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import ObjectProperty, NumericProperty, StringProperty
-
+from kivy.uix.label import Label
+from kivy.properties import ObjectProperty, NumericProperty, StringProperty, ListProperty
 from kivy.core.window import Window, WindowBase
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.metrics import dp, sp
 from kivy.garden.filebrowser import FileBrowser
 from kivy.utils import platform
+from kivy.utils import get_color_from_hex as C
 
 from kivymd.theming import ThemeManager
 from kivymd.pickers import MDThemePicker
 from kivymd.button import MDRaisedButton
-from kivymd.textfields import MDTextField
+from kivymd.textfields import MDTextField, MDTextFieldRound, MDTextFieldRect
+from kivymd.snackbars import Snackbar
 
 import re
 import xlrd
 import os
 from os.path import sep, expanduser, isdir, dirname
 from random import choice
+from time import sleep
 
 from database import Database
+from hoverable import HoverBehavior
 
 usernameHash= ''
 passwordHash= ''
 
 class InfoPopup(ModalView):
 	pass
+
+class ProgressPop(ModalView):
+	progress_value= NumericProperty(0)
+	progress_total= NumericProperty(0)
 
 class UserInfoEdit(ModalView):
 	pass
@@ -83,82 +91,22 @@ class YearDrop(DropDown):
 class SideNav(ModalView,Database):
 	pass
 
-class DateInput(MDTextField):
-	#pat = re.compile('[^0-9]{2}[^-/][^0-9]{2}[^-/][^0-9]{4}')
-	#dd= re.compile("[^0-9]{2}")
-	#yy= re.compile("[^0-9]{4}")
+class HoverLayout(BoxLayout, HoverBehavior):
+	pass
 
+class DateInput(MDTextField):
 
 	dd= ''
 	mm= ''
 	yyyy= ''
-
-
-	"""
-	def insert_text(self, substring, from_undo=False):
-		'''
-		pat = self.pat
-
-		if '-' in self.text:
-			print(self.text)
-			s = re.sub(pat, '', self.text)
-			
-		else:
-			s = '-'.join([re.sub(pat, '', s) for s in self.text.split('-')])
-			print("s: "+s)
-
-		return super(DateInput, self).insert_text(s, from_undo=from_undo)
-		'''
-		#print("self.text: "+self.text)
-		try:
-			print("self.text: "+self.text)
-			print("substring: "+substring)
-			print("_cursor: {}".format(self.cursor))
-			print("cursor: "+str(self.cursor_index()))
-			#if len(self.text)<=2:
-			s= str(int(substring))
-
-			#if len(self.text)+1==1:
-				#pass
-			if len(self.text)+1 ==2:
-				#if self.cursor[0]==0:
-				#	s= s
-				#	self.cursor= (2,0)
-				#else:
-				#	s+="-"
-				self.text= self.text+s+"-"
-				s=''
-			if len(self.text)+1 ==3:
-				self.text= self.text+"-"
-				#s="-"
-				s=''
-			if len(self.text)+1 ==5:
-				#if self.cursor_index() ==3:
-				#	s= s
-				#else:
-				#	s+="-"
-				self.text= self.text+s+"-"
-				s=''
-
-			if len(self.text)+1 ==6:
-				s="-"
-			if len(self.text)+1 ==10:
-				s+=''
-			if len(self.text)+1>10: s=''
-
-			return super(DateInput, self).insert_text(s, from_undo=from_undo)
-
-		except:
-			return super(DateInput, self).insert_text('', from_undo=from_undo)
-			"""
 
 	def date_filter(self, substring, do_undo):
 		print(substring)
 		
 		try:
 			text= str(int(substring))
-			print("self.text: "+self.text+text)
-			print("cursor: {}".format(self.cursor[0]))
+			#print("self.text: "+self.text+text)
+			#print("cursor: {}".format(self.cursor[0]))
 			
 			if self.cursor[0] == 0:
 				if not len(self.text) :
@@ -259,17 +207,14 @@ class DateInput(MDTextField):
 			return ''
 
 
-
-
-
 class AddDataLayout(ModalView,Database):
+
 	def next_focus(self,text,ele):
 		if(ele=="dd" and len(text)==2):
 			self.ids.date.ids.mm.focus=True
 		if(ele=="mm" and len(text)==2):
 			self.ids.date.ids.yy.focus=True
 		
-
 
 #popups class
 class LoginPopup(ModalView, Database):
@@ -301,7 +246,6 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 	def on_touch_down(self, touch):
 		collide_point= self.collide_point(touch.x, touch.y)
 		if collide_point:
-			#print("touched down")
 			self.root= self.parent.parent.parent.parent.parent.parent.parent.parent.manager
 			touch.grab(self)
 			self.ripple_show(touch)
@@ -310,7 +254,6 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 	def on_touch_up(self, touch):
 		if touch.grab_current is self:
-			#print("touched up")
 			touch.ungrab(self)
 			self.ripple_fade()
 			self.root.ids.profilePage.reg_no= self.parent.ids.lbl1.text
@@ -318,6 +261,66 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 			self.root.current= "profilepage"
 			return True
 		return False
+
+class LabelForList(Label):
+	pass
+
+class TextInputForList(TextInput):
+	pass
+
+#Being used in profile page
+class Rowinfo(BoxLayout, Database):
+
+	color= ListProperty()
+
+	def edit(self, root, icon, app):
+		fields= [child.children[0].text for child in root.children[1:]][-2::-1]
+		sem= root.children[-1].children[0].text
+		print(fields)
+		tableName= "_"+str(self.parent.reg_no)
+		conn= self.connect_database("fee_main.db")
+		c= conn.execute("select * from {}".format(tableName))
+		fields_names= tuple([des[0] for des in c.description][1:])
+		print(fields_names)
+
+		for each,text, fn in zip(root.children[1:][::-1][1:],fields, fields_names):
+			each.clear_widgets()
+			#if user wants to edit
+			if icon=="pencil":
+				self.color= [.1,.1,.1,1]
+				self._temp= TextInputForList()
+				self._temp.text= text
+				each.add_widget(self._temp)
+			else:
+				self.color= [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A")
+				self._temp1= LabelForList()
+				self._temp1.text=text
+				each.add_widget(self._temp1)
+				print("In py: {}".format((fn,text,sem)))
+				self.update_database(tableName, conn, fn, text, "sem", sem)
+
+
+	def verify_prev(self, root, icon, app):
+		#cannot edit more than one entry at once hence save any already ongoing edit automatically
+		for each in root.parent.children:
+			if each.ids.btn1.icon!="pencil":
+				self.color= [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A")
+				
+				fields= [child.children[0].text for child in each.children[1:]]
+				#print(fields)
+				for _temp, text in zip(each.children[1:], fields):
+					#print(_temp, text)
+					_temp.clear_widgets()
+					
+					_lbl= LabelForList()
+					_lbl.text=text
+					_temp.add_widget(_lbl)
+				each.ids.btn1.icon= "pencil"
+
+	def delete(self, icon):
+		if icon!= "pencil":
+			Snackbar(text="Cannot delete while in edit mode. Save ongoing edit first.", duration=2.5).show()
+
 
 #ScreenManager Class
 class ScreenManager(ScreenManager):
@@ -341,7 +344,6 @@ class UserScreen(Screen,Database):
 		#should be fixed inside MDIconButton in md library itself
 		self.ids.hamburger.ids.lbl_txt.text_size= (sp(80), sp(80))
 		self.ids.hamburger.ids.lbl_txt.font_size= sp(60)
-
 		self.ids.search.text=''
 
 		#--------------Update Student list---------------------#
@@ -394,7 +396,9 @@ class UserScreen(Screen,Database):
 		sn.open()
 
 	def search(self, text):
-		print(text)
+		'''
+		Dynamic search function
+		'''
 		if not text:
 			self.onStartUserScr()
 			return
@@ -434,8 +438,7 @@ class UserScreen(Screen,Database):
 #ProfilePage
 class ProfilePage(Screen, Database):
 
-
-	reg_no=0
+	reg_no= 0
 	color= StringProperty('')
 	colors= ["#C0392B", "#E74C3C", "#9B59B6", "#8E44AD","#2980B9",\
 	"#3498DB", "#1ABC9C","#16A085","#27AE60","#2ECC71","#D4AC0D","#F39C12","#E67E22","#D35400"]
@@ -444,6 +447,9 @@ class ProfilePage(Screen, Database):
 		self.color= choice(self.colors)
 		Clock.schedule_interval(self.set_button_width, 0)
 		self.extract_data("student_main.db", "General_record")
+		self.populate_screen()
+		self.ids.rb.reg_no= self.reg_no
+
 
 		Clock.schedule_interval(self.set_name_info, 0)
 		Clock.schedule_interval(self.set_roll_info, 0)
@@ -464,6 +470,7 @@ class ProfilePage(Screen, Database):
 		self.ids.stream.info_name=''
 		self.ids.batch.info_name=''
 		self.ids.fee.info_name=''
+		self.ids.rv.data=[]
 
 	def set_name_info(self, interval):
 		try:
@@ -505,20 +512,20 @@ class ProfilePage(Screen, Database):
 		self.ids.button.width = Window.width - (dp(50) + self.ids.button.height)
 
 	def extract_data(self, db_name, table_name):
-		conn= self.connect_database("student_main.db")
+		conn= self.connect_database(db_name)
 
 		try:
-			data_tuple= self.search_from_database(table_name, conn, "reg", self.reg_no)[0]
-			self.r= iter(list("Registration Number: {}".format(data_tuple[0])))
-			self.n= iter(list(data_tuple[1]))
-			self.b= iter(list(data_tuple[4]))
-			self.c= iter(list(data_tuple[2]))
-			self.s= iter(list(data_tuple[3]))
-			self.f= iter(list(str(data_tuple[5])))
-			self.totalFee= data_tuple[5]
+			self.data_tuple= self.search_from_database(table_name, conn, "reg", self.reg_no)[0]
+			self.r= iter(list("Registration Number: {}".format(self.data_tuple[0])))
+			self.n= iter(list(self.data_tuple[1]))
+			self.b= iter(list(self.data_tuple[4]))
+			self.c= iter(list(self.data_tuple[2]))
+			self.s= iter(list(self.data_tuple[3]))
+			self.f= iter(list(str(self.data_tuple[5])))
+			self.totalFee= self.data_tuple[5]
 			
-		except:
-			pass
+		except Exception as e:
+			print("Error here: {}".format(e))
 
 	def open_addDataLayout(self):
 		AddDataLayout().open()
@@ -529,14 +536,48 @@ class ProfilePage(Screen, Database):
 			ins.ids.rem.text="NA"
 		if(ins.ids.late.text==""):
 			ins.ids.late.text="0"
-		self.ids.rv.data.append({"sem":ins.ids.sem.text,\
-									"paid": "₹ "+ins.ids.paid.text, \
-									"due": "₹ "+str(self.totalFee-int(ins.ids.paid.text)), \
-									"late": "₹ "+ins.ids.late.text,\
-									"date":ins.ids.date.text, \
-									"tid":ins.ids.tid.text, \
-									"remarks":ins.ids.rem.text})
 
+		data_tuple= (int(ins.ids.sem.text), int(ins.ids.paid.text), int(self.totalFee-int(ins.ids.paid.text)),
+					int(ins.ids.late.text),ins.ids.date.text,ins.ids.tid.text,ins.ids.rem.text)
+		conn= self.connect_database("fee_main.db")
+
+		if self.insert_into_database("_"+str(self.reg_no), conn, data_tuple):
+
+			_temp={
+					"sem": str(data_tuple[0]),
+					"paid": str(data_tuple[1]),
+					"due": str(data_tuple[2]),
+					"late": str(data_tuple[3]),
+					"date": data_tuple[4],
+					"tid": data_tuple[5],
+					"remarks": data_tuple[6]
+					}
+
+			self.ids.rv.data.append(_temp)
+
+	def populate_screen(self):
+		self.ids.rv.data=[]
+		# try to populate the screen with data already available in the corresponding
+		# reg. no. table
+		try:
+			data_list= self.extractAllData("fee_main.db", "_"+str(self.reg_no), order_by="sem")
+			for data_tuple in sorted(data_list):
+				_temp={
+					"sem": str(data_tuple[0]),
+					"paid": str(data_tuple[1]),
+					"due": str(data_tuple[2]),
+					"late": str(data_tuple[3]),
+					"date": str(data_tuple[4]),
+					"tid": data_tuple[5],
+					"remarks": data_tuple[6]
+				}
+				self.ids.rv.data.append(_temp)
+		except:
+			#else create table
+			conn= self.connect_database("fee_main.db")
+			if conn is not None:
+				with open("fee_record.sql") as table:
+					self.create_table(table.read().format("_"+str(self.reg_no)), conn)
 
 
 	def anim_in(self, instance):
@@ -556,12 +597,22 @@ class ProfilePage(Screen, Database):
 			)
 		anim.start(instance)
 
+	def check_edits(self, rowinfo_root):
+		_temp= [1 for child in rowinfo_root.children if child.ids.btn1.icon=="check"]
+		if len(_temp):
+			Snackbar(text="Cannot go back while in edit mode. Save ongoing edits.", duration=2).show()
+			return False
+		return True
 
 
 
 #AdminScreen
 class AdminScreen(Screen, Database):
 	pc_userName= os.getlogin()
+
+	#will be used to show progress while reading xls
+	progress_value=0
+	progress_total=0
 
 	def onStartAdminScr(self):
 
@@ -610,10 +661,8 @@ class AdminScreen(Screen, Database):
 		target.add_widget(usr_submit)
 
 	def Add_User(self,name,email,username,password):
-		print(name+" "+email+" "+username+" "+password)
 
 		if(all([not len(each) for each in [name, email,username, password]])):
-			print("here")
 			return
 
 		self.ids.rv.data.insert(0, {'name': name,'email':email ,'username':username,'password':password })
@@ -636,6 +685,7 @@ class AdminScreen(Screen, Database):
 
 	def connectFileSelector(self, fromYear, toYear, course, stream, fee):
 		if(fromYear=="" or toYear=="" or fee==""):
+
 			op=InfoPopup()
 			op.ids.label.text="Please fill in all required fields."
 			op.open()
@@ -678,13 +728,17 @@ class AdminScreen(Screen, Database):
 
 
 	def _fbrowser_success(self, instance):
-		 selected_path= instance.selection[0]
-		 fpopup.dismiss()
+		try:
+			selected_path= instance.selection[0]
 
-		 with open("general_record.sql") as table:
-		 	self.readFile("student_main.db", table.read(), "General_record", selected_path, \
-		 		fromYear= self.fields["fromYear"], toYear= self.fields["toYear"], course= self.fields["course"],\
-		 		stream= self.fields["stream"], fee= self.fields["fee"])
+			with open("general_record.sql") as table:
+				self.readFile("student_main.db", table.read(), "General_record", selected_path, show_progress=True, \
+				fromYear= self.fields["fromYear"], toYear= self.fields["toYear"], course= self.fields["course"],\
+				stream= self.fields["stream"], fee= self.fields["fee"], fpopup=fpopup)
+			fpopup.dismiss()
+
+		except IndexError as e:
+			Snackbar(text="Please specify correct file path", duration=2).show()
 		 
 
 	def openEditPopup(self):					#for edit user information open popup
@@ -720,7 +774,7 @@ class AdminScreen(Screen, Database):
 	def openUStudInfo(self):					#for Update Student information open popup
 		if(self.ids.reg_input.text==""):
 			op=InfoPopup()
-			op.ids.label.text="Please enter Reg. no. !"
+			op.ids.label.text="Please enter Reg. no"
 			op.open()
 		elif(self.ids.yearBtn1.text=="Select Year" or self.ids.courseBtn2.text=="Select Course"):
 			op=InfoPopup()
@@ -732,7 +786,7 @@ class AdminScreen(Screen, Database):
 	def openDelWarnPopup(self):
 		if(self.ids.yearBtn.text=="Select Year" or self.ids.courseBtn1.text=="Select Course"):
 			op=InfoPopup()
-			op.ids.label.text="Please Select All required Buttons !"
+			op.ids.label.text="Please Select All required Buttons."
 			op.open()
 		else:
 			DeleteWarnPopup().open()
@@ -752,7 +806,6 @@ class AccountManagementSystem(App,Database):
 if __name__ == '__main__':
 
 	Window.maximize()
-	#Window.size=(900,700)
 	Window.minimum_width= 900
 	Window.minimum_height=700
 
