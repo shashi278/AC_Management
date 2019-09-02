@@ -10,6 +10,9 @@
 #:import MDTabs kivymd.tabs.MDTabs
 #:import MDTabsBase kivymd.tabs.MDTabsBase
 
+#:import MDList kivymd.list.MDList
+#:import OneLineListItem kivymd.list.OneLineListItem
+
 #:import RiseInTransition kivy.uix.screenmanager.RiseInTransition
 #:import FallOutTransition kivy.uix.screenmanager.FallOutTransition
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
@@ -309,7 +312,7 @@
 
 <TextInputForList>:
 	font_size:"17dp"
-	size_hint_x: 1
+	size_hint: .7,.8
 	#active_color: [0,0,0,.9]
 	#normal_color: [.2,.2,.2,1]
 	foreground_color: [1,1,1,1]
@@ -335,18 +338,18 @@
 		    pos: (self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1])
 		    size: (self.size[1], self.size[1])
 		Color:
-		    rgba:(1,1,1,1) if self.focus==False else (1,0,0,1)
+		    rgba:(1,1,1,1) if self.focus==False else app.theme_cls.primary_color
 		Line:
-		    width:1.3
+		    width:1.1
 		    points: self.pos[0] , self.pos[1], self.pos[0] + self.size[0], self.pos[1]
 		Line:
-		    width:1.3
+		    width:1.1
 		    points: self.pos[0], self.pos[1] + self.size[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1]
 		Line:
-		    width:1.3
+		    width:1.1
 		    ellipse: self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 180, 360
 		Line:
-		    width:1.3
+		    width:1.1
 		    ellipse: self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 360, 540
 
 
@@ -436,19 +439,20 @@
 
 		HoverLayout:
 			on_enter:
-				btn1.text_color= [1,1,1]
+				btn1.text_color= [1,1,1,1]
 				btn1.md_bg_color= [.5,.5,.5,.5]
 			on_leave:
-				btn1.text_color=[.4,.4,.4]
+				btn1.text_color=[.4,.4,.4,1]
 				btn1.md_bg_color= [.5,.5,.5,0]
 
 			AnchorLayout:
 				MDIconButton:
 					id: btn1
 					icon: "pencil"
+					#opposite_colors:True
 					theme_text_color: "Custom"
 					md_bg_color:[.5,.5,.5,0]
-					text_color: [.4,.4,.4]
+					text_color: [.4,.4,.4,1]
 					on_release:
 						#root.verify_prev(root, self.icon, app)
 						root.edit(root, self.icon, app)
@@ -457,10 +461,10 @@
 
 		HoverLayout:
 			on_enter:
-				btn2.text_color=[1,0,0]
+				btn2.text_color=[1,0,0,1]
 				btn2.md_bg_color= [.5,.5,.5,.5]
 			on_leave:
-				btn2.text_color=[.4,0,0]
+				btn2.text_color=[.4,0,0,1]
 				btn2.md_bg_color= [.5,.5,.5,0]
 
 			AnchorLayout:
@@ -469,7 +473,7 @@
 					icon: "delete-forever"
 					theme_text_color: "Custom"
 					md_bg_color: [.5,.5,.5,0]
-					text_color: [.6,0,0]
+					text_color: [.4,0,0,1]
 					on_release:
 						root.delete(root.ids.btn1.icon)
 
@@ -562,11 +566,11 @@
 			id: lbl5
 			text: root.batch
 
-<AdminRow@BoxLayout>:
+<UserInfo>:
 	canvas.before:
 		Color:
 			rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
-		Rectangle:
+		RoundedRectangle:
 			pos: self.pos
 			size: self.size
 	spacing: "10dp"
@@ -603,21 +607,49 @@
 			text: root.password
 			font_size:"15dp"
 			bold: True
+
 	BoxLayout:
 		padding:0
 		spacing:2
 		size_hint: (.08,1)
-		MDIconButton:
-			size_hint: (.5,1)
-			icon:"pencil"
-			opposite_colors: True
-			on_release:app.root.ids.adminScreen.openEditPopup()
+		HoverLayout:
+			on_enter:
+				btn1.text_color= [1,1,1,1]
+				btn1.md_bg_color= [.5,.5,.5,.5]
+			on_leave:
+				btn1.text_color=[.4,.4,.4,1]
+				btn1.md_bg_color= [.5,.5,.5,0]
+			
+			MDIconButton:
+				id:btn1
+				size_hint: (.5,1)
+				icon:"pencil"
+				theme_text_color: "Custom"
+				md_bg_color:[.5,.5,.5,0]
+				text_color: [.4,.4,.4,1]
+				#opposite_colors: True
+				on_release:
+					#root.verify_prev(root, self.icon, app)
+					root.edit(root, self.icon, app)
+					self.icon= "check" if self.icon=="pencil" else "pencil"
+		HoverLayout:
+			on_enter:
+				btn2.text_color=[1,0,0,1]
+				btn2.md_bg_color= [.5,.5,.5,.5]
+			on_leave:
+				btn2.text_color=[.4,0,0,1]
+				btn2.md_bg_color= [.5,.5,.5,0]
 
-		MDIconButton:
-			size_hint: (.5,1)
-			icon:"delete"
-			opposite_colors: True
-
+			MDIconButton:
+				id:btn2
+				size_hint: (.5,1)
+				icon:"delete-forever"
+				theme_text_color: "Custom"
+				md_bg_color: [.5,.5,.5,0]
+				text_color: [.4,0,0,1]
+				#opposite_colors: True
+				on_release:
+					root.delete(root.ids.btn1.icon)
 #-------------------------Add Data Layout------------------------------------#
 
 #####----------------for DateField----------------------###
@@ -1494,62 +1526,49 @@ ScreenManager:
 				size_hint: (0.13,1)
 				canvas:
 					Color:
-						rgb: C("#ffffff")
+						rgb: C("#ECF0F1") if app.theme_cls.theme_style=="Light" else C("#283747")
 					Rectangle:
 						pos: self.pos
 						size: self.size
 
 				#----------ToggleButtons in here--------------#
-				GridLayout:
-					size_hint: (1,0.7)
-					rows:4
-					spacing:2
-					padding:2
-					cols: 1
-					canvas:
-						Color:
-							rgb: C("#000000")
-						Rectangle:
-							pos: self.pos
-							size: self.size
+				AnchorLayout:
+					#orientation: 'vertical'
+					anchor_y: 'top'
+					size_hint: (1,0.3)
+					padding:10
+					#canvas:
+					#	Color:
+					#		rgb: C("#ffffff")
+					#	Rectangle:
+					#		pos: self.pos
+					#		size: self.size
 
-					#------manage user btn-------------#
-					ToggleButton:
-						text:"Manage User" if self.state=="down" else ""
-						font_size:self.width/7.5
-						bold:True
-						#state: 'down'
-						group: "utilBtns"
-						background_normal: 'media/images/mngusers.png'
-						on_state: root.change_screen(self)
+					MDList:
+						OneLineListItem:
+							text:"Manage User"
+							on_release:
+								root.change_screen(self)
 
-					#-------manage students btn---------#
-					ToggleButton:
-						text:"Manage Student" if self.state=="down" else ""
-						font_size:self.width/7.5
-						bold:True
-						group: "utilBtns"
-						background_normal: 'media/images/mngstud.png'
-						on_state: root.change_screen(self)
+						OneLineListItem:
+							text:"Admin Setting"
+							on_release:
+								root.change_screen(self)
 
-					#--------Admin settings btn----------#
-					ToggleButton:
-						text:"Admin Setting" if self.state=="down" else ""
-						font_size:self.width/7.5
-						bold: True
-						group: "utilBtns"
-						background_normal: 'media/images/adminsett.png'
-						on_state: root.change_screen(self)
-					#--------App setting btn in initial down state
-					ToggleButton:
-						text:"App Setting" if self.state=="down" else ""
-						font_size:self.width/7.5
-						group: 'utilBtns'
-						background_normal: 'media/images/appsetting.png'
-						on_state:root.change_screen(self)
+						OneLineListItem:
+							text:"Manage Student"
+							on_release:
+								root.change_screen(self)
+
+						OneLineListItem:
+							text:"App Setting"
+							on_release:
+								root.change_screen(self)
+
+					
 
 				AnchorLayout:
-					size_hint: (1,0.2)
+					size_hint: (1,0.1)
 					#---------------------logout layout----------#########
 
 					BoxLayout:
@@ -1636,7 +1655,7 @@ ScreenManager:
 									scroll_type: ['bars', 'content']
 									scroll_wheel_distance: dp(80)
 									bar_width: dp(7)
-									viewclass: 'AdminRow'
+									viewclass: 'UserInfo'
 									RecycleBoxLayout:
 										default_size: None, dp(40)
 										default_size_hint: 1, None
