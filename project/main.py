@@ -268,6 +268,39 @@ class LabelForList(Label):
 class TextInputForList(TextInput):
 	pass
 
+class UserInfo(BoxLayout,Database):
+
+	def edit(self, root, icon, app):
+		fields= [child.children[0].text for child in root.children[1:]][::-1]
+		print(fields)
+		tableName= "users"
+		conn= self.connect_database("user_all.db")
+		c= conn.execute("select * from {}".format(tableName))
+		fields_names= tuple([des[0] for des in c.description][1:])
+		#print(fields_names)
+
+		for each,text, fn in zip(root.children[1:][::-1][:],fields, fields_names):
+			each.clear_widgets()
+			#if user wants to edit
+			if icon=="pencil":
+				self.color= [.1,.1,.1,1]
+				self._temp= TextInputForList()
+				self._temp.text= text
+				each.add_widget(self._temp)
+			else:
+				self.color= [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A")
+				self._temp1= LabelForList()
+				self._temp1.font_size="15dp"
+				self._temp1.text=text
+				each.add_widget(self._temp1)
+				#print("In py: {}".format((fn,text,sem)))
+				#self.update_database(tableName, conn, fn, text, "sem", sem)
+
+
+	def delete(self, icon):
+		if icon!= "pencil":
+			Snackbar(text="Cannot delete while in edit mode. Save ongoing edit first.", duration=2.5).show()
+
 #Being used in profile page
 class Rowinfo(BoxLayout, Database):
 
@@ -621,7 +654,7 @@ class AdminScreen(Screen, Database):
 
 		#--------------Update User info Data List ---------------------#
 		self.ids.rv.data=[]
-		data_list= self.extractAllData("user_all.db", "users")
+		data_list= self.extractAllData("user_all.db", "users",order_by="id")
 		for each in data_list:
 			x={
 			"name": each[1],
