@@ -196,53 +196,55 @@
 
 
 ##creted for open at the time of detetion of a batch
-<DeleteWarnPopup>:
-	size_hint: (0.5, 0.4)
-	background: "media/images/login3.png"
-	canvas:
-		Color:
-			rgba: (0,0,1,0)
-		Rectangle:
-			pos: self.pos
-			size: self.size
+<DeleteWarning>:
+	size_hint:.4,.4
+	
+	pos_hint: {'x': 1.4}
+	on_open: app.root.anim_out(root)
+	on_dismiss: app.root.anim_in(root)
 	BoxLayout:
-		orientation: 'vertical'
-		#--------Label---------#
-		Label:
-			size_hint: (1,.2)
-			text:"Delete Confirmation"
-			color:0,0,0,1
-		#------Messege area--------#
+		id:container
+		orientation:"vertical"
+		canvas:
+			Color:
+				rgba:1,0,0,1
+			RoundedRectangle:
+				size:self.size
+				pos:self.pos
+				radius:10,0,0,10
 		BoxLayout:
-			size_hint: (1, .5)
+			padding:self.width*.2,0,0,0
+			Label:
+				text:"Do you really want to delete this Batch/semester ?"
+				text_size: self.size
+				halign: 'left'
+				valign: 'middle'
+				font_size:self.height/25+self.width/24
+		BoxLayout:
 			canvas:
 				Color:
-					rgba: (0,0,1,1)
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			Label:
-				id:labext
-				text:"Are you sure to delete Year ("+app.root.ids.adminScreen.ids.yearBtn.text+") and Course ("+app.root.ids.adminScreen.ids.courseBtn1.text+") ?"
-		#---------Buttons Confirm and cancel-------#
+					rgba:1,1,0,0
+				RoundedRectangle:
+					size:self.size
+					pos:self.pos
+					radius:10,0,0,10
+			AnchorLayout:
+				id:check
+				MDFloatingActionButton:
+					
+					icon:"check"
+					on_release:
+						root.delete()
+				
+			AnchorLayout:
+				MDFloatingActionButton:
+					icon:"window-close"
+					id:delete
+					on_release:
+						root.dismiss()
+			
 		BoxLayout:
-			size_hint: (1, .3)
-			AnchorLayout:
-				MDRoundFlatIconButton:
-					icon: "check-circle"
-					size_hint: (.5,.5)
-					text:"Confirm"
-					#md_bg_color:("green",500)
-					font_size:30
-					on_release:root.onHitConfirm()
-			AnchorLayout:
-				MDRoundFlatIconButton:
-					text: "Cancel"
-					font_size:30
-					#md_bg_color:("red",500)
-					icon: "close-circle"
-					size_hint: (.5,.5)
-					on_release:root.dismiss()
+			size_hint_y:.3
 
 #popup to progress
 <ProgressPop>:
@@ -1536,7 +1538,7 @@ ScreenManager:
 					#orientation: 'vertical'
 					anchor_y: 'top'
 					size_hint: (1,0.3)
-					padding:10
+					padding:0
 					#canvas:
 					#	Color:
 					#		rgb: C("#ffffff")
@@ -1986,26 +1988,30 @@ ScreenManager:
 					#---------------Manage App setting-----------------##
 					Screen:
 						name:"appSetting"
-						BoxLayout:
-							orientation: 'vertical'
-							size_hint_y: None
-							height:dp(80)
-							center_y: self.parent.center_y
-							MDRaisedButton:
-								size_hint: None, None
-								size: 3 * dp(48), dp(48)
-								center_x: self.parent.center_x
-								text: 'Change theme'
-								on_release: root.theme_picker_open()
-								opposite_colors: True
-								pos_hint: {'center_x': .5}
-							MDLabel:
-								text:
-									"Current: " + app.theme_cls.theme_style\
-									+ ", " + app.theme_cls.primary_palette
-								theme_text_color: 'Primary'
-								pos_hint: {'center_x': .5}
-								halign: 'center'
+						ScrollView:
+							MDList:
+								OneLineAvatarIconListItem:
+									text: "Dark Mode"
+									ListRightSwitch:
+										active: True if app.theme_cls.theme_style=="Dark" else False
+										on_active:
+											app.theme_cls.theme_style="Dark" if self.active\
+											else "Light"
+
+
+
+								TwoLineAvatarIconListItem:
+									text: "Theme"
+									secondary_text: "Current: " + app.theme_cls.theme_style + ", " + app.theme_cls.primary_palette
+									ListRightIconButton:
+										icon:"brush"
+										on_release:
+											root.theme_picker_open()
+
+								TwoLineAvatarIconListItem:
+									text: "CheckBox"
+									secondary_text:"Somthing about this...."
+									ListRightCheckBox:
 
 
 
