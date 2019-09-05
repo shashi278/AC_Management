@@ -685,8 +685,6 @@ class AdminScreen(Screen, Database):
 	progress_total=0
 
 	def onStartAdminScr(self):
-		#print(self.app_)
-		#self.app_.theme_cls.theme_style='Dark'
 		self.ids.logoutbtn.ids.lbl_txt.text_size= (sp(80), sp(80))
 		self.ids.logoutbtn.ids.lbl_txt.font_size= sp(40)
 
