@@ -28,7 +28,7 @@ from kivy.utils import get_color_from_hex as C
 
 from kivymd.theming import ThemeManager
 from kivymd.pickers import MDThemePicker
-from kivymd.button import MDRaisedButton
+from kivymd.button import MDRaisedButton,MDIconButton
 from kivymd.textfields import MDTextField, MDTextFieldRound, MDTextFieldRect
 from kivymd.snackbars import Snackbar
 
@@ -45,6 +45,33 @@ from hoverable import HoverBehavior
 usernameHash= ''
 passwordHash= ''
 
+#---List  heree-----------------------
+from kivymd.selectioncontrols import MDCheckbox,MDSwitch
+from kivymd.list import (
+    ILeftBody,
+    ILeftBodyTouch,
+    IRightBodyTouch,
+    OneLineIconListItem,
+    OneLineListItem,
+)
+		
+#left iconbutton
+class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
+	pass
+
+#right iconbutton,checkbox,switch
+class ListRightIconButton(IRightBodyTouch, MDIconButton):
+	pass
+
+class ListRightCheckBox(IRightBodyTouch, MDCheckbox):
+	pass
+
+class ListRightSwitch(IRightBodyTouch, MDSwitch):
+	pass
+
+#---------------------------------------------------------------------
+
+
 class InfoPopup(ModalView):
 	pass
 
@@ -58,9 +85,19 @@ class UserInfoEdit(ModalView):
 class UpdateStudentInfo(ModalView):
 	pass
 
-class DeleteWarnPopup(ModalView):
-	def onHitConfirm(self):
-		pass
+class DeleteWarning(ModalView):
+	def delete(self):
+		'''
+		///delete from database code
+		'''
+		self.ids.container.clear_widgets()
+		layout=GridLayout(cols=1)
+		self.ids.container.add_widget(layout)
+		layout.add_widget(Label(text="Successfully Deleted",font_size=self.height/25+self.width/25))
+		anc_layout=AnchorLayout()
+		layout.add_widget(anc_layout)
+		anc_layout.add_widget(MDRectangleFlatButton(text="Ok",on_release=self.dismiss))
+
 
 
 class CircularToggleButton(BoxLayout,ToggleButton):
@@ -648,7 +685,6 @@ class AdminScreen(Screen, Database):
 	progress_total=0
 
 	def onStartAdminScr(self):
-
 		self.ids.logoutbtn.ids.lbl_txt.text_size= (sp(80), sp(80))
 		self.ids.logoutbtn.ids.lbl_txt.font_size= sp(40)
 
@@ -829,7 +865,7 @@ class AccountManagementSystem(App,Database):
 	theme_cls = ThemeManager()
 	#theme_cls.primary_palette = 'Blue'
 	#theme_cls.theme_style='Light'
-	#theme_cls.accent_hue= "500"
+	#theme_cls.accent_hue= "500" 
 
 	def build(self):
 		return Builder.load_file("gui.kv")
