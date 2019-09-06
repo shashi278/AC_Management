@@ -198,10 +198,10 @@
 ##creted for open at the time of detetion of a batch
 <DeleteWarning>:
 	size_hint:.4,.4
-	
+	text:"Do you really want to delete this Batch/semester ?"
 	pos_hint: {'x': 1.4}
-	on_open: app.root.anim_out(root)
-	on_dismiss: app.root.anim_in(root)
+	on_open: self.anim_out(self)
+	on_dismiss: self.anim_in(self)
 	BoxLayout:
 		id:container
 		orientation:"vertical"
@@ -215,7 +215,7 @@
 		BoxLayout:
 			padding:self.width*.2,0,0,0
 			Label:
-				text:"Do you really want to delete this Batch/semester ?"
+				text:root.text
 				text_size: self.size
 				halign: 'left'
 				valign: 'middle'
