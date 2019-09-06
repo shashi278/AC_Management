@@ -97,6 +97,23 @@ class DeleteWarning(ModalView):
 		anc_layout=AnchorLayout()
 		layout.add_widget(anc_layout)
 		anc_layout.add_widget(MDRectangleFlatButton(text="Ok",on_release=self.dismiss))
+		
+	def anim_in(self, instance):
+		
+		anim= Animation(
+				pos_hint={'x':1.4},
+				t='in_cubic',
+				d=0.3
+			)
+		anim.start(instance)
+
+	def anim_out(self, instance):
+		anim= Animation(
+				pos_hint={'x':.6},
+				t='out_cubic',
+				d=0.3
+			)
+		anim.start(instance)
 
 
 
