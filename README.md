@@ -4,7 +4,7 @@ Private repo for Account Management System: IIIT Kalyani
 Instructions to run the app for collaborators:
 ---------------------------------------------
 
-#### Major Dependencies:
+#### Install these major dependencies:
 * Python3
 * [Kivy](https://github.com/kivy/kivy)
 * [KivyMD](https://github.com/HeaTTheatR/KivyMD)
