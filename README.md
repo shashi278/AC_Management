@@ -13,7 +13,7 @@ Instructions to run the app for collaborators:
 * pygame
 
 ##
-Install dependencies & run:
+To install dependencies & run:
 * Visit [KivyMD](https://github.com/HeaTTheatR/KivyMD) to install KivyMD.
 * For other dependencies run `pip install requirements.txt`
 * Clone this repo by running `git clone https://github.com/shashi278/AC_Management.git`
