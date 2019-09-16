@@ -1,3 +1,4 @@
 kivy
 xlrd
 fpdf
+pygame
