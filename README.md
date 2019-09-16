@@ -15,7 +15,7 @@ Instructions to run the app for collaborators:
 ##
 To install dependencies & run:
 * Visit [KivyMD](https://github.com/HeaTTheatR/KivyMD) to install KivyMD.
-* For other dependencies run `pip install requirements.txt`
+* For other dependencies run `pip install -r requirements.txt`
 * Clone this repo by running `git clone https://github.com/shashi278/AC_Management.git`
 * `cd AC_Management`
 * `python3 main.py`
