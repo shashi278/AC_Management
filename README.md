@@ -22,6 +22,6 @@ To install dependencies & run:
 
 ##
 #### Note:
-If it's the first time you're trying to run a *kivy* app on *unix* system, you're likely to get errors. if so, try running this command to install few required packages:
+If it's the first time you're trying to run a *kivy* app on *linux* system, you're likely to get errors. if so, try running this command to install few required packages:
 
 `sudo apt-get install build-essential autoconf libtool pkg-config python3-opengl python-pyrex python-pyside.qtopengl qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus python-qt4 python-qt4-gl libgle3 python3-dev libssl-dev`
