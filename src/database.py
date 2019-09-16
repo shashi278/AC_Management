@@ -10,7 +10,7 @@ tm = time.localtime()
 tmStmp = "{}{}{}".format(tm.tm_mday, tm.tm_mon, tm.tm_year)
 
 
-class Database:
+class Database():
     def __init__(self):
         if not os.path.exists("database/"):
             os.makedirs("database/")
