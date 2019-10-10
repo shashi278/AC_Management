@@ -1,22 +1,10 @@
+
 #:import C kivy.utils.get_color_from_hex
-
-#:import MDTextField kivymd.textfields.MDTextField
-#:import ThemeManager kivymd.theming.ThemeManager
-#:import MDRaisedButton kivymd.button.MDRaisedButton
-#:import MDRoundFlatIconButton kivymd.button.MDRoundFlatIconButton
-#:import MDRaisedButton kivymd.button.MDRaisedButton
-#:import MDLabel kivymd.label.MDLabel
-#:import MDTextFieldRound kivymd.textfields.MDTextFieldRound
-#:import MDTabs kivymd.tabs.MDTabs
-#:import MDTabsBase kivymd.tabs.MDTabsBase
-
-#:import MDList kivymd.list.MDList
-#:import OneLineListItem kivymd.list.OneLineListItem
 
 #:import RiseInTransition kivy.uix.screenmanager.RiseInTransition
 #:import FallOutTransition kivy.uix.screenmanager.FallOutTransition
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
-#:import NoTransition kivy.uix.screenmanager.NoTransition
+##:import NoTransition kivy.uix.screenmanager.
 
 <Section@BoxLayout>:
 	size_hint_y:1
@@ -32,220 +20,6 @@
 	bold: True
 	color: (1, 1, 1, 1)
 
-<MDTab@BoxLayout+MDTabsBase>:
-	orientation: "vertical"
-
-#--------------General Popups----------------------#
-
-#infoPop is created for showing when usr forgot to select dropdown or write in textbox
-<InfoPopup>:
-	size_hint: (0.5, 0.4)
-	background: "media/images/login3.png"
-	canvas:
-		Color:
-			rgba: (0,0,1,0)
-		Rectangle:
-			pos: self.pos
-			size: self.size
-	BoxLayout:
-		orientation: 'vertical'
-		BoxLayout:
-			size_hint: (1, .25)
-			Label:
-				text:"Information"
-				color:0,0,0,1
-
-		BoxLayout:
-			size_hint: (1, .5)
-			canvas:
-				Color:
-					rgba: (0,0,1,1)
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			Label:
-				id:label
-				text:""
-		AnchorLayout:
-			size_hint: (1, .25)
-			StrokeButton:
-				size_hint: (.2,.5)
-				text:"Ok"
-				on_release:root.dismiss()
-
-
-#for editing name,email,password and Username
-<UserInfoEdit>:
-	size_hint: (0.4, 0.65)
-	auto_dismiss: True
-	background: "media/images/login3.png"
-	canvas:
-		Color:
-			rgba: (0,0,1,0)
-		Rectangle:
-			pos: self.pos
-			size: self.size
-	BoxLayout:
-		orientation: 'vertical'
-		#------------Label--------------#
-		BoxLayout:
-			size_hint: (1,.2)
-			Label:
-				text:"Edit User Information"
-				color:0,0,0,1
-		AnchorLayout:
-			size_hint: (1,.6)
-			canvas:
-				Color:
-					rgba: (0,0,1,1)
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			GridLayout:
-				size_hint: (.6,1)
-				orientation: 'vertical'
-				cols: 1
-				spacing:10
-				padding: 20
-				TextInput:
-					hint_text:"Name"
-				TextInput:
-					hint_text:"Email"
-				TextInput:
-					hint_text:"Username"
-				TextInput:
-					hint_text:"Password"
-
-		BoxLayout:
-			size_hint: (1,.2)
-			AnchorLayout:
-				MDRoundFlatIconButton:
-					text:"Update"
-					icon: "check-circle"
-					font_size:30
-					size_hint: (.5,.5)
-
-			AnchorLayout:
-				MDRoundFlatIconButton:
-					text:"Cancel"
-					icon: "close-circle"
-					font_size:30
-					size_hint: (.5,.5)
-					on_release:root.dismiss()
-
-#for edit name reg and roll no
-<UpdateStudentInfo>:
-	size_hint: (0.4, 0.6)
-	auto_dismiss: True
-	background: "media/images/login3.png"
-	canvas:
-		Color:
-			rgba: (0,0,1,0)
-		Rectangle:
-			pos: self.pos
-			size: self.size
-
-	BoxLayout:
-		orientation: 'vertical'
-		#----------Label---------#
-		BoxLayout:
-			size_hint: (1,.2)
-			Label:
-				text:"Update Student Details"
-				color:0,0,0,1
-		#-----text boxes------#
-		AnchorLayout:
-			size_hint: (1, .55)
-			canvas:
-				Color:
-					rgba: (0,0,1,1)
-				Rectangle:
-					pos: self.pos
-					size: self.size
-			GridLayout:
-				size_hint: (.6,1)
-				orientation: 'vertical'
-				padding: 30
-				cols:1
-				spacing:10
-				TextInput:
-					size_hint: (1,.3)
-				TextInput:
-					size_hint: (1,.3)
-				TextInput:
-					size_hint: (1,.3)
-		#---------Buttons Update and cancel-------#
-		BoxLayout:
-			size_hint: (1,.25)
-			AnchorLayout:
-				MDRoundFlatIconButton:
-					text:"Update"
-					#md_bg_color:"green"
-					font_size:30
-					icon: "check-circle"
-					size_hint: (.5,.5)
-					
-			AnchorLayout:
-				MDRoundFlatIconButton:
-					text: "Cancel"
-					#md_bg_color:"red"
-					font_size:30
-					icon: "close-circle"
-					size_hint: (.5,.5)
-					on_release:root.dismiss()
-
-
-##creted for open at the time of detetion of a batch
-<DeleteWarning>:
-	size_hint:.4,.4
-	
-	pos_hint: {'x': 1.4}
-	on_open: app.root.anim_out(root)
-	on_dismiss: app.root.anim_in(root)
-	BoxLayout:
-		id:container
-		orientation:"vertical"
-		canvas:
-			Color:
-				rgba:1,0,0,1
-			RoundedRectangle:
-				size:self.size
-				pos:self.pos
-				radius:10,0,0,10
-		BoxLayout:
-			padding:self.width*.2,0,0,0
-			Label:
-				text:"Do you really want to delete this Batch/semester ?"
-				text_size: self.size
-				halign: 'left'
-				valign: 'middle'
-				font_size:self.height/25+self.width/24
-		BoxLayout:
-			canvas:
-				Color:
-					rgba:1,1,0,0
-				RoundedRectangle:
-					size:self.size
-					pos:self.pos
-					radius:10,0,0,10
-			AnchorLayout:
-				id:check
-				MDFloatingActionButton:
-					
-					icon:"check"
-					on_release:
-						root.delete()
-				
-			AnchorLayout:
-				MDFloatingActionButton:
-					icon:"window-close"
-					id:delete
-					on_release:
-						root.dismiss()
-			
-		BoxLayout:
-			size_hint_y:.3
-
 #popup to progress
 <ProgressPop>:
 	size_hint: 0.8, 0.2
@@ -259,38 +33,6 @@
 	elevation_normal: 20
 	opposite_colors: True
 
-<CustomButton@MDRaisedButton>:
-	elevation_normal: 2
-	opposite_colors: True
-
-<StrokeButton@Button>:
-	background_color: (0, 0, 0, 0)
-	background_normal: ''
-	back_color:(1,0,1,1)
-	border_radius:18
-	color:self.back_color
-	bold:True
-	canvas.before:
-		Color:
-			rgba:self.back_color
-		Line:
-			rounded_rectangle:(self.pos[0],self.pos[1],self.size[0],self.size[1],self.border_radius)
-			width:1.2 
-
-<SmoothButton@Button>:
-	background_color: (0,0,0,0)
-	background_normal: ''
-	back_color:(1,0,1,1)
-	border_radius:[18]
-	canvas.before:
-		Color:
-			rgba:self.back_color
-		RoundedRectangle:
-			size:self.size
-			pos:self.pos
-			radius:self.border_radius
-
-			
 #---------------being used in 'Row' Class------------#
 <ListItemLayout>:
 	text: ''
@@ -315,8 +57,6 @@
 <TextInputForList>:
 	font_size:"17dp"
 	size_hint: .7,.8
-	#active_color: [0,0,0,.9]
-	#normal_color: [.2,.2,.2,1]
 	foreground_color: [1,1,1,1]
 	write_tab: False
 	padding:0,self.height/2-self.line_height/2
@@ -507,7 +247,6 @@
 			size_hint: None, None
 			size: self.texture_size
 	
-
 ##--------------------List Items' Layout---------------------------------------###########
 #being used in user screen
 <Row@BoxLayout>:
@@ -577,37 +316,40 @@
 			size: self.size
 	spacing: "10dp"
 
+	sno:''
 	name:''
 	email:''
 	username:''
 	password:''
 
 	ListItemLayoutProfile:
-		size_hint:(0.23,1)
+		size_hint:(0.3,1)
+		LabelForList:
+			text: root.sno
+			bold: True
+
+	ListItemLayoutProfile:
+		#size_hint:(0.23,1)
 		LabelForList:
 			text: root.name
-			font_size:"15dp"
 			bold: True
 
 	ListItemLayoutProfile:
-		size_hint:(0.23,1)
+		#size_hint:(0.23,1)
 		LabelForList:
 			text: root.email
-			font_size:"15dp"
 			bold: True
 
 	ListItemLayoutProfile:
-		size_hint:(0.23,1)
+		#size_hint:(0.23,1)
 		LabelForList:
 			text: root.username
-			font_size:"15dp"
 			bold: True
 
 	ListItemLayoutProfile:
-		size_hint:(0.23,1)
+		#size_hint:(0.23,1)
 		LabelForList:
 			text: root.password
-			font_size:"15dp"
 			bold: True
 
 	BoxLayout:
@@ -655,7 +397,6 @@
 #-------------------------Add Data Layout------------------------------------#
 
 #####----------------for DateField----------------------###
-#:import MDTextField kivymd.textfields.MDTextField
 <TextField@MDTextField>:
 	write_tab:False
 <DateField@BoxLayout>:
@@ -700,7 +441,6 @@
 
 <InputFields@MDTextField>:
 	write_tab:False
-
 
 <AddDataLayout>:
 	size_hint: (1, .2)
@@ -795,7 +535,128 @@
 				md_bg_color: app.theme_cls.primary_color
 				on_release:root.dismiss()
 
+<HoverOneLineListItem>:
+	_color:[0,0,0,0]
+	canvas:
+		Color:
+			rgba: root._color
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	on_enter:
+		self._color=[.5,.5,.5,.2]
 
+	on_leave:
+		self._color=[0,0,0,0]
+
+#being used in manage student section
+<UpdateStudentLayout>:
+	id: updateInfoLayout
+	name: ''
+	batch: ''
+	course: ''
+	stream: ''
+
+	orientation: 'vertical'
+	BoxLayout:
+		spacing: 10
+		#name
+		BoxLayout:
+			padding: 10,0
+			AnchorLayout:
+				MDTextField:
+					write_tab: False
+					hint_text: "Name"
+					text: root.name
+					on_text: root.name= self.text
+
+
+		#batch
+		BoxLayout:
+			padding: 10,0
+			AnchorLayout:
+				MDTextField:
+					write_tab: False
+					hint_text: "Batch"
+					text: root.batch
+					on_text: root.batch= self.text
+	#course and stream
+	AnchorLayout:
+		spacing: 50
+		BoxLayout:
+			spacing: 50
+			size_hint: None, None
+			width: self.minimum_width
+			height: self.minimum_height
+
+			MDRaisedButton:
+				size_hint: None, None
+				size: 100, 50
+				id:courseBtn
+				elevation_normal:10
+				opposite_colors: True
+				text: root.course
+				on_release:
+					app.root.ids.adminScreen.openCourseList(self)
+
+			MDRaisedButton:
+				size_hint: None, None
+				size: 100, 50
+				id:streamBtn
+				elevation_normal:10
+				opposite_colors: True
+				text: root.stream
+				on_release:
+					app.root.ids.adminScreen.openStreamList(self)
+
+<DeleteWarning>:
+	size_hint:.4,.4
+	text:"Do you really want to delete "+" ?"
+	pos_hint: {'x': 1.4}
+	on_open: self.anim_out(self)
+	on_dismiss: self.anim_in(self)
+	BoxLayout:
+		id:container
+		orientation:"vertical"
+		canvas:
+			Color:
+				rgba: app.theme_cls.primary_color
+			RoundedRectangle:
+				size:self.size
+				pos:self.pos
+				radius:10,0,0,10
+		BoxLayout:
+			padding:self.width*.2,0,0,0
+			Label:
+				text:root.text
+				text_size: self.size
+				halign: 'left'
+				valign: 'middle'
+				font_size:self.height/25+self.width/24
+		BoxLayout:
+			canvas:
+				Color:
+					rgba:1,1,0,0
+				RoundedRectangle:
+					size:self.size
+					pos:self.pos
+					radius:10,0,0,10
+			AnchorLayout:
+				id:check
+				MDFloatingActionButton:
+					icon:"check"
+					on_release:
+						root.delete(app, self.text_color)
+				
+			AnchorLayout:
+				MDFloatingActionButton:
+					icon:"window-close"
+					id:delete
+					on_release:
+						root.dismiss()
+			
+		BoxLayout:
+			size_hint_y:.3
 
 #root of the app
 ScreenManager:
@@ -807,7 +668,6 @@ ScreenManager:
 		id: adminScreen
 	ProfilePage:
 		id: profilePage
-
 
 #-------------------ProfilePage---------------------#
 <ProfilePage>:
@@ -987,7 +847,6 @@ ScreenManager:
 			y: dp(30)
 			on_release:root.open_addDataLayout()
 
-
 #--------------------------HomeScreen-----------------------------------------###
 <HomeScreen>:
 
@@ -1122,17 +981,11 @@ ScreenManager:
 			BoxLayout:
 				size_hint: (1,0.4)
 
-
-
 ####--------------------------Login Popup Class------------------------------------####
 
-<LoginPopup>:
-	
-
+<LoginPopup>:	
 	size_hint: (0.4, 0.7)
-	
 	auto_dismiss: True
-
 	background: "media/images/login4.png"
 	canvas:
 		Color:
@@ -1499,7 +1352,6 @@ ScreenManager:
 							orientation: "vertical"
 							spacing: .5
 
-				
 
 #--------------------------------Admin Screen--------------------------------------########
 <AdminScreen>:
@@ -1517,8 +1369,9 @@ ScreenManager:
 					pos: self.pos
 					size: self.size
 			Label:
-				text:"Admin"
-				font_size:30
+				id: top_bar
+				text:"Admin:Manage Users"
+				font_size:26
 		#------------Main Layout ---------#
 		BoxLayout:
 			size_hint: (1,0.96)
@@ -1535,37 +1388,34 @@ ScreenManager:
 
 				#----------ToggleButtons in here--------------#
 				AnchorLayout:
-					#orientation: 'vertical'
 					anchor_y: 'top'
 					size_hint: (1,0.3)
-					padding:0
-					#canvas:
-					#	Color:
-					#		rgb: C("#ffffff")
-					#	Rectangle:
-					#		pos: self.pos
-					#		size: self.size
-
+					padding:10
+					
 					MDList:
-						OneLineListItem:
+						HoverOneLineListItem:
 							text:"Manage User"
 							on_release:
 								root.change_screen(self)
+								top_bar.text= "Admin:"+self.text
 
-						OneLineListItem:
+						HoverOneLineListItem:
 							text:"Admin Setting"
 							on_release:
 								root.change_screen(self)
+								top_bar.text= "Admin:"+self.text
 
-						OneLineListItem:
+						HoverOneLineListItem:
 							text:"Manage Student"
 							on_release:
 								root.change_screen(self)
+								top_bar.text= "Admin:"+self.text
 
-						OneLineListItem:
+						HoverOneLineListItem:
 							text:"App Setting"
 							on_release:
 								root.change_screen(self)
+								top_bar.text= "Admin:"+self.text
 
 					
 
@@ -1613,9 +1463,9 @@ ScreenManager:
 							padding:8
 							orientation: 'vertical'
 							#------------------Users Data types Label------------------#
-							GridLayout:
-								rows: 1
-								cols: 
+							BoxLayout:
+								#rows: 1
+								#cols: 
 								size_hint: (1,None)
 								size: (0,40)
 								canvas:
@@ -1626,9 +1476,19 @@ ScreenManager:
 										size: self.size
 
 									#------add user button-----------------#
-									
-
-
+								BoxLayout:
+									#size_hint: (None, 1)
+									#width: self.minimum_width
+									canvas:
+										Color:
+											rgba: .5,.5,.5,.5
+										Rectangle:
+											pos: self.pos
+											size: self.size
+									size_hint_x: 0.3
+									Label:
+										text:"S.No."
+										bold:True
 								BoxLayout:
 									Label:
 										text:"Name"
@@ -1648,6 +1508,7 @@ ScreenManager:
 								BoxLayout:
 									size_hint: None, None
 									size: (100, 40)
+
 							#------------------Users Data------------------#
 							BoxLayout:
 								size_hint: (1,0.715)
@@ -1659,7 +1520,7 @@ ScreenManager:
 									bar_width: dp(7)
 									viewclass: 'UserInfo'
 									RecycleBoxLayout:
-										default_size: None, dp(40)
+										default_size: None, dp(56)
 										default_size_hint: 1, None
 										size_hint_y: None
 										height: self.minimum_height
@@ -1697,16 +1558,15 @@ ScreenManager:
 										if (self.state=="down") :root.Add_User_Layout()
 										if(self.state=="normal"):root.ids.dyn_input.clear_widgets()
 
-
-
 					#----------------manage Student Screen-------------##
 					Screen:
 						name:"manageStudent"
+
 						MDTabs:
 							id: tab_panel
 							tab_display_mode:'text'
 
-							MDTab:
+							MyTab:
 								
 								name: 'addBatch'
 								text: "Add Batch"
@@ -1715,54 +1575,39 @@ ScreenManager:
 								BoxLayout:						
 									orientation: 'vertical'
 									
-									BoxLayout:					
-										size_hint: (1,.1)
-										canvas:
-											Color:
-												rgba: (0, 1, 1, 1)
-											Rectangle:
-												size:self.size 
-												pos:self.pos
-										Label:
-											text:"Add Batch"
-											bold: True
-											font_size: 30
-											color:(0,0,0,1)
-									
 									AnchorLayout:						
-										size_hint: (1,.7)
+										size_hint: (1,.8)
 
 										BoxLayout:
 											orientation: 'vertical'
-											size_hint: (.5,1)
+											size_hint: (.3,1)
+											padding: 20,50
+											spacing:50
 											
-											BoxLayout:
-												spacing: 50
+											MDTextField:
+												id: fromYear1
+												hint_text:"From Year"
+												input_filter: "int"
+												write_tab: False
+												multiline: False
+												on_text:
+													self.text =self.text[:4] if len(self.text)>4 else self.text
 
-												MDTextField:
-													id: fromYear1
-													hint_text:"From Year"
-													input_filter: "int"
-													write_tab: False
-													multiline: False
-													on_text:
-														self.text =self.text[:4] if len(self.text)>4 else self.text
+											MDTextField:
+												id: toYear1
+												hint_text:"To Year"
+												input_filter: "int"
+												write_tab: False
+												multiline: False
+												on_text:
+													self.text =self.text[:4] if len(self.text)>4 else self.text
 
-												MDTextField:
-													id: toYear1
-													hint_text:"To Year"
-													input_filter: "int"
-													write_tab: False
-													multiline: False
-													on_text:
-														self.text =self.text[:4] if len(self.text)>4 else self.text
-
-												MDTextField:
-													id: fee1
-													hint_text:"Fee"
-													input_filter: "int"
-													write_tab: False
-													multiline: False
+											MDTextField:
+												id: fee1
+												hint_text:"Fee"
+												input_filter: "int"
+												write_tab: False
+												multiline: False
 
 											AnchorLayout:
 												spacing: 50
@@ -1780,7 +1625,7 @@ ScreenManager:
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Course"
-														on_release:root.openCourseList1(self)
+														on_release:root.openCourseList(self)
 													MDRaisedButton:
 														size_hint: None, None
 														size: 100, 50
@@ -1788,21 +1633,21 @@ ScreenManager:
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Stream"
-														on_release:root.openStreamList1(self)
-											BoxLayout:
-												MDRaisedButton:
-													size_hint: (1,.25)
-													text: 'Upload file'
-													elevation_normal: 10
-													opposite_colors: True
-													on_release:
-														root.connectFileSelector(root.ids.fromYear1.text,\
-														root.ids.toYear1.text,root.ids.courseBtn1.text,\
-														root.ids.streamBtn1.text, root.ids.fee1.text)
+														on_release:root.openStreamList(self)
+
+											MDRaisedButton:
+												size_hint: 1,None
+												height: 50
+												text: 'Upload file'
+												elevation_normal: 10
+												opposite_colors: True
+												on_release:
+													root.connectFileSelector(fromYear1.text,toYear1.text,\
+													courseBtn1.text, streamBtn1.text, fee1.text)
 									BoxLayout:
 										size_hint: (1,.2)
 
-							MDTab:
+							MyTab:
 								id: deleteBatch
 								name: 'deleteBatch'
 								text: 'Delete Batch'
@@ -1810,52 +1655,37 @@ ScreenManager:
 								BoxLayout:							
 									orientation: 'vertical'
 									
-									BoxLayout:					
-										size_hint: (1,.1)
-										canvas:
-											Color:
-												rgba: (0, 1, 1, 1)
-											Rectangle:
-												size:self.size 
-												pos:self.pos
-										Label:
-											text:"Delete Batch"
-											bold: True
-											font_size: 30
-											color:(0,0,0,1)
-									
 									AnchorLayout:						
 										size_hint: (1,.7)
 
 										BoxLayout:
 											orientation: 'vertical'
-											size_hint: (.5,1)
+											size_hint: (.3,1)
+											padding: 20,50
+											spacing:50
 
-											BoxLayout:
-												spacing: 50
+											MDTextField:
+												id: fromYear2
+												hint_text:"From Year"
+												input_filter: "int"
+												write_tab: False
+												multiline: False
+												on_text:
+													self.text =self.text[:4] if len(self.text)>4 else self.text
 
-												MDTextField:
-													id: fromYear2
-													hint_text:"From Year"
-													input_filter: "int"
-													write_tab: False
-													multiline: False
-													on_text:
-														self.text =self.text[:4] if len(self.text)>4 else self.text
-
-												MDTextField:
-													id: toYear2
-													hint_text:"To Year"
-													input_filter: "int"
-													write_tab: False
-													multiline: False
-													on_text:
-														self.text =self.text[:4] if len(self.text)>4 else self.text
+											MDTextField:
+												id: toYear2
+												hint_text:"To Year"
+												input_filter: "int"
+												write_tab: False
+												multiline: False
+												on_text:
+													self.text =self.text[:4] if len(self.text)>4 else self.text
 
 											AnchorLayout:
 												
 												BoxLayout:
-													spacing: 80
+													spacing: 50
 													size_hint: None, None
 													width: self.minimum_width
 													height: self.minimum_height
@@ -1868,7 +1698,7 @@ ScreenManager:
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Course"
-														on_release:root.openCourseList2(self)
+														on_release:root.openCourseList(self)
 													MDRaisedButton:
 														size_hint: None, None
 														size: 100, 50
@@ -1876,21 +1706,21 @@ ScreenManager:
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Stream"
-														on_release:root.openStreamList2(self)
-											BoxLayout:
-												MDRaisedButton:
-													size_hint: (1,.25)
-													text: 'Delete Batch'
-													elevation_normal: 10
-													opposite_colors: True
-													on_release:
-														root.connectFileSelector(root.ids.fromYear2.text,\
-														root.ids.toYear2.text,root.ids.courseBtn2.text,\
-														root.ids.streamBtn2.text)
+														on_release:root.openStreamList(self)
+											#BoxLayout:
+											MDRaisedButton:
+												size_hint: (1,None)
+												height: 50
+												text: 'Delete Batch'
+												elevation_normal: 10
+												opposite_colors: True
+												on_release:
+													root.deleteBatch(fromYear2.text, toYear2.text,\
+													courseBtn2.text, streamBtn2.text)
 									BoxLayout:
 										size_hint: (1,.2)
 
-							MDTab:
+							MyTab:
 								id: updateStudent
 								name: 'updateStudent'
 								text: 'Update Student Details'
@@ -1898,51 +1728,31 @@ ScreenManager:
 								BoxLayout:							
 									orientation: 'vertical'
 									
-									BoxLayout:					
-										size_hint: (1,.1)
-										canvas:
-											Color:
-												rgba: (0, 1, 1, 1)
-											Rectangle:
-												size:self.size 
-												pos:self.pos
-										Label:
-											text:"Update Student Info"
-											bold: True
-											font_size: 30
-											color:(0,0,0,1)
-									
 									AnchorLayout:						
 										size_hint: (1,.7)
 
 										BoxLayout:
 											orientation: 'vertical'
-											size_hint: (.5,1)
+											size_hint: (.3,1)
 										
 											BoxLayout:
-												
-												MDTextField:
-													id: fromYear
-													hint_text:"Registration Number"
-													input_filter: "int"
-													write_tab: False
-													multiline: False
-													on_text:
-														self.text =self.text[:4] if len(self.text)>4 else self.text
+												size_hint_y: .4
+												AnchorLayout:
+													MDTextField:
+														size_hint_x: None
+														width: 250
+														id: reg_no
+														hint_text:"Registration number to be updated"
+														input_filter: "int"
+														write_tab: False
+														multiline: False
+														on_text:
+															self.text =self.text[:3] if len(self.text)>3 else self.text
+															root.checkBeforeUpdate(self.text, parentAnchor)
 
 											AnchorLayout:
-												canvas:
-													Color:
-														rgba: (0, 1, 1, 1)
-													Rectangle:
-														size:self.size 
-														pos:self.pos
-												BoxLayout:
-													spacing: 50
-													size_hint: None, None
-													width: self.minimum_width
-													height: self.minimum_height
-
+												id: parentAnchor
+												
 											BoxLayout:
 												size_hint_y: .17
 												MDRaisedButton:
@@ -1952,20 +1762,19 @@ ScreenManager:
 													elevation_normal: 10
 													opposite_colors: True
 													on_release:
-														root.connectFileSelector(root.ids.fromYear.text,root.ids.toYear.text,root.ids.courseBtn1.text,\
-														root.ids.streamBtn.text, root.ids.fee.text)
+														root.updateStudentInfo(reg_no.text,parentAnchor)
 									BoxLayout:
 										size_hint: (1,.2)
 
-							
 					#----------------Manage Admin Setting--------------#
 					Screen:
 						name:"adminSetting"
+
 						MDTabs:
 							id: tab_panel
 							tab_display_mode:'text'
 
-							MDTab:
+							MyTab:
 								name: 'music'
 								text: "Music"
 								icon: "playlist-play"
@@ -1974,7 +1783,7 @@ ScreenManager:
 									theme_text_color: 'Primary'
 									text: "Here is my music list :)"
 									halign: 'center'
-							MDTab:
+							MyTab:
 								name: 'movies'
 								text: 'Movies'
 								icon: "movie"
@@ -1988,30 +1797,27 @@ ScreenManager:
 					#---------------Manage App setting-----------------##
 					Screen:
 						name:"appSetting"
-						ScrollView:
-							MDList:
-								OneLineAvatarIconListItem:
-									text: "Dark Mode"
-									ListRightSwitch:
-										active: True if app.theme_cls.theme_style=="Dark" else False
-										on_active:
-											app.theme_cls.theme_style="Dark" if self.active\
-											else "Light"
 
-
-
-								TwoLineAvatarIconListItem:
-									text: "Theme"
-									secondary_text: "Current: " + app.theme_cls.theme_style + ", " + app.theme_cls.primary_palette
-									ListRightIconButton:
-										icon:"brush"
-										on_release:
-											root.theme_picker_open()
-
-								TwoLineAvatarIconListItem:
-									text: "CheckBox"
-									secondary_text:"Somthing about this...."
-									ListRightCheckBox:
+						BoxLayout:
+							orientation: 'vertical'
+							size_hint_y: None
+							height:dp(80)
+							center_y: self.parent.center_y
+							MDRaisedButton:
+								size_hint: None, None
+								size: 3 * dp(48), dp(48)
+								center_x: self.parent.center_x
+								text: 'Change theme'
+								on_release: root.theme_picker_open()
+								opposite_colors: True
+								pos_hint: {'center_x': .5}
+							MDLabel:
+								text:
+									"Current: " + app.theme_cls.theme_style\
+									+ ", " + app.theme_cls.primary_palette
+								theme_text_color: 'Primary'
+								pos_hint: {'center_x': .5}
+								halign: 'center'
 
 
 

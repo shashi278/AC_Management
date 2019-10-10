@@ -1,0 +1,4 @@
+kivy
+xlrd
+fpdf
+pygame
