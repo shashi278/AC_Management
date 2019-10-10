@@ -95,10 +95,18 @@
 		    ellipse: self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 360, 540
 
 
+<LabelForListStudent>:
+	font_size:"20dp"
+	bold: True
+	#color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+	#test
+	color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+
 <LabelForList>:
 	font_size:"20dp"
 	bold: True
-	color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+	color:(1,1,1,1) #if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+	
 
 #---------------being used in Profile Page--------#
 <Rowinfo>:
@@ -252,7 +260,9 @@
 <Row@BoxLayout>:
 	canvas.before:
 		Color:
-			rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
+			#rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
+			#test
+			rgba:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else C("#ffffff")
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -268,42 +278,42 @@
 	#-------S. No. item--------#
 	ListItemLayout:
 		size_hint:(0.05,1)
-		LabelForList:
+		LabelForListStudent:
 			id: lbl0
 			text: str(root.sno)
 
 	#---------reg. no.-----------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		LabelForList:
+		LabelForListStudent:
 			id: lbl1
 			text: str(root.reg)
 
 	#-------name item--------#
 	ListItemLayout:
 		size_hint:(0.2,1)
-		LabelForList:
+		LabelForListStudent:
 			id: lbl2
 			text: root.name
 
 	#-------course item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		LabelForList:
+		LabelForListStudent:
 			id: lbl3
 			text: root.course
 
 	#-------stream item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		LabelForList:
+		LabelForListStudent:
 			id: lbl4
 			text: root.stream
 
 	#-------batch item--------#
 	ListItemLayout:
 		size_hint:(0.1,1)
-		LabelForList:
+		LabelForListStudent:
 			id: lbl5
 			text: root.batch
 
@@ -355,7 +365,8 @@
 	BoxLayout:
 		padding:0
 		spacing:2
-		size_hint: (.08,1)
+		size_hint: (None,1)
+		width:90
 		HoverLayout:
 			on_enter:
 				btn1.text_color= [1,1,1,1]
@@ -1236,7 +1247,8 @@ ScreenManager:
 
 		#---------------------------header Area--------------------------------------###
 		BoxLayout:
-			size_hint: (1, 0.1)
+			id:header
+			size_hint: (1, 0.07)
 			canvas:
 				Color:
 					rgba: app.theme_cls.primary_color
@@ -1253,7 +1265,7 @@ ScreenManager:
 					icon: "menu"
 					theme_text_color: "Custom"
 					text_color: [1,1,1,1]
-					size: sp(90), sp(90)
+					size: sp(50), sp(50)
 					on_release:
 						root.open_sideNav()
 
@@ -1274,7 +1286,7 @@ ScreenManager:
 
 				MDTextFieldRound:
 					id: search
-					size_hint: (0.9, .5)
+					size_hint: (0.8,None)
 					hint_text:"Search"
 					icon_left: 'magnify'
 					icon_type:'left'
@@ -1290,8 +1302,7 @@ ScreenManager:
 		BoxLayout:
 			size_hint: (1, 0.9)
 			orientation: 'vertical'
-			#-----All Semester Tab---------#######
-			
+
 			BoxLayout:
 				orientation:"vertical"
 				BoxLayout:
@@ -1334,6 +1345,13 @@ ScreenManager:
 
 				#-------------------------------list area-----------------------------------###########
 				BoxLayout:
+					#test
+					canvas:
+						Color:
+							rgba:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+						Rectangle:
+							size:self.size
+							pos:self.pos
 					id: list_area
 					size_hint: (1,0.93)
 					spacing:"5dp"
@@ -1390,7 +1408,7 @@ ScreenManager:
 				AnchorLayout:
 					anchor_y: 'top'
 					size_hint: (1,0.3)
-					padding:10
+					#padding:10
 					
 					MDList:
 						HoverOneLineListItem:
@@ -1479,12 +1497,6 @@ ScreenManager:
 								BoxLayout:
 									#size_hint: (None, 1)
 									#width: self.minimum_width
-									canvas:
-										Color:
-											rgba: .5,.5,.5,.5
-										Rectangle:
-											pos: self.pos
-											size: self.size
 									size_hint_x: 0.3
 									Label:
 										text:"S.No."
@@ -1520,12 +1532,12 @@ ScreenManager:
 									bar_width: dp(7)
 									viewclass: 'UserInfo'
 									RecycleBoxLayout:
-										default_size: None, dp(56)
+										default_size: None, dp(45)
 										default_size_hint: 1, None
 										size_hint_y: None
 										height: self.minimum_height
 										orientation: "vertical"
-										spacing: dp(5)
+										spacing: dp(4)
 			
 							#----dynamic Layout With Fields-------#
 							BoxLayout:
@@ -1797,27 +1809,30 @@ ScreenManager:
 					#---------------Manage App setting-----------------##
 					Screen:
 						name:"appSetting"
+						ScrollView:
+							MDList:
+								OneLineAvatarIconListItem:
+									text: "Dark Mode"
+									ListRightSwitch:
+										active: True if app.theme_cls.theme_style=="Dark" else False
+										on_active:
+											app.theme_cls.theme_style="Dark" if self.active\
+											else "Light"
 
-						BoxLayout:
-							orientation: 'vertical'
-							size_hint_y: None
-							height:dp(80)
-							center_y: self.parent.center_y
-							MDRaisedButton:
-								size_hint: None, None
-								size: 3 * dp(48), dp(48)
-								center_x: self.parent.center_x
-								text: 'Change theme'
-								on_release: root.theme_picker_open()
-								opposite_colors: True
-								pos_hint: {'center_x': .5}
-							MDLabel:
-								text:
-									"Current: " + app.theme_cls.theme_style\
-									+ ", " + app.theme_cls.primary_palette
-								theme_text_color: 'Primary'
-								pos_hint: {'center_x': .5}
-								halign: 'center'
+
+
+								TwoLineAvatarIconListItem:
+									text: "Theme"
+									secondary_text: "Current: " + app.theme_cls.theme_style + ", " + app.theme_cls.primary_palette
+									ListRightIconButton:
+										icon:"brush"
+										on_release:
+											root.theme_picker_open()
+
+								TwoLineAvatarIconListItem:
+									text: "CheckBox"
+									secondary_text:"Somthing about this...."
+									ListRightCheckBox:
 
 
 
