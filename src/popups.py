@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivymd.uix.button import MDRaisedButton
 
 from database import Database
+from animator.attention import *
 
 usernameHash = ""
 passwordHash = ""
@@ -26,24 +27,53 @@ class AddDataLayout(ModalView, Database):
 
 # popups class
 class LoginPopup(ModalView, Database):
-    def login(self, username, password):
-        self.username = username
-        self.password = password
 
-        if self.username == usernameHash and self.password == passwordHash:
+    #for animation
+    defaults={
+        'pos_hint': {"center_x":0.5, "center_y": 0.5},
+        'size': '',
+        'opacity':1,
+        'angle': 0,
+        'origin_':''}
+
+    def login(self, username, password):
+
+        db_file= "user_main.db"
+        table_name= "users"
+        validated=False
+
+        conn= self.connect_database(db_file)
+        try:
+            valid_user= self.search_from_database(table_name,conn,"username",username,order_by="id")[0]
+        except (IndexError,TypeError) as e:
+            #print("\n\nValid user: {}\n\n".format(valid_user))
+            validated= False
+        else:
+           # print("\n\nValid user: {}\n\n".format(valid_user))
+            validated=True if username==valid_user[3] and password==valid_user[4] else False
+
+
+        if validated:
             self.ids.warningInfo.text = ""
             self.dismiss()
             return True
-
         else:
             self.ids.warningInfo.text = "Wrong username or password"
+            self.reset(self.ids.util_box)
+            ShakeAnimator(self.ids.util_box, duration=.6, repeat=False).start_()
             return False
 
     def show_password(self, field, button):
-        print(button.icon)
         field.password = not field.password
         field.focus = True
         button.icon = "eye" if button.icon == "eye-off" else "eye-off"
+
+    #for animation
+    def reset(self, widget):
+        for key, val in self.defaults.items():
+            if key=='size':
+                val=(widget.parent.width, widget.parent.height)
+            setattr(widget, key, val)
 
 
 class DeleteWarning(ModalView, Database):

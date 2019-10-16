@@ -984,15 +984,11 @@ ScreenManager:
 ####--------------------------Login Popup Class------------------------------------####
 
 <LoginPopup>:	
-	size_hint: (0.4, 0.7)
+	#size_hint: (0.4, 0.7)
+	size_hint: (0.3, 0.5)
 	auto_dismiss: True
 	background: "media/images/login4.png"
-	canvas:
-		Color:
-			rgba: (0,0,1,0)
-		Rectangle:
-			pos: self.pos
-			size: self.size
+	opacity:0.3
 	 
    #####-------------------Parent Boxlayout----------------------------######################
 
@@ -1006,8 +1002,8 @@ ScreenManager:
 				size: self.size
 
 		#------------------------title------------------------------------------#############
-		BoxLayout:
-			size_hint: (1, .1)
+		AnchorLayout:
+			size_hint: (1, .2)
 
 			canvas:
 				Color:
@@ -1017,6 +1013,7 @@ ScreenManager:
 					size: self.size
 
 			Label:
+				opacity:3
 				id: loginTitle
 				text: ""
 				font_size: dp(35)
@@ -1025,7 +1022,7 @@ ScreenManager:
 
 
 		AnchorLayout:
-			size_hint: (1, 0.9)
+			size_hint: (1, 0.8)
 			canvas:
 				Color:
 					rgba: (1,0,0.5,0)
@@ -1035,7 +1032,8 @@ ScreenManager:
 
 			#####------------------contains textInputs------------------------------#
 			GridLayout:
-				size_hint: (0.6, 0.9)
+				opacity:3
+				size_hint: (0.7, 1)
 				canvas:
 					Color:
 						rgba: (0.5,0,1,0)
@@ -1044,127 +1042,161 @@ ScreenManager:
 						size: self.size
 
 
-				rows: 4
+				rows: 2
 				cols: 1
-				spacing: (0, 2)
 
-				#------------login failure message------------------------------------#
-				BoxLayout:
-					size_hint: (1, 0.1)
+				FloatLayout:
+					#size_hint_y:.5
 					canvas:
 						Color:
-							rgba: (0.5,0.3,1,0)
-						Rectangle:
-							pos: self.pos
-							size: self.size
-
-					Label:
-						id: warningInfo
-						text: ''
-						color: (1, 0, 0, 1)
-
-				#-----------------------username-----------------#
-				AnchorLayout:
-					size_hint: (1, 0.25)
-					canvas:
-						Color:
-							rgba: (0.3,0,0.2,0)
+							rgba: (0.5,0,.2,0)
 						Rectangle:
 							pos: self.pos
 							size: self.size
 
 					BoxLayout:
-						size_hint: (1, None)
-						height: 40
-						canvas:
+						id: util_box
+						orientation: 'vertical'
+						pos_hint: {"center_x":0.5, "center_y": 0.5}
+						size_hint: None, None
+						size: self.parent.width, self.parent.height
+						opacity:1
+						angle: 0
+						origin_: None
+						axis: tuple((0,0,1))
+						
+
+						canvas.before:
+							PushMatrix
+							Rotate:
+								axis: self.axis
+								angle: self.angle 
+								origin: self.origin_ or self.center
+
 							Color:
-								rgba: (0,0,0,0)
+								rgba: 1,1,0,0
 							Rectangle:
 								pos: self.pos
 								size: self.size
+						canvas.after:
+							PopMatrix
 
-						#---------username input----------#
+						#-----------------Wrong credential info-------------#
 						BoxLayout:
-							size_hint: (1,1)
+							size_hint: (1, 0.1)
 							canvas:
 								Color:
-									rgba: (0.5,0.2,0.3,0)
+									rgba: (0.5,0.3,1,0)
 								Rectangle:
 									pos: self.pos
 									size: self.size
-							MDTextFieldRound:
-								id: username_
-								size_hint: (1, 1)
-								hint_text:"Username"
-								icon_type:'left'
-								icon_left: 'account-box'
-								on_text_validate:
-									x= root.login(root.ids.username_.text, root.ids.password_.text,)
-									if (x and root.ids.loginTitle.text=="User Login"):\
-									app.root.transition= SlideTransition(direction="right");\
-									app.root.current= "userScreen";\
-									app.root.ids.userScreen.onStartUserScr()
 
-									if (x and root.ids.loginTitle.text=="Admin Login"):\
-									app.root.transition= SlideTransition(direction="left");\
-									app.root.current= "adminScreen";\
-									app.root.ids.adminScreen.onStartAdminScr()
+							Label:
+								id: warningInfo
+								text: ''
+								color: (1, 0, 0, 1)	
 
-				#-------------------password---------------------------#
-				AnchorLayout:
-					size_hint: (1, 0.25)
-					anchor_y: 'top'
-					canvas:
-						Color:
-							rgba: (0.5,0,0.3,0)
-						Rectangle:
-							pos: self.pos
-							size: self.size
-
-					BoxLayout:
-						size_hint: (1, None)
-						height: 40
-						canvas:
-							Color:
-								rgba: (0,0,0,0)
-							Rectangle:
-								pos: self.pos
-								size: self.size
-
-						#---------password input----------#
-						BoxLayout:
-							size_hint: (1,1)
+						#-----------------------username-----------------#
+						AnchorLayout:
 							canvas:
 								Color:
-									rgba: (0,0,0,0)
+									rgba: (0.3,0,0.2,0)
 								Rectangle:
 									pos: self.pos
 									size: self.size
-							MDTextFieldRound:
-								id: password_
-								size_hint: (1, 1)
-								hint_text:"Password"
-								icon_left: 'key-variant'
-								icon_right: 'eye-off'
-								password: True
-								icon_callback: root.show_password
 
-								on_text_validate:
-									x= root.login(root.ids.username_.text, root.ids.password_.text,)
-									if (x and root.ids.loginTitle.text=="User Login"):\
-									app.root.transition= SlideTransition(direction="right");\
-									app.root.current= "userScreen";\
-									app.root.ids.userScreen.onStartUserScr()
+							BoxLayout:
+								size_hint: (1, None)
+								height: 40
+								canvas:
+									Color:
+										rgba: (0,0,0,0)
+									Rectangle:
+										pos: self.pos
+										size: self.size
 
-									if (x and root.ids.loginTitle.text=="Admin Login"):\
-									app.root.transition= SlideTransition(direction="left");\
-									app.root.current= "adminScreen";\
-									app.root.ids.adminScreen.onStartAdminScr()
-								
-				#-------------------Contains login button and fotgot password----------------------------------#
+								#---------username input----------#
+								BoxLayout:
+									size_hint: (1,1)
+									canvas:
+										Color:
+											rgba: (0.5,0.2,0.3,0)
+										Rectangle:
+											pos: self.pos
+											size: self.size
+									MDTextFieldRound:
+										id: username_
+										size_hint: (1, 1)
+										hint_text:"Username"
+										icon_type:'left'
+										icon_left: 'account-box'
+										foreground_color: (0, 0, 0, 1)
+										on_text_validate:
+											x= root.login(root.ids.username_.text, root.ids.password_.text,)
+											if (x and root.ids.loginTitle.text=="User Login"):\
+											app.root.transition= SlideTransition(direction="right");\
+											app.root.current= "userScreen";\
+											app.root.ids.userScreen.onStartUserScr()
+
+											if (x and root.ids.loginTitle.text=="Admin Login"):\
+											app.root.transition= SlideTransition(direction="left");\
+											app.root.current= "adminScreen";\
+											app.root.ids.adminScreen.onStartAdminScr()
+
+						#-------------------password---------------------------#
+						AnchorLayout:
+							canvas:
+								Color:
+									rgba: (0.5,0,0.3,0)
+								Rectangle:
+									pos: self.pos
+									size: self.size
+
+							BoxLayout:
+								size_hint: (1, None)
+								height: 40
+								canvas:
+									Color:
+										rgba: (0,0,0,0)
+									Rectangle:
+										pos: self.pos
+										size: self.size
+
+								#---------password input----------#
+								BoxLayout:
+									size_hint: (1,1)
+									canvas:
+										Color:
+											rgba: (0,0,0,0)
+										Rectangle:
+											pos: self.pos
+											size: self.size
+									MDTextFieldRound:
+										id: password_
+										size_hint: (1, 1)
+										hint_text:"Password"
+										foreground_color: (0, 0, 0, 1)
+										icon_left: 'key-variant'
+										icon_right: 'eye-off'
+										password: True
+										icon_callback: root.show_password
+
+										on_text_validate:
+											x= root.login(root.ids.username_.text, root.ids.password_.text,)
+											if (x and root.ids.loginTitle.text=="User Login"):\
+											app.root.transition= SlideTransition(direction="right");\
+											app.root.current= "userScreen";\
+											app.root.ids.userScreen.onStartUserScr()
+
+											if (x and root.ids.loginTitle.text=="Admin Login"):\
+											app.root.transition= SlideTransition(direction="left");\
+											app.root.current= "adminScreen";\
+											app.root.ids.adminScreen.onStartAdminScr()
+						
+				#-------------------Contains login button and forgot password----------------------------------#
 				BoxLayout:
 					orientation: 'vertical'
-					size_hint: (1, 0.4)
+					#size_hint: (1, 0.5)
 					canvas:
 						Color:
 							rgba: (1,0,1,0)
@@ -1184,7 +1216,8 @@ ScreenManager:
 
 						#-----------------login btn-------------#
 						MDFillRoundFlatButton:
-							size_hint: (1, .5)
+							size_hint: (1, None)
+							height: dp(40)
 							border: (10, 10, 10, 10)
 							text: "Login"
 							on_release:
@@ -1291,7 +1324,7 @@ ScreenManager:
 			size_hint: (1, 0.9)
 			orientation: 'vertical'
 			#-----All Semester Tab---------#######
-			
+
 			BoxLayout:
 				orientation:"vertical"
 				BoxLayout:
@@ -1370,7 +1403,7 @@ ScreenManager:
 					size: self.size
 			Label:
 				id: top_bar
-				text:"Admin:Manage Users"
+				text:"Admin:Manage User"
 				font_size:26
 		#------------Main Layout ---------#
 		BoxLayout:

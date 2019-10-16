@@ -5,7 +5,7 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import StringProperty
-from kivy.garden.filebrowser import FileBrowser
+from filebrowser import FileBrowser
 from kivy.utils import platform
 from kivy.uix.popup import Popup
 
@@ -344,7 +344,7 @@ class AdminScreen(Screen, Database):
                 "username": each[3],
                 "password": each[4],
             }
-            self.ids.rv.data.insert(0, x)
+            self.ids.rv.data.append(x)
         # --------------------------------------------#
 
     def change_screen(self, instance):
@@ -391,8 +391,7 @@ class AdminScreen(Screen, Database):
         if all([not len(each) for each in [name, email, username, password]]):
             return
 
-        self.ids.rv.data.insert(
-            0,
+        self.ids.rv.data.append(
             {"name": name, "email": email, "username": username, "password": password},
         )
         self.ids.addusrBtn.state = "normal"
