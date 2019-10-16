@@ -13,9 +13,18 @@ from kivymd.uix.button import (
     MDRaisedButton,
     MDRectangleFlatButton,
     MDFloatingActionButton,
+    MDIconButton,
 )
 from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.picker import MDThemePicker
+from kivymd.uix.selectioncontrol import MDCheckbox,MDSwitch
+from kivymd.uix.list import (
+    ILeftBody,
+    ILeftBodyTouch,
+    IRightBodyTouch,
+    OneLineIconListItem,
+    OneLineListItem,
+)
 
 import os
 from os.path import sep, expanduser, isdir, dirname
@@ -26,6 +35,25 @@ from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
 from dropdowns import *
+
+
+#---App Setting List -----------------------
+
+#left iconbutton
+class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
+    pass
+
+#right iconbutton,checkbox,switch
+class ListRightIconButton(IRightBodyTouch, MDIconButton):
+    pass
+
+class ListRightCheckBox(IRightBodyTouch, MDCheckbox):
+    pass
+
+class ListRightSwitch(IRightBodyTouch, MDSwitch):
+    pass
+
+
 
 # ScreenManager Class
 class ScreenManager(ScreenManager):
@@ -47,8 +75,8 @@ class UserScreen(Screen, Database):
     def onStartUserScr(self):
 
         # should be fixed inside MDIconButton in md library itself
-        self.ids.hamburger.ids.lbl_txt.text_size = (sp(80), sp(80))
-        self.ids.hamburger.ids.lbl_txt.font_size = sp(60)
+        #self.ids.hamburger.ids.lbl_txt.text_size = (sp(80), sp(80))
+        self.ids.hamburger.ids.lbl_txt.font_size = sp(35)
         self.ids.search.text = ""
 
         # --------------Update Student list---------------------#

@@ -10,3 +10,7 @@ class HoverOneLineListItem(OneLineListItem, HoverBehavior):
 
 class LabelForList(Label):
     pass
+
+
+class LabelForListStudent(Label):
+    pass

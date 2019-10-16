@@ -15,7 +15,7 @@ from kivymd.uix.snackbar import Snackbar
 from database import Database
 from hoverable import HoverBehavior
 from custom_textinputs import TextInputForList
-from custom_widgets import LabelForList
+from custom_widgets import LabelForList,LabelForListStudent
 
 
 class MyTab(BoxLayout, MDTabsBase):
@@ -59,13 +59,16 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 class UserInfo(BoxLayout, Database):
     def edit(self, root, icon, app):
-        fields = [child.children[0].text for child in root.children[1:]][::-1]
+        ##print(root.children[::-1][1:])
+        #for child in root.children[-2:0:-1]:
+        #    print(child.children[0].text)
+        fields = [child.children[0].text for child in root.children[-2:0:-1]]
         tableName = "users"
         conn = self.connect_database("user_main.db")
         c = conn.execute("select * from {}".format(tableName))
         fields_names = tuple([des[0] for des in c.description][1:])
 
-        for each, text, fn in zip(root.children[1:][::-1], fields, fields_names):
+        for each, text, fn in zip(root.children[::-1][1:], fields, fields_names):
             each.clear_widgets()
             # if user wants to edit
             if icon == "pencil":
