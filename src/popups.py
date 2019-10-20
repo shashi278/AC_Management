@@ -7,7 +7,7 @@ from kivy.uix.label import Label
 from kivymd.uix.button import MDRaisedButton
 
 from database import Database
-from animator.attention import *
+from animator.attention import ShakeAnimator
 
 usernameHash = ""
 passwordHash = ""
@@ -36,21 +36,26 @@ class LoginPopup(ModalView, Database):
         'angle': 0,
         'origin_':''}
 
-    def login(self, username, password):
+    def login(self, username, password, title):
 
         db_file= "user_main.db"
-        table_name= "users"
+        table_name= "users" if title=="User Login" else "admin"
         validated=False
 
         conn= self.connect_database(db_file)
         try:
             valid_user= self.search_from_database(table_name,conn,"username",username,order_by="id")[0]
         except (IndexError,TypeError) as e:
-            #print("\n\nValid user: {}\n\n".format(valid_user))
             validated= False
         else:
-           # print("\n\nValid user: {}\n\n".format(valid_user))
             validated=True if username==valid_user[3] and password==valid_user[4] else False
+        
+        #Run this below code just once to create an admin with  default credentials
+        '''
+        with open("admin_record.sql") as table:
+            self.create_table(table.read(), conn)
+            self.insert_into_database('admin', conn, ('','admin@example.com','admin','admin',''))
+        '''
 
 
         if validated:
@@ -77,11 +82,18 @@ class LoginPopup(ModalView, Database):
 
 
 class DeleteWarning(ModalView, Database):
-    def __init__(self, id_, data, db_file, table_name, *args):
+    def __init__(self, id_, data, db_file, table_name, *args, **kwargs):
+        
         self.id_ = id_
         self.data = data
         self.db_file = db_file
         self.table_name = table_name
+        self.success= False     #status of deletion
+        self.callback= None     #can be called after completion of any action, generally after deletion
+        self.delete_detail=''
+        try:
+            self.callback= kwargs["callback"]
+        except: pass
 
         if self.id_ == "batch":
             name1 = "batch"
@@ -107,20 +119,35 @@ class DeleteWarning(ModalView, Database):
                 + val3
                 + '"'
             )
+            self.delete_detail="Batch: "+val1+", Course: "+val2+", Stream: "+val3
 
+        elif self.id_ == "users":
+            self.condition=(
+                'name = "'+data["name"]+'" AND username = "'+data["username"]+'" AND pass = "'+data["password"]+'"'
+            )
+            self.delete_detail="User: {} with username {}".format(data["name"],data["username"])
+        
+        elif self.id_=="fee":
+            self.condition=(
+                'sem = "'+data["sem"]+'" AND tid = "'+data["tid"]+'"'
+            )
+            self.delete_detail="Fee detail: Semester "+data["sem"]+", Trans. Id "+data["tid"]+" for reg. no. "+data["reg"]
+        
         super(DeleteWarning, self).__init__(*args)
-        # print(data)
+
 
     def delete(self, app, text_color):
         """
-        ///delete from database code
+        code for deleting from database goes here
         """
-        # print(self.condition)
         conn = self.connect_database(self.db_file)
         res = self.delete_from_database(self.table_name, conn, self.condition)
 
         if res:
+            self.success= True
             res_text = "Successfully deleted!"
+            if self.callback is not None:
+                self.callback()
         else:
             res_text = "Error in deleting!"
 
