@@ -41,9 +41,6 @@ from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
 from dropdowns import *
 
-
-#---App Setting List -----------------------
-
 #left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
     pass
@@ -306,6 +303,7 @@ class ProfilePage(Screen, Database):
             }
 
             self.ids.rv.data.append(_temp)
+            self.populate_screen()
 
     def populate_screen(self):
         self.ids.rv.data = []
@@ -369,6 +367,8 @@ class AdminScreen(Screen, Database):
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
         data_list = self.extractAllData("user_main.db", "users", order_by="id")
+        print("\n\n\nData in rv: {}\n\n\n".format(self.ids.rv.data))
+        print("\n\n\nData in db: {}\n\n\n".format(data_list))
         for counter, each in enumerate(data_list, 1):
             x = {
                 "sno": str(counter),
@@ -379,7 +379,7 @@ class AdminScreen(Screen, Database):
             }
             self.ids.rv.data.append(x)
         # --------------------------------------------#
-
+        
     def change_screen(self, instance):
         if instance.text == "Manage User":
             self.ids.scrManager.current = "manageUser"
@@ -427,6 +427,7 @@ class AdminScreen(Screen, Database):
         self.ids.rv.data.append(
             {"name": name, "email": email, "username": username, "password": password},
         )
+
         self.ids.addusrBtn.state = "normal"
         layout = self.ids.dyn_input
         layout.clear_widgets()
@@ -434,6 +435,8 @@ class AdminScreen(Screen, Database):
         data = (name, email, username, password)
         with open("user_record.sql", "r") as table:
             self.addData("user_main.db", table.read(), "users", data)
+        
+        self.onStartAdminScr()
 
     def connectFileSelector(self, fromYear, toYear, course, stream, fee):
         if fromYear == "" or toYear == "" or fee == "":
