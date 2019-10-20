@@ -1,8 +1,11 @@
 
 #:import C kivy.utils.get_color_from_hex
-
 #:import RiseInTransition kivy.uix.screenmanager.RiseInTransition
 #:import FallOutTransition kivy.uix.screenmanager.FallOutTransition
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition 
+#:import CardTransition kivy.uix.screenmanager.CardTransition
+#:import SwapTransition kivy.uix.screenmanager.SwapTransition 
+#:import WipeTransition kivy.uix.screenmanager.WipeTransition
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
 ##:import NoTransition kivy.uix.screenmanager.
 
@@ -992,6 +995,59 @@ ScreenManager:
 			BoxLayout:
 				size_hint: (1,0.4)
 
+
+<ForgotPasswordScreen>:
+	BoxLayout:
+		opacity: 3.0
+		spacing:10
+		padding: [10, 0]
+		orientation:"vertical"
+		canvas:
+			Color:
+				rgba:0,1,0,0
+			RoundedRectangle:
+				pos:self.pos
+				size:self.size
+				radius:25,25,25,25
+		MDLabel:
+			size_hint_y:.15
+			text:"Reset Password"
+			font_size:self.width*.08
+			halign:"center"
+			color:1,1,1,1
+		MDLabel:
+			id:verifnLabel
+			size_hint_y:.1
+			text:"Send a Verification Code to Your Email"
+			color:1,1,1,1
+		BoxLayout:
+			id:sendCodeBox
+			spacing:60
+			size_hint_y:.1
+			MDRaisedButton:
+				id:sendBtn
+				text:"Send Code"
+				on_release:
+					root.ids.sendBtn.text="Resend Code"
+					root.call_Code_Submit_Layout()
+
+			MDLabel:
+				id:statusLabel
+
+		BoxLayout:
+			id:codeSubmitBox
+			spacing:50
+			size_hint_y:.15
+
+		AnchorLayout:
+			opacity:1
+			size_hint_y:.5
+			BoxLayout:
+				id:resetPasswordBox
+				size_hint:.5,1
+				spacing:5
+				orientation:"vertical"
+							
 ####--------------------------Login Popup Class------------------------------------####
 
 <LoginPopup>:	
@@ -1001,213 +1057,27 @@ ScreenManager:
 	background: "media/images/login4.png"
 	opacity:0.3
 	 
+
+	ScreenManager:
+		id:scr
+
+		Screen:
+			name:"login"
    #####-------------------Parent Boxlayout----------------------------######################
 
-	BoxLayout:
-		orientation: 'vertical'
-		canvas:
-			Color:
-				rgba: (1,0,1,0)
-			Rectangle:
-				pos: self.pos
-				size: self.size
-
-		#------------------------title------------------------------------------#############
-		AnchorLayout:
-			size_hint: (1, .2)
-
-			canvas:
-				Color:
-					rgba: (1,0,1,0)
-				Rectangle:
-					pos: self.pos
-					size: self.size
-
-			Label:
-				opacity:3
-				id: loginTitle
-				text: ""
-				font_size: dp(35)
-				bold: True
-				color: (1, 1, 1, 1)
-
-
-		AnchorLayout:
-			size_hint: (1, 0.8)
-			canvas:
-				Color:
-					rgba: (1,0,0.5,0)
-				Rectangle:
-					pos: self.pos
-					size: self.size
-
-			#####------------------contains textInputs------------------------------#
-			GridLayout:
-				opacity:3
-				size_hint: (0.7, 1)
+			BoxLayout:
+				orientation: 'vertical'
 				canvas:
 					Color:
-						rgba: (0.5,0,1,0)
+						rgba: (1,0,1,0)
 					Rectangle:
 						pos: self.pos
 						size: self.size
 
+				#------------------------title------------------------------------------#############
+				AnchorLayout:
+					size_hint: (1, .2)
 
-				rows: 2
-				cols: 1
-
-				FloatLayout:
-					#size_hint_y:.5
-					canvas:
-						Color:
-							rgba: (0.5,0,.2,0)
-						Rectangle:
-							pos: self.pos
-							size: self.size
-
-					BoxLayout:
-						id: util_box
-						orientation: 'vertical'
-						pos_hint: {"center_x":0.5, "center_y": 0.5}
-						size_hint: None, None
-						size: self.parent.width, self.parent.height
-						opacity:1
-						angle: 0
-						origin_: None
-						axis: tuple((0,0,1))
-						
-
-						canvas.before:
-							PushMatrix
-							Rotate:
-								axis: self.axis
-								angle: self.angle 
-								origin: self.origin_ or self.center
-
-							Color:
-								rgba: 1,1,0,0
-							Rectangle:
-								pos: self.pos
-								size: self.size
-						canvas.after:
-							PopMatrix
-
-						#-----------------Wrong credential info-------------#
-						BoxLayout:
-							size_hint: (1, 0.1)
-							canvas:
-								Color:
-									rgba: (0.5,0.3,1,0)
-								Rectangle:
-									pos: self.pos
-									size: self.size
-
-							Label:
-								id: warningInfo
-								text: ''
-								color: (1, 0, 0, 1)	
-
-						#-----------------------username-----------------#
-						AnchorLayout:
-							canvas:
-								Color:
-									rgba: (0.3,0,0.2,0)
-								Rectangle:
-									pos: self.pos
-									size: self.size
-
-							BoxLayout:
-								size_hint: (1, None)
-								height: 40
-								canvas:
-									Color:
-										rgba: (0,0,0,0)
-									Rectangle:
-										pos: self.pos
-										size: self.size
-
-								#---------username input----------#
-								BoxLayout:
-									size_hint: (1,1)
-									canvas:
-										Color:
-											rgba: (0.5,0.2,0.3,0)
-										Rectangle:
-											pos: self.pos
-											size: self.size
-									MDTextFieldRound:
-										id: username_
-										size_hint: (1, 1)
-										hint_text:"Username"
-										icon_type:'left'
-										icon_left: 'account-box'
-										foreground_color: (0, 0, 0, 1)
-										on_text_validate:
-											x= root.login(root.ids.username_.text, root.ids.password_.text,)
-											if (x and root.ids.loginTitle.text=="User Login"):\
-											app.root.transition= SlideTransition(direction="right");\
-											app.root.current= "userScreen";\
-											app.root.ids.userScreen.onStartUserScr()
-
-											if (x and root.ids.loginTitle.text=="Admin Login"):\
-											app.root.transition= SlideTransition(direction="left");\
-											app.root.current= "adminScreen";\
-											app.root.ids.adminScreen.onStartAdminScr()
-
-						#-------------------password---------------------------#
-						AnchorLayout:
-							canvas:
-								Color:
-									rgba: (0.5,0,0.3,0)
-								Rectangle:
-									pos: self.pos
-									size: self.size
-
-							BoxLayout:
-								size_hint: (1, None)
-								height: 40
-								canvas:
-									Color:
-										rgba: (0,0,0,0)
-									Rectangle:
-										pos: self.pos
-										size: self.size
-
-								#---------password input----------#
-								BoxLayout:
-									size_hint: (1,1)
-									canvas:
-										Color:
-											rgba: (0,0,0,0)
-										Rectangle:
-											pos: self.pos
-											size: self.size
-									MDTextFieldRound:
-										id: password_
-										size_hint: (1, 1)
-										hint_text:"Password"
-										foreground_color: (0, 0, 0, 1)
-										icon_left: 'key-variant'
-										icon_right: 'eye-off'
-										password: True
-										icon_callback: root.show_password
-
-										on_text_validate:
-											x= root.login(root.ids.username_.text, root.ids.password_.text,)
-											if (x and root.ids.loginTitle.text=="User Login"):\
-											app.root.transition= SlideTransition(direction="right");\
-											app.root.current= "userScreen";\
-											app.root.ids.userScreen.onStartUserScr()
-
-											if (x and root.ids.loginTitle.text=="Admin Login"):\
-											app.root.transition= SlideTransition(direction="left");\
-											app.root.current= "adminScreen";\
-											app.root.ids.adminScreen.onStartAdminScr()
-						
-				#-------------------Contains login button and forgot password----------------------------------#
-				BoxLayout:
-					orientation: 'vertical'
-					#size_hint: (1, 0.5)
 					canvas:
 						Color:
 							rgba: (1,0,1,0)
@@ -1215,57 +1085,256 @@ ScreenManager:
 							pos: self.pos
 							size: self.size
 
-					#-------------Login Btn Area----------------------------------#
-					AnchorLayout:
-						size_hint: (1, 0.5)
+					Label:
+						opacity:3
+						id: loginTitle
+						text: ""
+						font_size: dp(35)
+						bold: True
+						color: (1, 1, 1, 1)
+
+
+				AnchorLayout:
+					size_hint: (1, 0.8)
+					canvas:
+						Color:
+							rgba: (1,0,0.5,0)
+						Rectangle:
+							pos: self.pos
+							size: self.size
+
+					#####------------------contains textInputs------------------------------#
+					GridLayout:
+						opacity:3
+						size_hint: (0.7, 1)
 						canvas:
 							Color:
-								rgba: (0.5,0.5,0.5,0)
+								rgba: (0.5,0,1,0)
 							Rectangle:
 								pos: self.pos
 								size: self.size
 
-						#-----------------login btn-------------#
-						MDFillRoundFlatButton:
-							size_hint: (1, None)
-							height: dp(40)
-							border: (10, 10, 10, 10)
-							text: "Login"
-							on_release:
-								x= root.login(root.ids.username_.text, root.ids.password_.text,)
-								if (x and root.ids.loginTitle.text=="User Login"):\
-								app.root.transition= SlideTransition(direction="right");\
-								app.root.current= "userScreen";\
-								app.root.ids.userScreen.onStartUserScr()
 
-								if (x and root.ids.loginTitle.text=="Admin Login"):\
-								app.root.transition= SlideTransition(direction="left");\
-								app.root.current= "adminScreen";\
-								app.root.ids.adminScreen.onStartAdminScr()
+						rows: 2
+						cols: 1
 
-
-					#--------------forgot password area---------------------------#
-					AnchorLayout:
-						size_hint: (1, 0.5)
-						canvas:
-							Color:
-								rgba: (0.3,0.3,0.3,0)
-							Rectangle:
-								pos: self.pos
-								size: self.size
-
-						Button:
-							size_hint: (0.5, 0.3)
-							background_color: (0, 0, 0, 0)
-							canvas.before:
+						FloatLayout:
+							#size_hint_y:.5
+							canvas:
 								Color:
-									rgba: (0,0,1,0)
+									rgba: (0.5,0,.2,0)
 								Rectangle:
 									pos: self.pos
 									size: self.size
 
-							text:"Forgot Details?"
-							color: (0, 0, 1, 1)
+							BoxLayout:
+								id: util_box
+								orientation: 'vertical'
+								pos_hint: {"center_x":0.5, "center_y": 0.5}
+								size_hint: None, None
+								size: self.parent.width, self.parent.height
+								opacity:1
+								angle: 0
+								origin_: None
+								axis: tuple((0,0,1))
+								
+
+								canvas.before:
+									PushMatrix
+									Rotate:
+										axis: self.axis
+										angle: self.angle 
+										origin: self.origin_ or self.center
+
+									Color:
+										rgba: 1,1,0,0
+									Rectangle:
+										pos: self.pos
+										size: self.size
+								canvas.after:
+									PopMatrix
+
+								#-----------------Wrong credential info-------------#
+								BoxLayout:
+									size_hint: (1, 0.1)
+									canvas:
+										Color:
+											rgba: (0.5,0.3,1,0)
+										Rectangle:
+											pos: self.pos
+											size: self.size
+
+									Label:
+										id: warningInfo
+										text: ''
+										color: (1, 0, 0, 1)	
+
+								#-----------------------username-----------------#
+								AnchorLayout:
+									canvas:
+										Color:
+											rgba: (0.3,0,0.2,0)
+										Rectangle:
+											pos: self.pos
+											size: self.size
+
+									BoxLayout:
+										size_hint: (1, None)
+										height: 40
+										canvas:
+											Color:
+												rgba: (0,0,0,0)
+											Rectangle:
+												pos: self.pos
+												size: self.size
+
+										#---------username input----------#
+										BoxLayout:
+											size_hint: (1,1)
+											canvas:
+												Color:
+													rgba: (0.5,0.2,0.3,0)
+												Rectangle:
+													pos: self.pos
+													size: self.size
+											MDTextFieldRound:
+												id: username_
+												size_hint: (1, 1)
+												hint_text:"Username"
+												icon_type:'left'
+												icon_left: 'account-box'
+												foreground_color: (0, 0, 0, 1)
+												on_text_validate:
+													x= root.login(root.ids.username_.text, root.ids.password_.text,)
+													if (x and root.ids.loginTitle.text=="User Login"):\
+													app.root.transition= SlideTransition(direction="right");\
+													app.root.current= "userScreen";\
+													app.root.ids.userScreen.onStartUserScr()
+
+													if (x and root.ids.loginTitle.text=="Admin Login"):\
+													app.root.transition= SlideTransition(direction="left");\
+													app.root.current= "adminScreen";\
+													app.root.ids.adminScreen.onStartAdminScr()
+
+								#-------------------password---------------------------#
+								AnchorLayout:
+									canvas:
+										Color:
+											rgba: (0.5,0,0.3,0)
+										Rectangle:
+											pos: self.pos
+											size: self.size
+
+									BoxLayout:
+										size_hint: (1, None)
+										height: 40
+										canvas:
+											Color:
+												rgba: (0,0,0,0)
+											Rectangle:
+												pos: self.pos
+												size: self.size
+
+										#---------password input----------#
+										BoxLayout:
+											size_hint: (1,1)
+											canvas:
+												Color:
+													rgba: (0,0,0,0)
+												Rectangle:
+													pos: self.pos
+													size: self.size
+											MDTextFieldRound:
+												id: password_
+												size_hint: (1, 1)
+												hint_text:"Password"
+												foreground_color: (0, 0, 0, 1)
+												icon_left: 'key-variant'
+												icon_right: 'eye-off'
+												password: True
+												icon_callback: root.show_password
+
+												on_text_validate:
+													x= root.login(root.ids.username_.text, root.ids.password_.text,)
+													if (x and root.ids.loginTitle.text=="User Login"):\
+													app.root.transition= SlideTransition(direction="right");\
+													app.root.current= "userScreen";\
+													app.root.ids.userScreen.onStartUserScr()
+
+													if (x and root.ids.loginTitle.text=="Admin Login"):\
+													app.root.transition= SlideTransition(direction="left");\
+													app.root.current= "adminScreen";\
+													app.root.ids.adminScreen.onStartAdminScr()
+								
+						#-------------------Contains login button and forgot password----------------------------------#
+						BoxLayout:
+							orientation: 'vertical'
+							#size_hint: (1, 0.5)
+							canvas:
+								Color:
+									rgba: (1,0,1,0)
+								Rectangle:
+									pos: self.pos
+									size: self.size
+
+							#-------------Login Btn Area----------------------------------#
+							AnchorLayout:
+								size_hint: (1, 0.5)
+								canvas:
+									Color:
+										rgba: (0.5,0.5,0.5,0)
+									Rectangle:
+										pos: self.pos
+										size: self.size
+
+								#-----------------login btn-------------#
+								MDFillRoundFlatButton:
+									size_hint: (1, None)
+									height: dp(40)
+									border: (10, 10, 10, 10)
+									text: "Login"
+									on_release:
+										x= root.login(root.ids.username_.text, root.ids.password_.text,)
+										if (x and root.ids.loginTitle.text=="User Login"):\
+										app.root.transition= SlideTransition(direction="right");\
+										app.root.current= "userScreen";\
+										app.root.ids.userScreen.onStartUserScr()
+
+										if (x and root.ids.loginTitle.text=="Admin Login"):\
+										app.root.transition= SlideTransition(direction="left");\
+										app.root.current= "adminScreen";\
+										app.root.ids.adminScreen.onStartAdminScr()
+
+
+							#--------------forgot password area---------------------------#
+							AnchorLayout:
+								size_hint: (1, 0.5)
+								canvas:
+									Color:
+										rgba: (0.3,0.3,0.3,0)
+									Rectangle:
+										pos: self.pos
+										size: self.size
+
+								Button:
+									size_hint: (0.5, 0.3)
+									background_color: (0, 0, 0, 0)
+									canvas.before:
+										Color:
+											rgba: (0,0,1,0)
+										Rectangle:
+											pos: self.pos
+											size: self.size
+
+									text:"Forgot Details?"
+									color: (0, 0, 1, 1)
+									on_release:
+										root.opacity=.3
+										root.ids.scr.transition=SwapTransition()
+										root.ids.scr.current='reset'
+
+		ForgotPasswordScreen:
+			name:"reset"
 
 
 
