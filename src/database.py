@@ -93,6 +93,7 @@ class Database():
         if conn is not None:
             try:
                 cur = conn.cursor()
+                print("cur: {}".format(cur))
                 filtered_list = cur.execute(
                     """
 							SELECT * FROM {} WHERE {} LIKE ? ORDER BY {};
@@ -101,7 +102,6 @@ class Database():
                     ),
                     (str(value) + "%",),
                 ).fetchall()
-
                 return filtered_list
             except Error as e:
                 print("Error in searching: {}".format(e))

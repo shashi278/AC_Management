@@ -8,6 +8,7 @@ from kivy.properties import (
 )
 from kivy.uix.screenmanager import RiseInTransition
 from kivy.utils import get_color_from_hex as C
+from kivy.factory import Factory
 
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.snackbar import Snackbar
@@ -16,6 +17,8 @@ from database import Database
 from hoverable import HoverBehavior
 from custom_textinputs import TextInputForList
 from custom_widgets import LabelForList,LabelForListStudent
+from popups import DeleteWarning
+#from screens import ScreenManager, HomeScreen, UserScreen, ProfilePage, AdminScreen
 
 
 class MyTab(BoxLayout, MDTabsBase):
@@ -59,10 +62,9 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 class UserInfo(BoxLayout, Database):
     def edit(self, root, icon, app):
-        ##print(root.children[::-1][1:])
-        #for child in root.children[-2:0:-1]:
-        #    print(child.children[0].text)
         fields = [child.children[0].text for child in root.children[-2:0:-1]]
+        username= root.children[-4].children[0].text
+
         tableName = "users"
         conn = self.connect_database("user_main.db")
         c = conn.execute("select * from {}".format(tableName))
@@ -74,6 +76,8 @@ class UserInfo(BoxLayout, Database):
             if icon == "pencil":
                 self.color = [0.1, 0.1, 0.1, 1]
                 self._temp = TextInputForList()
+                if fn=="username":
+                    self._temp.disabled=True
                 self._temp.text = text
                 each.add_widget(self._temp)
             else:
@@ -85,13 +89,22 @@ class UserInfo(BoxLayout, Database):
                 self._temp1 = LabelForList()
                 self._temp1.text = text
                 each.add_widget(self._temp1)
+                self.update_database(tableName, conn, fn, text, "username", username)
 
-    def delete(self, icon):
+    def delete(self, app, root, icon):
         if icon != "pencil":
             Snackbar(
                 text="Cannot delete while in edit mode. Save ongoing edits first.",
                 duration=2.5,
             ).show()
+        else:
+            fields = [child.children[0].text for child in root.children[-2:0:-1]]
+            data={
+                "name":fields[0],
+                "username": fields[2],
+                "password": fields[3]
+            }
+            DeleteWarning("users",data,"user_main.db","users", callback=app.root.ids.adminScreen.onStartAdminScr).open()
 
 
 # Being used in profile page
@@ -102,12 +115,11 @@ class Rowinfo(BoxLayout, Database):
     def edit(self, root, icon, app):
         fields = [child.children[0].text for child in root.children[1:]][-2::-1]
         sem = root.children[-1].children[0].text
-        print(fields)
+
         tableName = "_" + str(self.parent.reg_no)
         conn = self.connect_database("fee_main.db")
         c = conn.execute("select * from {}".format(tableName))
         fields_names = tuple([des[0] for des in c.description][1:])
-        print(fields_names)
 
         for each, text, fn in zip(root.children[1:][::-1][1:], fields, fields_names):
             each.clear_widgets()
@@ -126,33 +138,20 @@ class Rowinfo(BoxLayout, Database):
                 self._temp1 = LabelForList()
                 self._temp1.text = text
                 each.add_widget(self._temp1)
-                # print("In py: {}".format((fn,text,sem)))
                 self.update_database(tableName, conn, fn, text, "sem", sem)
 
-    def verify_prev(self, root, icon, app):
-        # cannot edit more than one entry at once hence save any already ongoing edit automatically
-        for each in root.parent.children:
-            if each.ids.btn1.icon != "pencil":
-                self.color = (
-                    [0.7, 0.7, 0.7, 1]
-                    if app.theme_cls.theme_style == "Dark"
-                    else C("#17202A")
-                )
-
-                fields = [child.children[0].text for child in each.children[1:]]
-                # print(fields)
-                for _temp, text in zip(each.children[1:], fields):
-                    # print(_temp, text)
-                    _temp.clear_widgets()
-
-                    _lbl = LabelForList()
-                    _lbl.text = text
-                    _temp.add_widget(_lbl)
-                each.ids.btn1.icon = "pencil"
-
-    def delete(self, icon):
+    def delete(self, app, root, icon):
         if icon != "pencil":
             Snackbar(
                 text="Cannot delete while in edit mode. Save ongoing edit first.",
                 duration=2.5,
             ).show()
+        else:
+            fields = [child.children[0].text for child in root.children[1:]][-1::-1]
+            data={
+                "sem":fields[0],
+                "tid":fields[5],
+                "reg": self.parent.reg_no
+            }
+            tableName = "_" + str(self.parent.reg_no)
+            DeleteWarning("fee",data,"fee_main.db",tableName, callback=app.root.current_screen.populate_screen).open()
