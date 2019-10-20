@@ -7,4 +7,5 @@ theme: jekyll-theme-midnight
   uses: lgeiger/black-action@v1.0.1
 - name: Install pipenv
   uses: dschep/install-pipenv-action@v1
-  
+- name: Python Style Checker
+  uses: andymckay/pycodestyle-action@0.1.3
