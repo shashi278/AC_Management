@@ -5,3 +5,6 @@ theme: jekyll-theme-midnight
   uses: jpetrucciani/black-check@19.3b0
 - name: Black Code Formatter
   uses: lgeiger/black-action@v1.0.1
+- name: Install pipenv
+  uses: dschep/install-pipenv-action@v1
+  
