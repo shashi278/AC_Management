@@ -1,4 +1,5 @@
-from kivy.uix.screenmanager import ScreenManager, Screen, RiseInTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, RiseInTransition, SwapTransition
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.textinput import TextInput
 from kivy.metrics import dp, sp
 from kivy.animation import Animation
@@ -8,7 +9,10 @@ from kivy.properties import StringProperty
 from filebrowser import FileBrowser
 from kivy.utils import platform
 from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
 from kivymd.uix.button import (
     MDRaisedButton,
     MDRectangleFlatButton,
@@ -30,6 +34,7 @@ import os
 from os.path import sep, expanduser, isdir, dirname
 from random import choice
 from sqlite3 import Error
+from functools import partial
 
 from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
@@ -585,3 +590,83 @@ class AdminScreen(Screen, Database):
                 ).show()
         else:
             Snackbar(text="Invalid registration number", duration=2).show()
+
+
+class ForgotPasswordScreen(Screen):
+
+    code_recieved="Code"
+    def call_Code_Submit_Layout(self):
+        self.ids.codeSubmitBox.clear_widgets()
+        self.ids.resetPasswordBox.clear_widgets()
+        textfld=MDTextField()
+        textfld.hint_text="Code"
+        if(self.get_email_status()):
+            self.ids.codeSubmitBox.add_widget(textfld)
+            self.ids.codeSubmitBox.add_widget(MDRaisedButton(text="Submit",on_release=partial(self.verify_code,textfld)))
+
+    def verify_code(self,inst,*args):
+        #self.ids.resetPasswordBox.clear_widgets()
+        if inst.text==self.code_recieved :
+            if len(self.ids.resetPasswordBox.children)==0:
+                self.ids.statusLabel.text=""
+                nwpsd_fld=MDTextField()
+                nwpsd_fld.hint_text="New Password"
+                nwpsd_fld.password=True
+                rnwpsd_fld=MDTextField()
+                rnwpsd_fld.hint_text="Re-Enter New Password"
+                rnwpsd_fld.password=True
+                self.ids.resetPasswordBox.add_widget(nwpsd_fld)
+                self.ids.resetPasswordBox.add_widget(rnwpsd_fld)
+                anchrl=AnchorLayout()
+                anchrl.add_widget(MDRaisedButton(text="Reset Password",on_release=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)))
+                self.ids.resetPasswordBox.add_widget(anchrl)        
+        else:
+            self.ids.statusLabel.text="Code doesn't match!"
+            self.ids.statusLabel.color=(1,0,0,1)
+            self.ids.resetPasswordBox.clear_widgets()
+
+    def new_password_set(self,inst1,inst2,*args):
+        if(inst1.text==inst2.text):
+            if(inst1.text is not ""):
+                """
+                new pass= inst1.text =inst2.text 
+                Database Update
+                code here 
+
+                """
+                self.ids.codeSubmitBox.clear_widgets()
+                self.ids.sendCodeBox.clear_widgets()
+                lbl=MDLabel(text="Password Reset Successfully !")
+                lbl.halign="center"
+                lbl.font_size=lbl.width*0.20
+                self.ids.sendCodeBox.add_widget(lbl)
+                self.ids.verifnLabel.text=""
+                self.ids.resetPasswordBox.clear_widgets()
+                anchrl=AnchorLayout()
+                anchrl.add_widget(MDRaisedButton(text="Go to Login",on_release=self.go_to_login))
+                self.ids.resetPasswordBox.add_widget(anchrl)
+        else:
+            self.ids.codeSubmitBox.clear_widgets()
+            lbl1=MDLabel(text="Password Doesn't match")
+            lbl1.color=(1,0,0,1)
+            self.ids.codeSubmitBox.add_widget(lbl1)
+
+    def go_to_login(self,*args):
+        self.parent.transition=SwapTransition()
+        self.parent.parent.opacity=0.3
+        self.parent.current='login'
+        pass
+
+    def get_email_status(self):
+        """
+            Code for send email 
+            if email sent return True 
+            and status label to be
+            set here
+        """
+        import time
+        time.sleep(1)       #Temporary
+        self.ids.statusLabel.text="Code Sent"
+        self.ids.statusLabel.color=(1,1,1,1)
+        
+        return True

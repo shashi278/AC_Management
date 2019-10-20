@@ -1,0 +1,11 @@
+theme: jekyll-theme-midnight
+- name: Python Syntax Checker
+  uses: cclauss/Find-Python-syntax-errors-action@v0.2.0
+- name: Black Check
+  uses: jpetrucciani/black-check@19.3b0
+- name: Black Code Formatter
+  uses: lgeiger/black-action@v1.0.1
+- name: Install pipenv
+  uses: dschep/install-pipenv-action@v1
+- name: Python Style Checker
+  uses: andymckay/pycodestyle-action@0.1.3
