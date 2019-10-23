@@ -1,3 +1,4 @@
+from kivy.uix.screenmanager import SwapTransition
 from kivy.uix.modalview import ModalView
 from kivy.animation import Animation
 from kivy.uix.gridlayout import GridLayout
@@ -80,6 +81,15 @@ class LoginPopup(ModalView, Database):
                 val=(widget.parent.width, widget.parent.height)
             setattr(widget, key, val)
 
+    def check_caller(self,scr_name):
+        if(scr_name=="Admin Login"):
+            self.opacity=.3
+            self.ids.scr.transition=SwapTransition()
+            self.ids.scr.current='reset'
+        elif(scr_name=="User Login"):
+            self.opacity=.3
+            self.ids.scr.transition=SwapTransition()
+            self.ids.scr.current='reset_user'
 
 class DeleteWarning(ModalView, Database):
     def __init__(self, id_, data, db_file, table_name, *args, **kwargs):

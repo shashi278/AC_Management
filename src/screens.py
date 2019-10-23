@@ -39,6 +39,7 @@ from functools import partial
 from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
+from custom_widgets import AdminInfoLabel, AdminInfoEditField
 from dropdowns import *
 
 #left iconbutton
@@ -381,14 +382,41 @@ class AdminScreen(Screen, Database):
         # --------------------------------------------#
         
     def change_screen(self, instance):
-        if instance.text == "Manage User":
+        if instance.text == "Manage User" and self.check_edits_admin():
+            self.ids.top_bar.text= "Admin: "+instance.text
             self.ids.scrManager.current = "manageUser"
-        elif instance.text == "Manage Student":
+
+        elif instance.text == "Manage Student" and self.check_edits_admin() and self.check_edits_users():
+            self.ids.top_bar.text= "Admin: "+instance.text
             self.ids.scrManager.current = "manageStudent"
-        elif instance.text == "Admin Setting":
+
+        elif instance.text == "Admin Setting" and self.check_edits_users():
+            self.ids.top_bar.text= "Admin: "+instance.text
             self.ids.scrManager.current = "adminSetting"
-        elif instance.text == "App Setting":
+
+        elif instance.text == "App Setting" and self.check_edits_admin() and self.check_edits_users():
+            self.ids.top_bar.text= "Admin: "+instance.text
             self.ids.scrManager.current = "appSetting"
+
+    def check_edits_admin(self):
+        if(self.ids.adminInfoEditBtn.icon=="check" \
+            or self.ids.adminPasswordEditBtn.icon=="check"\
+            or self.ids.adminUsernameEditBtn.icon=="check" ):
+            Snackbar(
+                text="Cannot go back while in edit mode. Save ongoing edits.",
+                duration=2,
+            ).show()
+            return False
+        else:
+            return True
+
+    def check_edits_users(self):
+        """
+            Code Requires here
+
+        """
+        return True
+
 
     def theme_picker_open(self):
         MDThemePicker().open()
@@ -592,6 +620,99 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Invalid registration number", duration=2).show()
 
 
+    admin_name="Shashi Ranjan"
+    admin_username="admin"
+    admin_password="admin"
+    admin_email="Shashiranjankv@gmail.com"
+    admin_alt_email="Shashiranjan@iiitkalyani.ac.in"
+    admin_mobile="9905689898"
+
+    def edit_admin_info(self):
+        self.ids.adminInfoEditBtn.icon="check"
+        self.ids.adminInfoLayout.clear_widgets()
+
+        name=AdminInfoEditField()
+        name.hint_text="Name"
+        name.text=self.admin_name
+        self.ids.adminInfoLayout.add_widget(name)
+
+        email=AdminInfoEditField()
+        email.hint_text="Email Id"
+        email.text=self.admin_email
+        self.ids.adminInfoLayout.add_widget(email)
+
+        mob=AdminInfoEditField()
+        mob.hint_text="Mobile No."
+        mob.text=self.admin_mobile
+        self.ids.adminInfoLayout.add_widget(mob)
+
+        alt_email=AdminInfoEditField()
+        alt_email.hint_text="Alt. Email Id"
+        alt_email.text=self.admin_alt_email
+        self.ids.adminInfoLayout.add_widget(alt_email)
+
+    def show_admin_info(self):
+        self.ids.adminInfoEditBtn.icon="pencil"
+        texts=[]
+        admin= self.ids.adminInfoLayout
+        for each in admin.children[::-1]:
+            texts.append(each.children[0].text)
+        
+        """
+            Database Addition of name,email,alt email ,mobile
+        """
+        admin.clear_widgets()
+        for title,text in zip(["Name","Email id","Mobile No.","Alt. Email Id"],texts):
+            admin.add_widget(AdminInfoLabel(title=title,text=text))
+
+    def edit_admin_username(self):
+        self.ids.adminUsernameEditBtn.icon="check"
+        self.ids.adminUsernameLayout.clear_widgets()
+
+        username_field=AdminInfoEditField()
+        username_field.hint_text="Username"
+        username_field.text=self.admin_username
+        self.ids.adminUsernameLayout.add_widget(username_field)
+
+    def show_admin_username(self):
+        self.ids.adminUsernameEditBtn.icon="pencil"
+        self.admin_username=self.ids.adminUsernameLayout.children[0].children[0].text
+        """
+            Database add Username
+        """
+        self.ids.adminUsernameLayout.clear_widgets()
+        self.ids.adminUsernameLayout.add_widget(AdminInfoLabel(title="Username",text=self.admin_username))
+
+    def edit_admin_password(self):
+        self.ids.adminPasswordEditBtn.icon="check"
+        self.ids.eyeBtn.disabled=True
+        self.ids.adminPasswordLayout.clear_widgets()
+
+        password_field=AdminInfoEditField()
+        password_field.hint_text="password"
+        password_field.text=self.admin_password
+        self.ids.adminPasswordLayout.add_widget(password_field)
+
+    flag=0
+    def show_admin_password(self):
+        self.flag=1
+        self.ids.adminPasswordEditBtn.icon="pencil"
+        self.ids.eyeBtn.disabled=False
+        self.admin_password=self.ids.adminPasswordLayout.children[0].children[0].text
+
+        self.ids.adminPasswordLayout.clear_widgets()
+        global admin_pass_label
+        admin_pass_label=AdminInfoLabel()
+        admin_pass_label.title="Password"
+        admin_pass_label.text="*********"
+        self.ids.adminPasswordLayout.add_widget(admin_pass_label)
+
+    def on_eye_btn_pressed(self,inst):
+        if(inst.state=="down"):
+            admin_pass_label.text=self.admin_password
+        else:
+            admin_pass_label.text="*********"
+
 class ForgotPasswordScreen(Screen):
 
     code_recieved="Code"
@@ -603,6 +724,7 @@ class ForgotPasswordScreen(Screen):
         if(self.get_email_status()):
             self.ids.codeSubmitBox.add_widget(textfld)
             self.ids.codeSubmitBox.add_widget(MDRaisedButton(text="Submit",on_release=partial(self.verify_code,textfld)))
+            textfld.on_text_validate=partial(self.verify_code,textfld)
 
     def verify_code(self,inst,*args):
         #self.ids.resetPasswordBox.clear_widgets()
@@ -619,7 +741,10 @@ class ForgotPasswordScreen(Screen):
                 self.ids.resetPasswordBox.add_widget(rnwpsd_fld)
                 anchrl=AnchorLayout()
                 anchrl.add_widget(MDRaisedButton(text="Reset Password",on_release=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)))
-                self.ids.resetPasswordBox.add_widget(anchrl)        
+                self.ids.resetPasswordBox.add_widget(anchrl)
+                nwpsd_fld.on_text_validate=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)
+                rnwpsd_fld.on_text_validate=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)
+
         else:
             self.ids.statusLabel.text="Code doesn't match!"
             self.ids.statusLabel.color=(1,0,0,1)
@@ -670,3 +795,6 @@ class ForgotPasswordScreen(Screen):
         self.ids.statusLabel.color=(1,1,1,1)
         
         return True
+
+class ForgotPasswordUser(Screen):
+    pass
