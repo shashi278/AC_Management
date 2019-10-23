@@ -1,5 +1,6 @@
 from kivymd.uix.list import OneLineListItem
 from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
 
 from hoverable import HoverBehavior
 
@@ -13,4 +14,10 @@ class LabelForList(Label):
 
 
 class LabelForListStudent(Label):
+    pass
+
+class AdminInfoLabel(BoxLayout):
+    pass
+
+class AdminInfoEditField(BoxLayout):
     pass
