@@ -41,7 +41,7 @@
 	text: ''
 	canvas.before:
 		Color:
-			rgba: (0,0,0,0)#(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
+			rgba: (0,0,0,0)
 		RoundedRectangle:
 			pos: self.pos
 			size: self.size
@@ -52,7 +52,7 @@
 	text: ''
 	canvas.before:
 		Color:
-			rgba: (0,0,0,0) #(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
+			rgba: (0,0,0,0)
 		RoundedRectangle:
 			pos: self.pos
 			size: self.size
@@ -245,8 +245,8 @@
 		anchor_x: "right"
 		Label:
 			size_hint: None, None
-			size: self.texture_size
 			text: root.info_title
+			size: self.texture_size
 			bold: True
 			font_size: sp(15)
 	AnchorLayout:
@@ -1117,7 +1117,7 @@ ScreenManager:
 						cols: 1
 
 						FloatLayout:
-							size_hint_y:.3
+							size_hint_y:.5
 							canvas:
 								Color:
 									rgba: (0.5,0,.2,0)
@@ -1308,6 +1308,11 @@ ScreenManager:
 											app.root.transition= SlideTransition(direction="right");\
 											app.root.current= "userScreen";\
 											app.root.ids.userScreen.onStartUserScr()
+
+											if (x and root.ids.loginTitle.text=="Admin Login"):\
+											app.root.transition= SlideTransition(direction="left");\
+											app.root.current= "adminScreen";\
+											app.root.ids.adminScreen.onStartAdminScr()
 
 
 								#--------------forgot password area---------------------------#

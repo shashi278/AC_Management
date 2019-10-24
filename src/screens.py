@@ -78,8 +78,8 @@ class UserScreen(Screen, Database):
 
         # should be fixed inside MDIconButton in md library itself
         #self.ids.hamburger.ids.lbl_txt.text_size = (sp(80), sp(80))
-        self.ids.hamburger.ids.lbl_txt.font_size = sp(35)
-        self.ids.search.text = ""
+        #self.ids.hamburger.ids.lbl_txt.font_size = sp(35)
+        #self.ids.search.text = ""
 
         # --------------Update Student list---------------------#
         self.ids.rv.data = []
@@ -186,12 +186,12 @@ class ProfilePage(Screen, Database):
     ]
 
     def on_enter(self, *args):
-        self.color = choice(self.colors)
-        Clock.schedule_interval(self.set_button_width, 0)
-        self.extract_data("student_main.db", "General_record")
         self.populate_screen()
+        self.color = choice(self.colors)
+        self.extract_data("student_main.db", "General_record")
         self.ids.rb.reg_no = self.reg_no
-
+        
+        Clock.schedule_interval(self.set_button_width, 0)
         Clock.schedule_interval(self.set_name_info, 0)
         Clock.schedule_interval(self.set_roll_info, 0)
         Clock.schedule_once(self.schedule, 0.5)
@@ -265,7 +265,8 @@ class ProfilePage(Screen, Database):
             self.c = iter(list(self.data_tuple[2]))
             self.s = iter(list(self.data_tuple[3]))
             self.f = iter(list(str(self.data_tuple[5])))
-            self.totalFee = self.data_tuple[5]
+            self.total_fee = self.data_tuple[5]
+            self.ids.rb.total_fee= self.total_fee
 
         except Exception as e:
             print("Error here: {}".format(e))
@@ -282,7 +283,7 @@ class ProfilePage(Screen, Database):
         data_tuple = (
             int(ins.ids.sem.text),
             int(ins.ids.paid.text),
-            int(self.totalFee - int(ins.ids.paid.text)),
+            int(self.total_fee - int(ins.ids.paid.text)),
             int(ins.ids.late.text),
             ins.ids.date.text,
             ins.ids.tid.text,
@@ -306,6 +307,7 @@ class ProfilePage(Screen, Database):
             self.populate_screen()
 
     def populate_screen(self):
+        #print("\n\n\n\nrv.data before: {}\n\n\n\n".format(self.ids.rv.data))
         self.ids.rv.data = []
         # try to populate the screen with data already available in the corresponding
         # reg. no. table
@@ -330,6 +332,7 @@ class ProfilePage(Screen, Database):
             if conn is not None:
                 with open("fee_record.sql") as table:
                     self.create_table(table.read().format("_" + str(self.reg_no)), conn)
+        #print("\n\n\n\nrv.data after: {}\n\n\n\n".format(self.ids.rv.data))
 
     def anim_in(self, instance):
 
@@ -344,7 +347,7 @@ class ProfilePage(Screen, Database):
         _temp = [1 for child in rowinfo_root.children if child.ids.btn1.icon == "check"]
         if len(_temp):
             Snackbar(
-                text="Cannot go back while in edit mode. Save ongoing edits.",
+                text="Cannot go back while in editing. Save ongoing edits.",
                 duration=2,
             ).show()
             return False
@@ -367,8 +370,7 @@ class AdminScreen(Screen, Database):
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
         data_list = self.extractAllData("user_main.db", "users", order_by="id")
-        print("\n\n\nData in rv: {}\n\n\n".format(self.ids.rv.data))
-        print("\n\n\nData in db: {}\n\n\n".format(data_list))
+        
         for counter, each in enumerate(data_list, 1):
             x = {
                 "sno": str(counter),
