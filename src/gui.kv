@@ -9,6 +9,33 @@
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
 ##:import NoTransition kivy.uix.screenmanager.
 
+<AdminInfoEditField>:
+	hint_text:""
+	text:""
+	size_hint_y:None
+	height:60
+	MDTextField:
+		id:txt
+		hint_text:root.hint_text
+		text:root.text
+		size_hint_x:None
+		width:200
+
+<AdminInfoLabel>:
+	text:""
+	title:""
+	spacing:-20
+	size_hint_y:None
+	height:60		
+	orientation:"vertical"
+	MDLabel:
+		text:root.title
+		color:.53,.53,.53,1
+		font_size:14
+	MDLabel:
+		text:root.text
+		color: 0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+
 <Section@BoxLayout>:
 	size_hint_y:1
 	canvas:
@@ -1007,12 +1034,27 @@ ScreenManager:
 				pos:self.pos
 				size:self.size
 				radius:25,25,25,25
-		MDLabel:
+		BoxLayout:
 			size_hint_y:.15
-			text:"Reset Password"
-			font_size:self.width*.08
-			halign:"center"
-			color:1,1,1,1
+			spacing:-20
+			AnchorLayout:
+				size_hint_x:None
+				width:30
+				anhor_x:"left"
+				MDIconButton:
+					icon:"arrow-left"
+					theme_text_color:"Custom"
+					text_color:1,1,1,1
+					on_release:
+						root.parent.transition=SwapTransition()
+        				root.parent.parent.opacity=0.3
+        				root.parent.current='login'
+
+			MDLabel:
+				text:"Reset Password"
+				font_size:self.width*.08
+				halign:"center"
+				color:1,1,1,1
 		MDLabel:
 			id:verifnLabel
 			size_hint_y:.1
@@ -1338,12 +1380,53 @@ ScreenManager:
 										text:"Forgot Details?"
 										color: (0, 0, 1, 1)
 										on_release:
-											root.opacity=.3
-											root.ids.scr.transition=SwapTransition()
-											root.ids.scr.current='reset'
-
+											root.check_caller(root.ids.loginTitle.text)
+											
 		ForgotPasswordScreen:
 			name:"reset"
+
+		ForgotPasswordUser:
+			name:"reset_user"
+			BoxLayout:
+				opacity: 3.0
+				spacing:10
+				padding: [10, 0]
+				orientation:"vertical"
+				canvas:
+					Color:
+						rgba:0,1,0,0
+					RoundedRectangle:
+						pos:self.pos
+						size:self.size
+						radius:25,25,25,25
+				BoxLayout:
+					size_hint_y:.15
+					spacing:-20
+					AnchorLayout:
+						size_hint_x:None
+						width:30
+						anhor_x:"left"
+						MDIconButton:
+							icon:"arrow-left"
+							theme_text_color:"Custom"
+							text_color:1,1,1,1
+							on_release:
+								root.ids.scr.transition=SwapTransition()
+								root.opacity=0.3
+								root.ids.scr.current='login'
+
+					MDLabel:
+						text:"Reset Password"
+						font_size:self.width*.08
+						halign:"center"
+						color:1,1,1,1
+				
+				AnchorLayout:
+					size_hint_y:.75
+					MDLabel:
+						halign:"center"
+						text:"Please contact Admin !"
+						color:1,1,1,1
 
 
 
@@ -1526,25 +1609,22 @@ ScreenManager:
 							text:"Manage User"
 							on_release:
 								root.change_screen(self)
-								top_bar.text= "Admin:"+self.text
+								
 
 						HoverOneLineListItem:
 							text:"Admin Setting"
 							on_release:
 								root.change_screen(self)
-								top_bar.text= "Admin:"+self.text
 
 						HoverOneLineListItem:
 							text:"Manage Student"
 							on_release:
 								root.change_screen(self)
-								top_bar.text= "Admin:"+self.text
 
 						HoverOneLineListItem:
 							text:"App Setting"
 							on_release:
 								root.change_screen(self)
-								top_bar.text= "Admin:"+self.text
 
 					
 
@@ -1892,30 +1972,130 @@ ScreenManager:
 					#----------------Manage Admin Setting--------------#
 					Screen:
 						name:"adminSetting"
+						BoxLayout:
+							padding:10,10,10,10
+							BoxLayout:
+								spacing:10
+								size_hint:.5,1
+								orientation:"vertical"
 
-						MDTabs:
-							id: tab_panel
-							tab_display_mode:'text'
+								#Basic Details
+								BoxLayout:
+									padding:10
+									orientation:"vertical"		
+										
+									BoxLayout:
+										size_hint_y:.1
+										MDLabel:
+											size_hint_x: .15
+											font_size: self.width/7
+											id:lbl
+											text:"Admin Details"
+											color:0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+											
+											
+										BoxLayout:
+											size_hint_x:1-root.ids.lbl.size_hint_x
+											canvas:
+												Color:
+													rgba:app.theme_cls.primary_color
+												SmoothLine:
+													points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+													width:dp(1.15)
 
-							MyTab:
-								name: 'music'
-								text: "Music"
-								icon: "playlist-play"
-								MDLabel:
-									font_style: 'Body1'
-									theme_text_color: 'Primary'
-									text: "Here is my music list :)"
-									halign: 'center'
-							MyTab:
-								name: 'movies'
-								text: 'Movies'
-								icon: "movie"
+									GridLayout:
+										id:adminInfoLayout
+										size_hint_y:.8
+										cols:2
+										AdminInfoLabel:
+											title:"Name"
+											text:root.admin_name
+										AdminInfoLabel:
+											title:"Email Id"
+											text:root.admin_email
+										AdminInfoLabel:
+											title:"Mobile no."
+											text:root.admin_mobile
+										AdminInfoLabel:
+											title:"Alt. Email Id"
+											text:root.admin_alt_email
+									
+									AnchorLayout:
+										size_hint_y:.1
+										anchor_x:"right"
+										MDIconButton:
+											id:adminInfoEditBtn
+											icon:"pencil"
+											on_release:
+												root.edit_admin_info() if self.icon=="pencil" else root.show_admin_info()
+								
+									
 
-								MDRaisedButton:
-									text: "MDRaisedButton"
-									elevation_normal: 10
-									opposite_colors: True
-									pos_hint: {'x':.5,'y':0.5}
+								#Basic Credential
+								BoxLayout:
+									padding:10
+									orientation:"vertical"
+									BoxLayout:
+										size_hint_y:.1
+										MDLabel:
+											size_hint_x:.18
+											font_size:self.width/8
+											id:lbl1
+											text:"Change Credential"
+											color: 0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+											
+											
+										BoxLayout:
+											size_hint_x:1-root.ids.lbl1.size_hint_x
+											canvas:
+												Color:
+													rgba:app.theme_cls.primary_color
+												SmoothLine:
+													points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+													width:dp(1)
+
+									BoxLayout:
+										orientation:"vertical"
+										size_hint_y:.9
+										BoxLayout:
+											size_hint_y:None
+											height:60
+											BoxLayout:
+												BoxLayout:
+													id:adminUsernameLayout
+													AdminInfoLabel:
+														title:"UserName"
+														text:root.admin_username
+												MDIconButton:
+													id:adminUsernameEditBtn
+													icon:"pencil"
+													on_release:
+														root.edit_admin_username() if self.icon=="pencil" else root.show_admin_username()
+
+											BoxLayout:
+											
+
+											BoxLayout:
+												BoxLayout:
+													id:adminPasswordLayout
+													AdminInfoLabel:
+														title:"Password"
+														text:"********" if (root.ids.eyeBtn.state=="normal") else root.admin_password
+												BoxLayout:
+													MDIconButton:
+														id:eyeBtn
+														icon:"eye"
+														on_state:
+															root.on_eye_btn_pressed(self) if root.flag==1 else None
+		
+													MDIconButton:
+														id:adminPasswordEditBtn
+														icon:"pencil"
+														on_release:
+															root.edit_admin_password() if self.icon=="pencil" else root.show_admin_password()
+										BoxLayout:
+											
+										
 
 					#---------------Manage App setting-----------------##
 					Screen:
