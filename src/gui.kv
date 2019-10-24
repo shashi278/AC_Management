@@ -34,7 +34,7 @@
 		font_size:14
 	MDLabel:
 		text:root.text
-		color: 0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+		color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 
 <Section@BoxLayout>:
 	size_hint_y:1
@@ -1986,7 +1986,7 @@ ScreenManager:
 											font_size: self.width/7
 											id:lbl
 											text:"Admin Details"
-											color:0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+											color:(0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 											
 											
 										BoxLayout:
@@ -2037,7 +2037,7 @@ ScreenManager:
 											font_size:self.width/8
 											id:lbl1
 											text:"Change Credential"
-											color: 0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+											color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 											
 											
 										BoxLayout:
