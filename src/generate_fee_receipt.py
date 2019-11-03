@@ -40,8 +40,9 @@ class PDF(FPDF):
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
 
 
-def callpdf(personalinfo, feeinfo):
+def generate_pdf(personalinfo, feeinfo):
     # Instantiation of inherited class
+
     pdf = PDF()
     pdf.alias_nb_pages()
     pdf.add_page()
@@ -50,8 +51,13 @@ def callpdf(personalinfo, feeinfo):
     pdf.set_font("Times", "B", 14)
     pdf.cell(0, 5, "Fee Details", 0, 1, "C")
 
+    
+
     pdf.ln(5)
     pdf.set_font("Times", "B", 12)
+    
+    print("\n\n\n\nI'm from generate_pdf_1\n\n\n")
+    print(personalinfo)
     pdf.multi_cell(
         0.0,
         7.0,
@@ -72,6 +78,8 @@ def callpdf(personalinfo, feeinfo):
 		Tution Fee: "
         + personalinfo["fee"],
     )
+
+    print("\n\n\n\nI'm from generate_pdf_2\n\n\n")
 
     pdf.ln(30)
     pdf.set_font("Times", "B", 13)
@@ -97,6 +105,8 @@ def callpdf(personalinfo, feeinfo):
     pdf.set_y(-35)
     pdf.cell(0, 10, "Singnature of Accountant", 0, 0, "R")
     pdf.output(personalinfo["reg"] + ".pdf", "F")
+
+    
 
 
 if __name__ == "__main__":
@@ -214,4 +224,4 @@ if __name__ == "__main__":
         "stream": "cse",
         "fee": "94700",
     }
-    callpdf(personal_info, fee_info)
+    generate_pdf(personal_info, fee_info)
