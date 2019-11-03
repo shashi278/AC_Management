@@ -83,11 +83,11 @@ class LoginPopup(ModalView, Database):
 
     def check_caller(self,scr_name):
         if(scr_name=="Admin Login"):
-            self.opacity=.3
+            self.opacity=.6
             self.ids.scr.transition=SwapTransition()
             self.ids.scr.current='reset'
         elif(scr_name=="User Login"):
-            self.opacity=.3
+            self.opacity=.6
             self.ids.scr.transition=SwapTransition()
             self.ids.scr.current='reset_user'
 

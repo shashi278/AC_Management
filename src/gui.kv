@@ -894,6 +894,7 @@ ScreenManager:
 	name:"homeScreen"
 
 	BoxLayout:
+		
 		orientation: 'vertical'
 
 		canvas.before:
@@ -927,7 +928,8 @@ ScreenManager:
 						size: self.texture_size
 
 				BoxLayout:
-					size_hint: (.7,1)
+					
+					size_hint: (.6,1)
 					orientation: 'vertical'
 					BoxLayout:
 						Label:
@@ -943,12 +945,37 @@ ScreenManager:
 							font_size: self.height/22+self.width/22
 							halign: 'left'
 							valign: 'middle'
-				
+					
+				BoxLayout:
+					orientation:"vertical"
+					spacing:-40
+					size_hint: (.1,1)
+					
+					AnchorLayout:
+						size_hint_y:.7
+						Button:
+							size_hint: None, None
+							size: 80,80
+							#text: "User"
+							border: (0, 0, 0, 0)
+							background_normal: 'media/images/admin3.png'
+							background_down: 'media/images/admin3_down.png'
+							on_release:
+								root.openLoginPop("Admin")
+					AnchorLayout:
+						size_hint_y:.3
+						Label:
+							text: "ADMIN"
+							bold: True
+							color: C("#000000")
+							font_size: dp("15")
+					
 
 			######----------------------------------------------
 
 			BoxLayout:
 				size_hint: (1,.6)
+				
 				
 
 
@@ -976,19 +1003,19 @@ ScreenManager:
 						on_release:
 							root.openLoginPop("User")
 
-				AnchorLayout:
-					anchor_x: 'center'
-					anchor_y: 'center'
+				#AnchorLayout:
+				#	anchor_x: 'center'
+				#	anchor_y: 'center'
 
-					Button:
-						size_hint: None, None
-						size: 120,120
-						#text: "User"
-						border: (0, 0, 0, 0)
-						background_normal: 'media/images/admin3.png'
-						background_down: 'media/images/admin3_down.png'
-						on_release:
-							root.openLoginPop("Admin")
+				#	Button:
+				#		size_hint: None, None
+				#		size: 120,120
+				#		#text: "User"
+				#		border: (0, 0, 0, 0)
+				#		background_normal: 'media/images/admin3.png'
+				#		background_down: 'media/images/admin3_down.png'
+				#		on_release:
+				#			root.openLoginPop("Admin")
 
 
 			##-------------labels------------------------###############
@@ -999,22 +1026,22 @@ ScreenManager:
 					anchor_x: "center"
 					anchor_y: "center"
 
-					Label:
+					MDRaisedButton:
 						text: "USERS"
-						bold: True
-						color: C("#000000")
-						font_size: dp("24")
+						#bold: True
+						#color: C("#000000")
+						#font_size: dp("24")
 
 
 
-				AnchorLayout:
-					anchor_x: "center"
-					anchor_y: "center"
-					Label:
-						text: "ADMIN"
-						bold: True
-						color: C("#000000")
-						font_size: dp("24")
+				#AnchorLayout:
+				#	anchor_x: "center"
+				#	anchor_y: "center"
+				#	Label:
+				#		text: "ADMIN"
+				#		bold: True
+				#		color: C("#000000")
+				#		font_size: dp("24")
 
 
 
@@ -1049,7 +1076,7 @@ ScreenManager:
 					text_color:1,1,1,1
 					on_release:
 						root.parent.transition=SwapTransition()
-        				root.parent.parent.opacity=0.3
+        				root.parent.parent.opacity=0.6
         				root.parent.current='login'
 
 			MDLabel:
@@ -1098,7 +1125,7 @@ ScreenManager:
 	size_hint: (0.3, 0.5)
 	auto_dismiss: True
 	background: "media/images/login4.png"
-	opacity:0.3
+	opacity:0.6
 	 
 
 	ScreenManager:
@@ -1341,23 +1368,25 @@ ScreenManager:
 											size: self.size
 
 									#-----------------login btn-------------#
-									MDFillRoundFlatButton:
+									BoxLayout:
 										size_hint: (1, None)
 										height: dp(40)
-										border: (10, 10, 10, 10)
-										text: "Login"
-										on_release:
-											x= root.login(root.ids.username_.text, root.ids.password_.text,\
-											root.ids.loginTitle.text)
-											if (x and root.ids.loginTitle.text=="User Login"):\
-											app.root.transition= SlideTransition(direction="right");\
-											app.root.current= "userScreen";\
-											app.root.ids.userScreen.onStartUserScr()
+										MDFillRoundFlatButton:
+											size_hint:1,1
+											border: (10, 10, 10, 10)
+											text: "Login"
+											on_release:
+												x= root.login(root.ids.username_.text, root.ids.password_.text,\
+												root.ids.loginTitle.text)
+												if (x and root.ids.loginTitle.text=="User Login"):\
+												app.root.transition= SlideTransition(direction="right");\
+												app.root.current= "userScreen";\
+												app.root.ids.userScreen.onStartUserScr()
 
-											if (x and root.ids.loginTitle.text=="Admin Login"):\
-											app.root.transition= SlideTransition(direction="left");\
-											app.root.current= "adminScreen";\
-											app.root.ids.adminScreen.onStartAdminScr()
+												if (x and root.ids.loginTitle.text=="Admin Login"):\
+												app.root.transition= SlideTransition(direction="left");\
+												app.root.current= "adminScreen";\
+												app.root.ids.adminScreen.onStartAdminScr()
 
 
 								#--------------forgot password area---------------------------#
@@ -1415,7 +1444,7 @@ ScreenManager:
 							text_color:1,1,1,1
 							on_release:
 								root.ids.scr.transition=SwapTransition()
-								root.opacity=0.3
+								root.opacity=0.6
 								root.ids.scr.current='login'
 
 					MDLabel:
@@ -1542,7 +1571,6 @@ ScreenManager:
 
 				#-------------------------------list area-----------------------------------###########
 				BoxLayout:
-					#test
 					canvas:
 						Color:
 							rgba:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
@@ -1782,13 +1810,13 @@ ScreenManager:
 									orientation: 'vertical'
 									
 									AnchorLayout:						
-										size_hint: (1,.8)
+										size_hint: (1,.87)
 
 										BoxLayout:
 											orientation: 'vertical'
 											size_hint: (.3,1)
-											padding: 20,50
-											spacing:50
+											padding: 20,48,20,0
+											spacing:30
 											
 											MDTextField:
 												id: fromYear1
@@ -1826,7 +1854,7 @@ ScreenManager:
 
 													MDRaisedButton:
 														size_hint: None, None
-														size: 100, 50
+														size: 100, 40
 														id:courseBtn1
 														elevation_normal:10
 														opposite_colors: True
@@ -1834,24 +1862,25 @@ ScreenManager:
 														on_release:root.openCourseList(self)
 													MDRaisedButton:
 														size_hint: None, None
-														size: 100, 50
+														size: 100, 40
 														id:streamBtn1
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Stream"
 														on_release:root.openStreamList(self)
-
-											MDRaisedButton:
+											BoxLayout:
 												size_hint: 1,None
 												height: 50
-												text: 'Upload file'
-												elevation_normal: 10
-												opposite_colors: True
-												on_release:
-													root.connectFileSelector(fromYear1.text,toYear1.text,\
-													courseBtn1.text, streamBtn1.text, fee1.text)
+												MDRaisedButton:
+													size_hint: 1,1
+													text: 'Upload file'
+													elevation_normal: 10
+													opposite_colors: True
+													on_release:
+														root.connectFileSelector(fromYear1.text,toYear1.text,\
+														courseBtn1.text, streamBtn1.text, fee1.text)
 									BoxLayout:
-										size_hint: (1,.2)
+										size_hint: (1,.13)
 
 							MyTab:
 								id: deleteBatch
@@ -1867,7 +1896,7 @@ ScreenManager:
 										BoxLayout:
 											orientation: 'vertical'
 											size_hint: (.3,1)
-											padding: 20,50
+											padding: 20,50,20,0
 											spacing:50
 
 											MDTextField:
@@ -1899,7 +1928,7 @@ ScreenManager:
 
 													MDRaisedButton:
 														size_hint: None, None
-														size: 100, 50
+														size: 100, 40
 														id:courseBtn2
 														elevation_normal:10
 														opposite_colors: True
@@ -1907,22 +1936,24 @@ ScreenManager:
 														on_release:root.openCourseList(self)
 													MDRaisedButton:
 														size_hint: None, None
-														size: 100, 50
+														size: 100, 40
 														id:streamBtn2
 														elevation_normal:10
 														opposite_colors: True
 														text:"Select Stream"
 														on_release:root.openStreamList(self)
-											#BoxLayout:
-											MDRaisedButton:
+											BoxLayout:
+												
 												size_hint: (1,None)
 												height: 50
-												text: 'Delete Batch'
-												elevation_normal: 10
-												opposite_colors: True
-												on_release:
-													root.deleteBatch(fromYear2.text, toYear2.text,\
-													courseBtn2.text, streamBtn2.text)
+												MDRaisedButton:
+													size_hint:(1,1)
+													text: 'Delete Batch'
+													elevation_normal: 10
+													opposite_colors: True
+													on_release:
+														root.deleteBatch(fromYear2.text, toYear2.text,\
+														courseBtn2.text, streamBtn2.text)
 									BoxLayout:
 										size_hint: (1,.2)
 
