@@ -344,7 +344,7 @@ class ProfilePage(Screen, Database):
         _temp = [1 for child in rowinfo_root.children if child.ids.btn1.icon == "check"]
         if len(_temp):
             Snackbar(
-                text="Cannot go back while in editing. Save ongoing edits.",
+                text="Cannot go back while editing. Save ongoing edits.",
                 duration=2,
             ).show()
             return False
@@ -405,24 +405,35 @@ class AdminScreen(Screen, Database):
     progress_value = 0
     progress_total = 0
 
+    admin_password=""
+    not_mail="AJljljldkjskldj"
+    not_mail_password="Adf45464"
+    
     def onStartAdminScr(self):
+
+        Clock.schedule_once(self.populate_admin_info,0)
+        Clock.schedule_once(self.populate_admin_username,0)
+        Clock.schedule_once(self.populate_admin_password,0)
 
         self.ids.logoutbtn.ids.lbl_txt.text_size = (sp(80), sp(80))
         self.ids.logoutbtn.ids.lbl_txt.font_size = sp(40)
 
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
-        data_list = self.extractAllData("user_main.db", "users", order_by="id")
+        data_list_users = self.extractAllData("user_main.db", "users", order_by="id")
         
-        for counter, each in enumerate(data_list, 1):
-            x = {
-                "sno": str(counter),
-                "name": each[1],
-                "email": each[2],
-                "username": each[3],
-                "password": each[4],
-            }
-            self.ids.rv.data.append(x)
+        try:
+            for counter, each in enumerate(data_list_users, 1):
+                x = {
+                    "sno": str(counter),
+                    "name": each[1],
+                    "email": each[2],
+                    "username": each[3],
+                    "password": each[4],
+                }
+                self.ids.rv.data.append(x)
+        except TypeError:
+            pass
         # --------------------------------------------#
         
     def change_screen(self, instance):
@@ -464,7 +475,7 @@ class AdminScreen(Screen, Database):
     def theme_picker_open(self):
         MDThemePicker().open()
 
-    def Add_User_Layout(self):
+    def add_user_layout(self):
         target = self.ids.dyn_input
         usr_name = TextInput(size_hint=(0.2, 1), hint_text="Name", write_tab=False)
         usr_email = TextInput(
@@ -479,7 +490,7 @@ class AdminScreen(Screen, Database):
         usr_submit = MDRaisedButton(
             size_hint=(0.2, 1),
             text="Submit",
-            on_release=lambda x: self.Add_User(
+            on_release=lambda x: self.add_user(
                 usr_name.text, usr_email.text, usr_username.text, usr_password.text
             ),
         )
@@ -490,7 +501,7 @@ class AdminScreen(Screen, Database):
         target.add_widget(usr_password)
         target.add_widget(usr_submit)
 
-    def Add_User(self, name, email, username, password):
+    def add_user(self, name, email, username, password):
 
         if all([not len(each) for each in [name, email, username, password]]):
             return
@@ -575,10 +586,10 @@ class AdminScreen(Screen, Database):
                 )
             fpopup.dismiss()
 
-        except IndexError as e:
+        except IndexError:
             Snackbar(text="Please specify a valid file path", duration=2).show()
 
-    # -----------------------select Cousrse and Stream---------------------------------------------#
+    # -----------------------select Course and Stream---------------------------------------------#
     def openCourseList(self, instance):
         dropdown = CourseDrop()
         dropdown.open(instance)
@@ -662,39 +673,52 @@ class AdminScreen(Screen, Database):
         else:
             Snackbar(text="Invalid registration number", duration=2).show()
 
+    def populate_admin_info(self, *args):
+        
+        try:
+            data_list_admin= self.extractAllData("user_main.db","admin",order_by="id")[0]
+            texts=[data_list_admin[1],data_list_admin[2],str(data_list_admin[5]),'']
 
-    admin_name="Shashi Ranjan"
-    admin_username="admin"
-    admin_password="admin"
-    admin_email="Shashiranjankv@gmail.com"
-    admin_alt_email="Shashiranjan@iiitkalyani.ac.in"
-    admin_mobile="9905689898"
-    not_mail="Anand@iiitkalyani.com"
-    not_mail_password="Anand"
+            admin= self.ids.adminInfoLayout
+            admin.clear_widgets()
+            for title,text in zip(["Name","Email id","Mobile No.","Alt. Email Id"],texts):
+                admin.add_widget(AdminInfoLabel(title=title,text=text))
+        except TypeError:
+            pass
+    
+    def populate_admin_username(self,*args):
+        try:
+            data_list_admin= self.extractAllData("user_main.db","admin",order_by="id")[0]
+
+            self.ids.adminUsernameLayout.clear_widgets()
+            self.ids.adminUsernameLayout.add_widget(
+                AdminInfoLabel(title="Username",text=data_list_admin[3])
+                )
+        except TypeError:
+            pass
+    
+    def populate_admin_password(self, *args):
+        try:
+            data_list_admin= self.extractAllData("user_main.db","admin",order_by="id")[0]
+            self.admin_password=data_list_admin[4]
+        except TypeError:
+            pass
+    
 
     def edit_admin_info(self):
         self.ids.adminInfoEditBtn.icon="check"
-        self.ids.adminInfoLayout.clear_widgets()
-
-        name=AdminInfoEditField()
-        name.hint_text="Name"
-        name.text=self.admin_name
-        self.ids.adminInfoLayout.add_widget(name)
-
-        email=AdminInfoEditField()
-        email.hint_text="Email Id"
-        email.text=self.admin_email
-        self.ids.adminInfoLayout.add_widget(email)
-
-        mob=AdminInfoEditField()
-        mob.hint_text="Mobile No."
-        mob.text=self.admin_mobile
-        self.ids.adminInfoLayout.add_widget(mob)
-
-        alt_email=AdminInfoEditField()
-        alt_email.hint_text="Alt. Email Id"
-        alt_email.text=self.admin_alt_email
-        self.ids.adminInfoLayout.add_widget(alt_email)
+        texts=[]
+        admin= self.ids.adminInfoLayout
+        for each in admin.children[::-1]:
+            texts.append(each.children[0].text)
+        
+        admin.clear_widgets()
+        for hint_text,text in zip(["Name","Email id","Mobile No.","Alt. Email Id"],texts):
+            
+            _tmp= AdminInfoEditField()
+            _tmp.hint_text=hint_text
+            _tmp.text=text
+            admin.add_widget(_tmp)
 
     def show_admin_info(self):
         self.ids.adminInfoEditBtn.icon="pencil"
@@ -702,31 +726,61 @@ class AdminScreen(Screen, Database):
         admin= self.ids.adminInfoLayout
         for each in admin.children[::-1]:
             texts.append(each.children[0].text)
+        print(texts)
         
-        """
-            Database Addition of name,email,alt email ,mobile
-        """
         admin.clear_widgets()
         for title,text in zip(["Name","Email id","Mobile No.","Alt. Email Id"],texts):
             admin.add_widget(AdminInfoLabel(title=title,text=text))
+        
+        #Database Addition of name,email,mobile
+        fields= ["name","email","phone"]
+        new_data= texts[:len(texts)-1] #not including alt. email for now
+
+        try:
+            conn = self.connect_database("user_main.db")
+            #READ ME: Here we're supposing that admin table has just one entry with id=1
+            self.update_database(
+                "admin", conn, fields, new_data, "id", 1
+            )
+        except Error:
+            Snackbar(text="Error updating admin database", duration=2).show()
+        else:
+            Snackbar(
+                text="Updated admin details",
+                duration=2,
+            ).show()
 
     def edit_admin_username(self):
         self.ids.adminUsernameEditBtn.icon="check"
-        self.ids.adminUsernameLayout.clear_widgets()
 
         username_field=AdminInfoEditField()
         username_field.hint_text="Username"
-        username_field.text=self.admin_username
+        username_field.text=self.ids.adminUsernameLayout.children[0].text
+        
+        self.ids.adminUsernameLayout.clear_widgets()
         self.ids.adminUsernameLayout.add_widget(username_field)
 
     def show_admin_username(self):
         self.ids.adminUsernameEditBtn.icon="pencil"
         self.admin_username=self.ids.adminUsernameLayout.children[0].children[0].text
-        """
-            Database add Username
-        """
+        
         self.ids.adminUsernameLayout.clear_widgets()
         self.ids.adminUsernameLayout.add_widget(AdminInfoLabel(title="Username",text=self.admin_username))
+
+        #Database manipulation here
+        try:
+            conn = self.connect_database("user_main.db")
+            #READ ME: Here we're supposing that admin table has just one entry with id=1
+            self.update_database(
+                "admin", conn, "username", self.admin_username, "id", 1
+            )
+        except Error:
+            Snackbar(text="Error updating admin username", duration=2).show()
+        else:
+            Snackbar(
+                text="Admin username updated",
+                duration=2,
+            ).show()
 
     def edit_admin_password(self):
         self.ids.adminPasswordEditBtn.icon="check"
@@ -752,6 +806,20 @@ class AdminScreen(Screen, Database):
         admin_pass_label.text="*********"
         self.ids.adminPasswordLayout.add_widget(admin_pass_label)
 
+        #Database manipulation here
+        try:
+            conn = self.connect_database("user_main.db")
+            #READ ME: Here we're supposing that admin table has just one entry with id=1
+            self.update_database(
+                "admin", conn, "pass", self.admin_password, "id", 1
+            )
+        except Error:
+            Snackbar(text="Error updating admin password", duration=2).show()
+        else:
+            Snackbar(
+                text="Admin password updated",
+                duration=2,
+            ).show()
 
     def edit_not_mail(self):
         self.ids.notMailEditBtn.icon="check"
