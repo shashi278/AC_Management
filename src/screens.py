@@ -669,6 +669,8 @@ class AdminScreen(Screen, Database):
     admin_email="Shashiranjankv@gmail.com"
     admin_alt_email="Shashiranjan@iiitkalyani.ac.in"
     admin_mobile="9905689898"
+    not_mail="Anand@iiitkalyani.com"
+    not_mail_password="Anand"
 
     def edit_admin_info(self):
         self.ids.adminInfoEditBtn.icon="check"
@@ -750,11 +752,59 @@ class AdminScreen(Screen, Database):
         admin_pass_label.text="*********"
         self.ids.adminPasswordLayout.add_widget(admin_pass_label)
 
-    def on_eye_btn_pressed(self,inst):
-        if(inst.state=="down"):
-            admin_pass_label.text=self.admin_password
-        else:
-            admin_pass_label.text="*********"
+
+    def edit_not_mail(self):
+        self.ids.notMailEditBtn.icon="check"
+        not_mail_field=AdminInfoEditField()
+        not_mail_field.hint_text="Notification Email"
+        not_mail_field.text=self.ids.notMailLayout.children[0].text
+        self.ids.notMailLayout.clear_widgets()
+        self.ids.notMailLayout.add_widget(not_mail_field)
+
+    def show_not_mail(self):
+        self.ids.notMailEditBtn.icon="pencil"
+        self.not_mail=self.ids.notMailLayout.children[0].children[0].text
+        """
+            Database add Notification mail
+        """
+        self.ids.notMailLayout.clear_widgets()
+        self.ids.notMailLayout.add_widget(AdminInfoLabel(title="Notification Email",text=self.not_mail))
+
+    def edit_not_mail_password(self):
+        self.ids.notMailPassEditBtn.icon="check"
+        self.ids.eyeBtn1.disabled=True
+        self.ids.notMailPassLayout.clear_widgets()
+
+        mail_pass_field=AdminInfoEditField()
+        mail_pass_field.hint_text="Notification Email password"
+        mail_pass_field.text=self.not_mail_password
+        self.ids.notMailPassLayout.add_widget(mail_pass_field)
+
+    flag1=0
+    def show_not_mail_password(self):
+        self.flag1=1
+        self.ids.notMailPassEditBtn.icon="pencil"
+        self.ids.eyeBtn1.disabled=False
+        self.not_mail_password=self.ids.notMailPassLayout.children[0].children[0].text
+
+        self.ids.notMailPassLayout.clear_widgets()
+        global mail_pass_label
+        mail_pass_label=AdminInfoLabel()
+        mail_pass_label.title="Notification Email Password"
+        mail_pass_label.text="*********"
+        self.ids.notMailPassLayout.add_widget(mail_pass_label)
+
+    def on_eye_btn_pressed(self,inst,key):
+        if(key==1):
+            if(inst.state=="down"):
+                admin_pass_label.text=self.admin_password
+            else:
+                admin_pass_label.text="*********"
+        elif(key==2):
+            if(inst.state=="down"):
+                mail_pass_label.text=self.not_mail_password
+            else:
+                mail_pass_label.text="*********"
 
 class ForgotPasswordScreen(Screen, Database):
 
