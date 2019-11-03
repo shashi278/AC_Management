@@ -93,7 +93,7 @@ class Database():
         if conn is not None:
             try:
                 cur = conn.cursor()
-                print("cur: {}".format(cur))
+                #print("cur: {}".format(cur))
                 filtered_list = cur.execute(
                     """
 							SELECT * FROM {} WHERE {} LIKE ? ORDER BY {};

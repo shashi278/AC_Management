@@ -7,6 +7,7 @@
 #:import SwapTransition kivy.uix.screenmanager.SwapTransition 
 #:import WipeTransition kivy.uix.screenmanager.WipeTransition
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
+
 ##:import NoTransition kivy.uix.screenmanager.
 
 <AdminInfoEditField>:
@@ -34,7 +35,7 @@
 		font_size:14
 	MDLabel:
 		text:root.text
-		color: 0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+		color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 
 <Section@BoxLayout>:
 	size_hint_y:1
@@ -68,7 +69,7 @@
 	text: ''
 	canvas.before:
 		Color:
-			rgba: (0,0,0,0)#(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
+			rgba: (0,0,0,0)
 		RoundedRectangle:
 			pos: self.pos
 			size: self.size
@@ -79,7 +80,7 @@
 	text: ''
 	canvas.before:
 		Color:
-			rgba: (0,0,0,0) #(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#1B2631")
+			rgba: (0,0,0,0)
 		RoundedRectangle:
 			pos: self.pos
 			size: self.size
@@ -272,8 +273,8 @@
 		anchor_x: "right"
 		Label:
 			size_hint: None, None
-			size: self.texture_size
 			text: root.info_title
+			size: self.texture_size
 			bold: True
 			font_size: sp(15)
 	AnchorLayout:
@@ -515,7 +516,7 @@
 					self.text= self.text.strip()
 				on_text_validate:
 					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.addFeeData(root); root.dismiss()
+					app.root.ids.profilePage.add_fee_data(root); root.dismiss()
 
 			InputFields:
 				size_hint_x: .45
@@ -526,7 +527,7 @@
 					self.text= self.text.strip()
 				on_text_validate:
 					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.addFeeData(root); root.dismiss()
+					app.root.ids.profilePage.add_fee_data(root); root.dismiss()
 
 			InputFields:
 				size_hint_x: .45
@@ -537,7 +538,7 @@
 					self.text= self.text.strip()
 				on_text_validate:
 					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.addFeeData(root); root.dismiss()
+					app.root.ids.profilePage.add_fee_data(root); root.dismiss()
 
 			DateField:
 				size_hint_x: .6
@@ -552,7 +553,7 @@
 					self.text= self.text.strip()
 				on_text_validate:
 					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.addFeeData(root); root.dismiss()
+					app.root.ids.profilePage.add_fee_data(root); root.dismiss()
 
 			InputFields:
 				id:rem
@@ -566,7 +567,7 @@
 				md_bg_color: app.theme_cls.primary_color
 				on_release:
 					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.addFeeData(root); root.dismiss()
+					app.root.ids.profilePage.add_fee_data(root); root.dismiss()
 			MDFloatingActionButton:
 				icon: 'window-close'
 				opposite_colors: True
@@ -738,7 +739,8 @@ ScreenManager:
 					theme_text_color: "Custom"
 					text_color: [1,1,1,1]
 					on_release:
-						if root.check_edits(root.ids.rv.children[0]): app.root.transition= FallOutTransition();app.root.current= "userScreen"
+						if root.check_edits(root.ids.rv.children[0]):\
+						app.root.transition= FallOutTransition();app.root.current= "userScreen"
 				
 
 			BoxMinimumHeight:
@@ -812,7 +814,7 @@ ScreenManager:
 						theme_text_color: 'Custom'
 						text_color: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else [0,0,0,1]
 						on_release:
-							print("Print data")
+							root.print_pdf()
 							
 				BoxLayout:
 					orientation:"vertical"
@@ -884,7 +886,7 @@ ScreenManager:
 			md_bg_color: app.theme_cls.primary_color
 			x: root.width-dp(90)
 			y: dp(30)
-			on_release:root.open_addDataLayout()
+			on_release:root.open_add_data_layout()
 
 #--------------------------HomeScreen-----------------------------------------###
 <HomeScreen>:
@@ -1068,8 +1070,9 @@ ScreenManager:
 				id:sendBtn
 				text:"Send Code"
 				on_release:
-					root.ids.sendBtn.text="Resend Code"
-					root.call_Code_Submit_Layout()
+					x= root.call_code_submit_layout()
+					print(x)
+					if x==True: root.ids.sendBtn.text="Resend Code"
 
 			MDLabel:
 				id:statusLabel
@@ -1350,6 +1353,11 @@ ScreenManager:
 											app.root.transition= SlideTransition(direction="right");\
 											app.root.current= "userScreen";\
 											app.root.ids.userScreen.onStartUserScr()
+
+											if (x and root.ids.loginTitle.text=="Admin Login"):\
+											app.root.transition= SlideTransition(direction="left");\
+											app.root.current= "adminScreen";\
+											app.root.ids.adminScreen.onStartAdminScr()
 
 
 								#--------------forgot password area---------------------------#
@@ -1986,7 +1994,7 @@ ScreenManager:
 											font_size: self.width/7
 											id:lbl
 											text:"Admin Details"
-											color:0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+											color:(0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 											
 											
 										BoxLayout:
@@ -2037,7 +2045,7 @@ ScreenManager:
 											font_size:self.width/8
 											id:lbl1
 											text:"Change Credential"
-											color: 0,0,0,1 if app.theme_cls.theme_style=="Light" else 1,1,1,1
+											color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 											
 											
 										BoxLayout:
