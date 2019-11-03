@@ -1579,7 +1579,7 @@ ScreenManager:
 			size_hint: (1,0.07)
 			canvas:
 				Color:
-					rgb: C("#000000")
+					rgba: app.theme_cls.primary_color
 				Rectangle:
 					pos: self.pos
 					size: self.size
@@ -2029,6 +2029,7 @@ ScreenManager:
 										MDIconButton:
 											id:adminInfoEditBtn
 											icon:"pencil"
+											md_bg_color: app.theme_cls.primary_color
 											on_release:
 												root.edit_admin_info() if self.icon=="pencil" else root.show_admin_info()
 								
@@ -2072,6 +2073,7 @@ ScreenManager:
 												MDIconButton:
 													id:adminUsernameEditBtn
 													icon:"pencil"
+													md_bg_color: app.theme_cls.primary_color
 													on_release:
 														root.edit_admin_username() if self.icon=="pencil" else root.show_admin_username()
 
@@ -2094,6 +2096,7 @@ ScreenManager:
 													MDIconButton:
 														id:adminPasswordEditBtn
 														icon:"pencil"
+														md_bg_color: app.theme_cls.primary_color
 														on_release:
 															root.edit_admin_password() if self.icon=="pencil" else root.show_admin_password()
 										BoxLayout:
