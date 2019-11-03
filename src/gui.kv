@@ -17,8 +17,8 @@
 	height:60
 	MDTextField:
 		id:txt
-		hint_text:root.hint_text
-		text:root.text
+		hint_text:self.parent.hint_text
+		text:self.parent.text
 		size_hint_x:None
 		width:200
 
@@ -1205,7 +1205,7 @@ ScreenManager:
 								size: self.parent.width, self.parent.height
 								opacity:1
 								angle: 0
-								origin_: None
+								origin_: (0,0)
 								axis: tuple((0,0,1))
 								
 
@@ -1789,7 +1789,7 @@ ScreenManager:
 											size:self.size
 											pos:self.pos
 									on_release:
-										if (self.state=="down") :root.Add_User_Layout()
+										if (self.state=="down") :root.add_user_layout()
 										if(self.state=="normal"):root.ids.dyn_input.clear_widgets()
 
 					#----------------manage Student Screen-------------##
@@ -2043,16 +2043,16 @@ ScreenManager:
 										cols:2
 										AdminInfoLabel:
 											title:"Name"
-											text:root.admin_name
+											text:''
 										AdminInfoLabel:
 											title:"Email Id"
-											text:root.admin_email
+											text:''
 										AdminInfoLabel:
 											title:"Mobile no."
-											text:root.admin_mobile
+											text:''
 										AdminInfoLabel:
 											title:"Alt. Email Id"
-											text:root.admin_alt_email
+											text:''
 									
 									AnchorLayout:
 										size_hint_y:.1
@@ -2100,7 +2100,7 @@ ScreenManager:
 													id:adminUsernameLayout
 													AdminInfoLabel:
 														title:"UserName"
-														text:root.admin_username
+														text:''
 												MDIconButton:
 													id:adminUsernameEditBtn
 													icon:"pencil"
