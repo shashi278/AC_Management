@@ -892,6 +892,7 @@ ScreenManager:
 	name:"homeScreen"
 
 	BoxLayout:
+		
 		orientation: 'vertical'
 
 		canvas.before:
@@ -925,7 +926,8 @@ ScreenManager:
 						size: self.texture_size
 
 				BoxLayout:
-					size_hint: (.7,1)
+					
+					size_hint: (.6,1)
 					orientation: 'vertical'
 					BoxLayout:
 						Label:
@@ -941,12 +943,37 @@ ScreenManager:
 							font_size: self.height/22+self.width/22
 							halign: 'left'
 							valign: 'middle'
-				
+					
+				BoxLayout:
+					orientation:"vertical"
+					spacing:-40
+					size_hint: (.1,1)
+					
+					AnchorLayout:
+						size_hint_y:.7
+						Button:
+							size_hint: None, None
+							size: 80,80
+							#text: "User"
+							border: (0, 0, 0, 0)
+							background_normal: 'media/images/admin3.png'
+							background_down: 'media/images/admin3_down.png'
+							on_release:
+								root.openLoginPop("Admin")
+					AnchorLayout:
+						size_hint_y:.3
+						Label:
+							text: "ADMIN"
+							bold: True
+							color: C("#000000")
+							font_size: dp("15")
+					
 
 			######----------------------------------------------
 
 			BoxLayout:
 				size_hint: (1,.6)
+				
 				
 
 
@@ -974,19 +1001,19 @@ ScreenManager:
 						on_release:
 							root.openLoginPop("User")
 
-				AnchorLayout:
-					anchor_x: 'center'
-					anchor_y: 'center'
+				#AnchorLayout:
+				#	anchor_x: 'center'
+				#	anchor_y: 'center'
 
-					Button:
-						size_hint: None, None
-						size: 120,120
-						#text: "User"
-						border: (0, 0, 0, 0)
-						background_normal: 'media/images/admin3.png'
-						background_down: 'media/images/admin3_down.png'
-						on_release:
-							root.openLoginPop("Admin")
+				#	Button:
+				#		size_hint: None, None
+				#		size: 120,120
+				#		#text: "User"
+				#		border: (0, 0, 0, 0)
+				#		background_normal: 'media/images/admin3.png'
+				#		background_down: 'media/images/admin3_down.png'
+				#		on_release:
+				#			root.openLoginPop("Admin")
 
 
 			##-------------labels------------------------###############
@@ -1005,14 +1032,14 @@ ScreenManager:
 
 
 
-				AnchorLayout:
-					anchor_x: "center"
-					anchor_y: "center"
-					Label:
-						text: "ADMIN"
-						bold: True
-						color: C("#000000")
-						font_size: dp("24")
+				#AnchorLayout:
+				#	anchor_x: "center"
+				#	anchor_y: "center"
+				#	Label:
+				#		text: "ADMIN"
+				#		bold: True
+				#		color: C("#000000")
+				#		font_size: dp("24")
 
 
 
@@ -1047,7 +1074,7 @@ ScreenManager:
 					text_color:1,1,1,1
 					on_release:
 						root.parent.transition=SwapTransition()
-        				root.parent.parent.opacity=0.3
+        				root.parent.parent.opacity=0.6
         				root.parent.current='login'
 
 			MDLabel:
@@ -1095,7 +1122,7 @@ ScreenManager:
 	size_hint: (0.3, 0.5)
 	auto_dismiss: True
 	background: "media/images/login4.png"
-	opacity:0.3
+	opacity:0.6
 	 
 
 	ScreenManager:
@@ -1407,7 +1434,7 @@ ScreenManager:
 							text_color:1,1,1,1
 							on_release:
 								root.ids.scr.transition=SwapTransition()
-								root.opacity=0.3
+								root.opacity=0.6
 								root.ids.scr.current='login'
 
 					MDLabel:

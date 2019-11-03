@@ -413,7 +413,6 @@ class AdminScreen(Screen, Database):
     def check_edits_users(self):
         """
             Code Requires here
-
         """
         return True
 
@@ -757,7 +756,6 @@ class ForgotPasswordScreen(Screen):
                 new pass= inst1.text =inst2.text 
                 Database Update
                 code here 
-
                 """
                 self.ids.codeSubmitBox.clear_widgets()
                 self.ids.sendCodeBox.clear_widgets()
@@ -778,7 +776,7 @@ class ForgotPasswordScreen(Screen):
 
     def go_to_login(self,*args):
         self.parent.transition=SwapTransition()
-        self.parent.parent.opacity=0.3
+        self.parent.parent.opacity=0.6
         self.parent.current='login'
         pass
 
