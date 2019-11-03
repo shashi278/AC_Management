@@ -21,6 +21,7 @@
 		text:self.parent.text
 		size_hint_x:None
 		width:200
+		write_tab:False
 
 <AdminInfoLabel>:
 	text:""
@@ -2142,8 +2143,9 @@ ScreenManager:
 										BoxLayout:
 											MDLabel:
 												markup:True
-												text:"[sup][b]****[/b][/sup]Notification Email Provided for sending notification mail to students."
+												text:"[sup][b]**[/b][/sup]Notification Email Provided for sending notification mail to students."
 												font_size:dp(13)
+												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 										
 										
 

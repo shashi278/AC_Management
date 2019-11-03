@@ -405,12 +405,9 @@ class AdminScreen(Screen, Database):
     progress_value = 0
     progress_total = 0
 
-    admin_name=""
-    admin_username=""
     admin_password=""
-    admin_email=""
-    admin_alt_email=""
-    admin_mobile=""
+    not_mail="AJljljldkjskldj"
+    not_mail_password="Adf45464"
     
     def onStartAdminScr(self):
 
@@ -755,11 +752,12 @@ class AdminScreen(Screen, Database):
 
     def edit_admin_username(self):
         self.ids.adminUsernameEditBtn.icon="check"
-        self.ids.adminUsernameLayout.clear_widgets()
 
         username_field=AdminInfoEditField()
         username_field.hint_text="Username"
-        username_field.text=self.admin_username
+        username_field.text=self.ids.adminUsernameLayout.children[0].text
+        
+        self.ids.adminUsernameLayout.clear_widgets()
         self.ids.adminUsernameLayout.add_widget(username_field)
 
     def show_admin_username(self):
@@ -808,7 +806,6 @@ class AdminScreen(Screen, Database):
         admin_pass_label.text="*********"
         self.ids.adminPasswordLayout.add_widget(admin_pass_label)
 
-<<<<<<< HEAD
         #Database manipulation here
         try:
             conn = self.connect_database("user_main.db")
@@ -823,13 +820,6 @@ class AdminScreen(Screen, Database):
                 text="Admin password updated",
                 duration=2,
             ).show()
-
-    def on_eye_btn_pressed(self,inst):
-        if(inst.state=="down"):
-            admin_pass_label.text=self.admin_password
-        else:
-            admin_pass_label.text="*********"
-=======
 
     def edit_not_mail(self):
         self.ids.notMailEditBtn.icon="check"
@@ -883,7 +873,6 @@ class AdminScreen(Screen, Database):
                 mail_pass_label.text=self.not_mail_password
             else:
                 mail_pass_label.text="*********"
->>>>>>> 97bbae447bcea30407284765478cb663c1e2c9c4
 
 class ForgotPasswordScreen(Screen, Database):
 
