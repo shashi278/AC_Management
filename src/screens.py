@@ -30,17 +30,22 @@ from kivymd.uix.list import (
     OneLineListItem,
 )
 
+#internal imports
 import os
 from os.path import sep, expanduser, isdir, dirname
 from random import choice
 from sqlite3 import Error
 from functools import partial
+import asyncio
 
+#local imports
 from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
 from custom_widgets import AdminInfoLabel, AdminInfoEditField
 from dropdowns import *
+from mail import OTPMail
+from generate_fee_receipt import generate_pdf
 
 #left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
@@ -79,8 +84,8 @@ class UserScreen(Screen, Database):
 
         # should be fixed inside MDIconButton in md library itself
         #self.ids.hamburger.ids.lbl_txt.text_size = (sp(80), sp(80))
-        self.ids.hamburger.ids.lbl_txt.font_size = sp(35)
-        self.ids.search.text = ""
+        #self.ids.hamburger.ids.lbl_txt.font_size = sp(35)
+        #self.ids.search.text = ""
 
         # --------------Update Student list---------------------#
         self.ids.rv.data = []
@@ -99,20 +104,11 @@ class UserScreen(Screen, Database):
         except:
             pass
 
-    def openSemesterList(self, instance):
-        semesterBtn = self.ids.semesterBtn
-        dropdown = SemesterDrop()
-        dropdown.open(instance)
-        dropdown.bind(
-            on_select=lambda instance, btn: self.onSelect(btn, self.ids.semesterBtn)
-        )
-
     def onSelect(self, btn, mainBtn):
         mainBtn.text = btn.text
         print(btn.id)
 
     def anim_in(self, instance):
-
         anim = Animation(pos_hint={"x": -0.3}, t="in_cubic", d=0.3)
         anim.start(instance)
 
@@ -187,12 +183,12 @@ class ProfilePage(Screen, Database):
     ]
 
     def on_enter(self, *args):
-        self.color = choice(self.colors)
-        Clock.schedule_interval(self.set_button_width, 0)
-        self.extract_data("student_main.db", "General_record")
         self.populate_screen()
+        self.color = choice(self.colors)
+        self.extract_data("student_main.db", "General_record")
         self.ids.rb.reg_no = self.reg_no
-
+        
+        Clock.schedule_interval(self.set_button_width, 0)
         Clock.schedule_interval(self.set_name_info, 0)
         Clock.schedule_interval(self.set_roll_info, 0)
         Clock.schedule_once(self.schedule, 0.5)
@@ -266,15 +262,16 @@ class ProfilePage(Screen, Database):
             self.c = iter(list(self.data_tuple[2]))
             self.s = iter(list(self.data_tuple[3]))
             self.f = iter(list(str(self.data_tuple[5])))
-            self.totalFee = self.data_tuple[5]
+            self.total_fee = self.data_tuple[5]
+            self.ids.rb.total_fee= self.total_fee
 
         except Exception as e:
-            print("Error here: {}".format(e))
+            Snackbar(text="Error retrieving data: {}".format(e),duration=2).show()
 
-    def open_addDataLayout(self):
+    def open_add_data_layout(self):
         AddDataLayout().open()
 
-    def addFeeData(self, ins):
+    def add_fee_data(self, ins):
         if ins.ids.rem.text == "":
             ins.ids.rem.text = "NA"
         if ins.ids.late.text == "":
@@ -283,7 +280,7 @@ class ProfilePage(Screen, Database):
         data_tuple = (
             int(ins.ids.sem.text),
             int(ins.ids.paid.text),
-            int(self.totalFee - int(ins.ids.paid.text)),
+            int(self.total_fee - int(ins.ids.paid.text)),
             int(ins.ids.late.text),
             ins.ids.date.text,
             ins.ids.tid.text,
@@ -307,6 +304,7 @@ class ProfilePage(Screen, Database):
             self.populate_screen()
 
     def populate_screen(self):
+        #print("\n\n\n\nrv.data before: {}\n\n\n\n".format(self.ids.rv.data))
         self.ids.rv.data = []
         # try to populate the screen with data already available in the corresponding
         # reg. no. table
@@ -331,6 +329,7 @@ class ProfilePage(Screen, Database):
             if conn is not None:
                 with open("fee_record.sql") as table:
                     self.create_table(table.read().format("_" + str(self.reg_no)), conn)
+        #print("\n\n\n\nrv.data after: {}\n\n\n\n".format(self.ids.rv.data))
 
     def anim_in(self, instance):
 
@@ -345,16 +344,62 @@ class ProfilePage(Screen, Database):
         _temp = [1 for child in rowinfo_root.children if child.ids.btn1.icon == "check"]
         if len(_temp):
             Snackbar(
-                text="Cannot go back while in edit mode. Save ongoing edits.",
+                text="Cannot go back while in editing. Save ongoing edits.",
                 duration=2,
             ).show()
             return False
         return True
 
+    def print_pdf(self):
+        
+        #conn = self.connect_database("student_main.db")
+        #try:
+        #    self.data_tuple = self.search_from_database(
+        #        "General_record", conn, "reg", self.reg_no
+        #    )[0]
+        #except Error:
+        #    Snackbar(text="Error retrieving student's info.", duration=2).show()
+        #else:
+        student_info={
+            "name": self.data_tuple[1],
+            "reg": str(self.data_tuple[0]),
+            "batch": self.data_tuple[4],
+            "course": self.data_tuple[2],
+            "stream": self.data_tuple[3],
+            "fee": str(self.data_tuple[5]),
+        }
+
+        try:
+            data_list = self.extractAllData(
+                "fee_main.db", "_" + str(self.reg_no), order_by="sem"
+            )
+            print(data_list)
+            
+        except Error:
+            Snackbar(text="Error retrieving fee data for reg_no {}".format(self.reg_no), duration=2).show()
+        else:
+            if len(data_list):
+                fee_data=[]
+                for data_tuple in sorted(data_list):
+                    _temp = {
+                        "sem": str(data_tuple[0]),
+                        "paid": str(data_tuple[1]),
+                        "due": str(data_tuple[2]),
+                        "late": str(data_tuple[3]),
+                        "date": str(data_tuple[4]),
+                        "tid": data_tuple[5]
+                    }
+                    fee_data.append(_temp)
+                print(fee_data)
+                print("\n\n\n\nReady to print but not yet\n\n\n")
+                generate_pdf(student_info,fee_data)
+                Snackbar(text="PDF generated for reg. no. {}".format(self.reg_no),duration=2).show()
+            else:
+                Snackbar(text="No fee data found for reg. no. {}".format(self.reg_no),duration=2).show()
 
 # AdminScreen
 class AdminScreen(Screen, Database):
-    pc_userName = os.getlogin()
+    pc_username = os.getlogin()
 
     # will be used to show progress while reading xls
     progress_value = 0
@@ -368,8 +413,7 @@ class AdminScreen(Screen, Database):
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
         data_list = self.extractAllData("user_main.db", "users", order_by="id")
-        print("\n\n\nData in rv: {}\n\n\n".format(self.ids.rv.data))
-        print("\n\n\nData in db: {}\n\n\n".format(data_list))
+        
         for counter, each in enumerate(data_list, 1):
             x = {
                 "sno": str(counter),
@@ -712,22 +756,30 @@ class AdminScreen(Screen, Database):
         else:
             admin_pass_label.text="*********"
 
-class ForgotPasswordScreen(Screen):
+class ForgotPasswordScreen(Screen, Database):
 
-    code_recieved="Code"
-    def call_Code_Submit_Layout(self):
+    otp_recieved="OTP"
+    mail_sent=False
+    def call_code_submit_layout(self):
+        print("\n\n\nI've been calleddddddddddd!!\n\n")
         self.ids.codeSubmitBox.clear_widgets()
         self.ids.resetPasswordBox.clear_widgets()
         textfld=MDTextField()
-        textfld.hint_text="Code"
-        if(self.get_email_status()):
+        textfld.hint_text="Enter OTP"
+        print("\n\n\nI'm hereeeeeeeeeeeeeeeeeee\n\n")
+        Clock.schedule_once(self.get_email_status, 0)
+        #Clock.schedule_once(partial(asyncio.run,self.get_email_status()),0)
+        #r=asyncio.run(self.get_email_status())
+        print("\n\n\ndadasdasdada\n\n")
+        if(self.mail_sent):
             self.ids.codeSubmitBox.add_widget(textfld)
             self.ids.codeSubmitBox.add_widget(MDRaisedButton(text="Submit",on_release=partial(self.verify_code,textfld)))
             textfld.on_text_validate=partial(self.verify_code,textfld)
+            return True
 
     def verify_code(self,inst,*args):
         #self.ids.resetPasswordBox.clear_widgets()
-        if inst.text==self.code_recieved :
+        if inst.text==self.otp_recieved :
             if len(self.ids.resetPasswordBox.children)==0:
                 self.ids.statusLabel.text=""
                 nwpsd_fld=MDTextField()
@@ -745,7 +797,7 @@ class ForgotPasswordScreen(Screen):
                 rnwpsd_fld.on_text_validate=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)
 
         else:
-            self.ids.statusLabel.text="Code doesn't match!"
+            self.ids.statusLabel.text="OTP doesn't match!"
             self.ids.statusLabel.color=(1,0,0,1)
             self.ids.resetPasswordBox.clear_widgets()
 
@@ -770,7 +822,7 @@ class ForgotPasswordScreen(Screen):
                 self.ids.resetPasswordBox.add_widget(anchrl)
         else:
             self.ids.codeSubmitBox.clear_widgets()
-            lbl1=MDLabel(text="Password Doesn't match")
+            lbl1=MDLabel(text="Password Doesn't match!")
             lbl1.color=(1,0,0,1)
             self.ids.codeSubmitBox.add_widget(lbl1)
 
@@ -778,21 +830,32 @@ class ForgotPasswordScreen(Screen):
         self.parent.transition=SwapTransition()
         self.parent.parent.opacity=0.6
         self.parent.current='login'
-        pass
 
-    def get_email_status(self):
+    def get_email_status(self, *args):
         """
             Code for send email 
             if email sent return True 
             and status label to be
             set here
         """
-        import time
-        time.sleep(1)       #Temporary
-        self.ids.statusLabel.text="Code Sent"
-        self.ids.statusLabel.color=(1,1,1,1)
+        x=OTPMail()
+        if x.login('shashir@iiitkalyani.ac.in','Shashi@1531'):
+            #extract admin email
+            admin_email=self.extractAllData("user_main.db","admin",order_by="id")[0][2]
+            print("\n\n\n\nAdmin Email: {}\n\n\n\n".format(admin_email))
+            #c= Clock.schedule_once(partial(x.send_otp, admin_email),5)
+            #print(help(c))
+            self.otp_recieved= x.send_otp(admin_email)
+            print("OTP: ",self.otp_recieved)
+            self.ids.statusLabel.text="Code Sent"
+            self.ids.statusLabel.color=(1,1,1,1)
+            self.mail_sent=True
+            #return True
+        else:
+            self.mail_sent=False
+            Snackbar(text="Could not sent mail. Check your connection", duration=2).show()
         
-        return True
+        #return  False
 
 class ForgotPasswordUser(Screen):
     pass
