@@ -894,18 +894,15 @@ ScreenManager:
 	name:"homeScreen"
 
 	BoxLayout:
-		
 		orientation: 'vertical'
-
 		canvas.before:
-
 			Rectangle:
 				pos: self.pos
 				size: self.size
 				source:"media/images/back5.jpg"
 
 		BoxLayout:
-			size_hint: (1,0.55)
+			size_hint: (1,0.2)
 			orientation: 'vertical'
 
 
@@ -948,7 +945,7 @@ ScreenManager:
 					
 				BoxLayout:
 					orientation:"vertical"
-					spacing:-40
+					spacing:-28
 					size_hint: (.1,1)
 					
 					AnchorLayout:
@@ -973,11 +970,9 @@ ScreenManager:
 
 			######----------------------------------------------
 
-			BoxLayout:
-				size_hint: (1,.6)
+		BoxLayout:
+			size_hint: (1,.35)
 				
-				
-
 
 		BoxLayout:
 			orientation: 'vertical'
@@ -994,7 +989,7 @@ ScreenManager:
 
 					Button:
 						size_hint: None, None
-						size: 125,145
+						size: 150,174
 						#text: "User"
 						border: (0, 0, 0, 0)
 						background_normal: 'media/images/multi_user3.png'
@@ -1003,51 +998,26 @@ ScreenManager:
 						on_release:
 							root.openLoginPop("User")
 
-				#AnchorLayout:
-				#	anchor_x: 'center'
-				#	anchor_y: 'center'
-
-				#	Button:
-				#		size_hint: None, None
-				#		size: 120,120
-				#		#text: "User"
-				#		border: (0, 0, 0, 0)
-				#		background_normal: 'media/images/admin3.png'
-				#		background_down: 'media/images/admin3_down.png'
-				#		on_release:
-				#			root.openLoginPop("Admin")
-
-
-			##-------------labels------------------------###############
 			BoxLayout:
+				size_hint:1,.1
+			##-------------Button------------------------###############
+			AnchorLayout:
 				size_hint:1,.2
 
-				AnchorLayout:
-					anchor_x: "center"
-					anchor_y: "center"
+				BoxLayout:
+					size_hint_x:.25
 
-					MDRaisedButton:
-						text: "USERS"
-						#bold: True
-						#color: C("#000000")
-						#font_size: dp("24")
-
-
-
-				#AnchorLayout:
-				#	anchor_x: "center"
-				#	anchor_y: "center"
-				#	Label:
-				#		text: "ADMIN"
-				#		bold: True
-				#		color: C("#000000")
-				#		font_size: dp("24")
-
-
+					MDFillRoundFlatButton:
+						opacity:.9
+						size_hint:1,1
+						text: "Work Space"
+						font_size:self.width/10
+						on_release:
+							root.openLoginPop("User")
 
 			#blankkkkkkk-------------__#######
 			BoxLayout:
-				size_hint: (1,0.4)
+				size_hint: (1,0.3)
 
 
 <ForgotPasswordScreen>:
@@ -1124,7 +1094,7 @@ ScreenManager:
 	#size_hint: (0.4, 0.7)
 	size_hint: (0.3, 0.5)
 	auto_dismiss: True
-	background: "media/images/login4.png"
+	background: "media/images/image.png"
 	opacity:0.6
 	 
 
@@ -2089,8 +2059,9 @@ ScreenManager:
 													points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
 													width:dp(1)
 
-									BoxLayout:
-										orientation:"vertical"
+									GridLayout:
+										#orientation:"vertical"
+										cols:1
 										size_hint_y:.9
 										BoxLayout:
 											size_hint_y:None
@@ -2122,7 +2093,7 @@ ScreenManager:
 														id:eyeBtn
 														icon:"eye"
 														on_state:
-															root.on_eye_btn_pressed(self) if root.flag==1 else None
+															root.on_eye_btn_pressed(self,1) if root.flag==1 else None
 		
 													MDIconButton:
 														id:adminPasswordEditBtn
@@ -2130,8 +2101,50 @@ ScreenManager:
 														md_bg_color: app.theme_cls.primary_color
 														on_release:
 															root.edit_admin_password() if self.icon=="pencil" else root.show_admin_password()
+										#test
 										BoxLayout:
+											size_hint_y:None
+											height:60
+											BoxLayout:
+												BoxLayout:
+													id:notMailLayout
+													AdminInfoLabel:
+														title:"Notification Email"
+														text:root.not_mail
+												MDIconButton:
+													id:notMailEditBtn
+													icon:"pencil"
+													on_release:
+														root.edit_not_mail() if self.icon=="pencil" else root.show_not_mail()
+
+											BoxLayout:
 											
+
+											BoxLayout:
+												BoxLayout:
+													id:notMailPassLayout
+													AdminInfoLabel:
+														title:"Notification Email Password"
+														text:"********" if (root.ids.eyeBtn1.state=="normal") else root.not_mail_password
+												BoxLayout:
+													MDIconButton:
+														id:eyeBtn1
+														icon:"eye"
+														on_state:
+															root.on_eye_btn_pressed(self,2) if root.flag1==1 else None
+		
+													MDIconButton:
+														id:notMailPassEditBtn
+														icon:"pencil"
+														on_release:
+															root.edit_not_mail_password() if self.icon=="pencil" else root.show_not_mail_password()
+										BoxLayout:
+										BoxLayout:
+											MDLabel:
+												markup:True
+												text:"[sup][b]****[/b][/sup]Notification Email Provided for sending notification mail to students."
+												font_size:dp(13)
+										
 										
 
 					#---------------Manage App setting-----------------##
