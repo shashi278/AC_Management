@@ -16,9 +16,6 @@ from database import Database
 from screens import HomeScreen
 from custom_buttons import CircularToggleButton
 
-import sys
-
-
 # Main App
 class AccountManagementSystem(App, Database):
     theme_cls = ThemeManager()
