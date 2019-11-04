@@ -75,6 +75,7 @@ class HomeScreen(Screen):
     def openLoginPop(self, title):
         lp = LoginPopup()
         lp.ids.loginTitle.text = "{} Login".format(title)
+        lp.ids.username_.focus= True
         lp.open()
 
 
@@ -756,7 +757,7 @@ class AdminScreen(Screen, Database):
         username_field=AdminInfoEditField()
         username_field.hint_text="Username"
         username_field.text=self.ids.adminUsernameLayout.children[0].text
-        
+
         self.ids.adminUsernameLayout.clear_widgets()
         self.ids.adminUsernameLayout.add_widget(username_field)
 
@@ -976,4 +977,7 @@ class ForgotPasswordScreen(Screen, Database):
         #return  False
 
 class ForgotPasswordUser(Screen):
+    pass
+
+class NotificationScreen(Screen):
     pass

@@ -1245,6 +1245,7 @@ ScreenManager:
 												icon_type:'left'
 												icon_left: 'account-box'
 												foreground_color: (0, 0, 0, 1)
+												text_validate_unfocus:False
 												on_text_validate:
 													x= root.login(root.ids.username_.text, root.ids.password_.text,\
 													root.ids.loginTitle.text)
@@ -1289,6 +1290,7 @@ ScreenManager:
 												size_hint: (1, 1)
 												hint_text:"Password"
 												foreground_color: (0, 0, 0, 1)
+												text_validate_unfocus:False
 												icon_left: 'key-variant'
 												icon_right: 'eye-off'
 												password: True
@@ -2115,6 +2117,7 @@ ScreenManager:
 												MDIconButton:
 													id:notMailEditBtn
 													icon:"pencil"
+													md_bg_color: app.theme_cls.primary_color
 													on_release:
 														root.edit_not_mail() if self.icon=="pencil" else root.show_not_mail()
 
@@ -2137,13 +2140,14 @@ ScreenManager:
 													MDIconButton:
 														id:notMailPassEditBtn
 														icon:"pencil"
+														md_bg_color: app.theme_cls.primary_color
 														on_release:
 															root.edit_not_mail_password() if self.icon=="pencil" else root.show_not_mail_password()
 										BoxLayout:
 										BoxLayout:
 											MDLabel:
 												markup:True
-												text:"[sup][b]**[/b][/sup]Notification Email Provided for sending notification mail to students."
+												text:"[sup][b]**[/b][/sup]Notification Email is for sending fee notification mail to students"
 												font_size:dp(13)
 												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 										
@@ -2180,6 +2184,31 @@ ScreenManager:
 
 
 #-----------------------Side Navigation ------------------------#
+
+#-----------------------Notification Screen Starts----------------##
+<NotificationScreen>:
+	name:"notificationScreen"
+
+	BoxLayout:
+		orientation:"vertical"
+#---------------------------header Area--------------------------------------###
+		BoxLayout:
+			id:header
+			size_hint: (1, 0.07)
+			canvas:
+				Color:
+					rgba: app.theme_cls.primary_color
+				Rectangle:
+					pos: self.pos
+					size: self.size
+			Label:
+				text:"Notification Center"
+				
+		BoxLayout:
+			id:main_area
+			Label:
+				text:"Notification Area"
+
 
 <SideNav>:
 	size_hint: (0.2, 1)

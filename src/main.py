@@ -16,8 +16,6 @@ from database import Database
 from screens import HomeScreen
 from custom_buttons import CircularToggleButton
 
-import sys
-sys.excepthook= lambda *args: None
 
 # Main App
 class AccountManagementSystem(App, Database):
