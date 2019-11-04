@@ -31,7 +31,7 @@ class PDF(FPDF):
 
         self.set_draw_color(0, 1, 1)
         self.line(10, 50, 200, 50)
-        self.ln(33)
+        self.ln(30)
 
     # Page footer
     def footer(self):
@@ -47,13 +47,13 @@ def generate_pdf(personalinfo, feeinfo):
     pdf.alias_nb_pages()
     pdf.add_page()
 
-    pdf.ln(6)
+    pdf.ln(5)
     pdf.set_font("Times", "B", 14)
     pdf.cell(0, 5, "Fee Details", 0, 1, "C")
 
     
 
-    pdf.ln(5)
+    pdf.ln(1)
     pdf.set_font("Times", "B", 12)
     
     print("\n\n\n\nI'm from generate_pdf_1\n\n\n")
@@ -65,23 +65,22 @@ def generate_pdf(personalinfo, feeinfo):
         + personalinfo["name"]
         + "\nReg No: "
         + personalinfo["reg"]
-        + "                                                                                \
-	                                       Batch: "
+        + "                                                                             \
+	                                             Batch: "
         + personalinfo["batch"]
-        + "\n\
-		Course & Stream: "
+        + "\nCourse & Stream: "
         + personalinfo["course"]
         + "("
         + personalinfo["stream"]
-        + ")"
-        + "                                                                                         \
+        + (")" if personalinfo["course"]=="B.TECH" else ")     ")
+        + "                                                                                    \
 		Tution Fee: "
         + personalinfo["fee"],
     )
 
     print("\n\n\n\nI'm from generate_pdf_2\n\n\n")
 
-    pdf.ln(30)
+    pdf.ln(10)
     pdf.set_font("Times", "B", 13)
     pdf.cell(
         192,
@@ -220,8 +219,8 @@ if __name__ == "__main__":
         "name": "Anand Kumar",
         "reg": "213",
         "batch": "2017-2021",
-        "course": "B.tech",
-        "stream": "cse",
+        "course": "B.TECH",
+        "stream": "CSE",
         "fee": "94700",
     }
     generate_pdf(personal_info, fee_info)
