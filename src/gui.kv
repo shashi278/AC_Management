@@ -437,49 +437,6 @@
 					root.delete(app, root,root.ids.btn1.icon)
 #-------------------------Add Data Layout------------------------------------#
 
-#####----------------for DateField----------------------###
-<TextField@MDTextField>:
-	write_tab:False
-<DateField@BoxLayout>:
-	padding:5
-	canvas:
-		Color:
-			rgba:1,0,1,0
-		RoundedRectangle:
-			pos:self.pos
-			size:self.size
-
-	TextField:
-		id:dd
-		size_hint:root.width*.2,1
-		hint_text:"DD"
-		on_text:
-			root.parent.parent.parent.next_focus(self.text,"dd")
-
-	Label:
-		size_hint:root.width*.1,1
-		text:"/"
-		color:0,0,0,1
-
-	TextField:
-		id:mm
-		size_hint:root.width*.2,1
-		hint_text:"MM"
-		on_text:
-			root.parent.parent.parent.next_focus(self.text,"mm")
-	Label:
-		size_hint:root.width*.1,1
-		text:"/"
-		color:0,0,0,1
-
-	TextField:
-		id:yy
-		size_hint:root.width*.4,1
-		hint_text:"YYYY"
-		on_text:
-			self.text =self.text[:4] if len(self.text)>4 else self.text
-	#----------------------------------------------
-
 <InputFields@MDTextField>:
 	write_tab:False
 
@@ -541,11 +498,27 @@
 					if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
 					app.root.ids.profilePage.add_fee_data(root); root.dismiss()
 
-			DateField:
-				size_hint_x: .6
-				id:date
-				text:self.ids.dd.text+"/"+self.ids.mm.text+"/"+self.ids.yy.text
-
+			
+			BoxLayout:
+				size_hint_x: None
+				width:140
+				AnchorLayout:
+					size_hint_x: None
+					width:40
+					MDIconButton:
+						icon:"calendar-month"
+						md_bg_color:app.theme_cls.primary_color
+						on_release:
+							root.open_date_picker()
+				
+				AnchorLayout:
+					size_hint_x: None
+					width:100
+					padding:0,10,0,0
+					MDLabel:
+						id:date
+						halign:"center"
+						text:"No date selected"
 			InputFields:
 				size_hint_x: .7
 				id:tid
@@ -1613,20 +1586,14 @@ ScreenManager:
 							text:"Manage User"
 							on_release:
 								root.change_screen(self)
-								
-
-						HoverOneLineListItem:
-							text:"Admin Setting"
-							on_release:
-								root.change_screen(self)
 
 						HoverOneLineListItem:
 							text:"Manage Student"
 							on_release:
-								root.change_screen(self)
+								root.change_screen(self)		
 
 						HoverOneLineListItem:
-							text:"App Setting"
+							text:"Admin Setting"
 							on_release:
 								root.change_screen(self)
 
@@ -2104,7 +2071,7 @@ ScreenManager:
 														md_bg_color: app.theme_cls.primary_color
 														on_release:
 															root.edit_admin_password() if self.icon=="pencil" else root.show_admin_password()
-										#test
+										#Notification Mail 
 										BoxLayout:
 											size_hint_y:None
 											height:60
@@ -2151,36 +2118,6 @@ ScreenManager:
 												font_size:dp(13)
 												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 										
-										
-
-					#---------------Manage App setting-----------------##
-					Screen:
-						name:"appSetting"
-						ScrollView:
-							MDList:
-								OneLineAvatarIconListItem:
-									text: "Dark Mode"
-									ListRightSwitch:
-										active: True if app.theme_cls.theme_style=="Dark" else False
-										on_active:
-											app.theme_cls.theme_style="Dark" if self.active\
-											else "Light"
-
-
-
-								TwoLineAvatarIconListItem:
-									text: "Theme"
-									secondary_text: "Current: " + app.theme_cls.theme_style + ", " + app.theme_cls.primary_palette
-									ListRightIconButton:
-										icon:"brush"
-										on_release:
-											root.theme_picker_open()
-
-								TwoLineAvatarIconListItem:
-									text: "CheckBox"
-									secondary_text:"Somthing about this...."
-									ListRightCheckBox:
-
 
 
 #-----------------------Side Navigation ------------------------#
@@ -2217,7 +2154,12 @@ ScreenManager:
 	on_dismiss: app.root.ids.userScreen.anim_in(root)
 	BoxLayout:
 		orientation: 'vertical'
-
+		canvas:
+			Color:
+				rgba: (0.2,0.2,0.2,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+			Rectangle:
+				pos: self.pos
+				size: self.size
 		#--------------User Icon---------------------------#
 		AnchorLayout:
 			size_hint: (1,0.4)
@@ -2232,45 +2174,106 @@ ScreenManager:
 			Image:
 				source: 'media/images/user_logout_pic.png'
 				size_hint: None, None
-				size: 140,140
+				size: 140,145
 		#------------User name and Logout Button-------------#
 		BoxLayout:
-			size_hint: (1,0.1)
+			orientation:"vertical"
+			ScrollView:
+				MDList:
+					TwoLineAvatarIconListItem:
+						canvas.before:
+							Color:
+								rgba:app.theme_cls.primary_color
+							Rectangle:
+								pos:self.pos
+								size:self.size
+						text:"Shashi Ranjan"
+						secondary_text:"username"
+						ListLeftIconButton:
+							icon:"account"
+							user_font_size: "30sp"
+						ListRightIconButton:
+							icon:"logout"
+							on_release:
+								app.root.transition= SlideTransition(direction="left")
+								app.root.current='homeScreen'
+								root.dismiss()
+
+					MDSeparator:
+
+					OneLineIconListItem:
+						text:"Pesonalisation"
+						on_release:
+							root.open_personalisation()
+						IconLeftWidget:
+							icon:"brush"
+
+					MDSeparator:
+					
+					OneLineIconListItem:
+						text:"Notification Panel"
+						on_release:
+							print("Hello Boy")
+						IconLeftWidget:
+							icon:"email-edit"
+
+###Popup Where User an can change theme 
+<Personalisation>:
+	auto_dismiss:False
+	size_hint:.35,.5
+	BoxLayout:
+		orientation:"vertical"
+		canvas:
+			Color:
+				rgba:(0.1,0.1,0.1,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+			Rectangle:
+				pos:self.pos
+				size:self.size
+		BoxLayout:
+			size_hint_y:.3
 			canvas:
 				Color:
 					rgba:app.theme_cls.primary_color
 				Rectangle:
-					pos: (self.x, self.y)
-					size: self.size
-		#------usename--------#
-			BoxLayout:
-				size_hint: (0.8,1)
-				Label:
-					text:"Mukesh"
-					bold: True
-					font_size: 20
-			#-------logout Button------#
-			AnchorLayout:
-				size_hint: (0.2,1)
-				MDIconButton:
-					icon:"power"
-					on_release:
-						app.root.transition= SlideTransition(direction="left")
-						app.root.current='homeScreen'
-						root.dismiss()
-
-
-		#---------Blank Space----------------------------#
+					pos:self.pos
+					size:self.size
+			MDLabel:
+				color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+				text:"Pesonalisation"
+				font_size:30
+				halign:"center"
 		BoxLayout:
-			canvas:
-				Color:
-					rgba: (1, 1, 1, 1)
-				Rectangle:
-					pos: (self.x, self.y)
-					size: self.size
-			
+			size_hint_y:.7
+			orientation:"vertical"
+			BoxLayout:
+				size_hint_y:.7
+				ScrollView:
+					MDList:
+						OneLineAvatarIconListItem:
+							text: "Dark Mode"
+							ListRightSwitch:
+								active: True if app.theme_cls.theme_style=="Dark" else False
+								on_active:
+									app.theme_cls.theme_style="Dark" if self.active\
+									else "Light"
 
 
+
+						TwoLineAvatarIconListItem:
+							text: "Theme"
+							secondary_text: "Current: " + app.theme_cls.theme_style + ", " + app.theme_cls.primary_palette
+							ListRightIconButton:
+								icon:"brush"
+								on_release:
+									root.theme_picker_open()
+			AnchorLayout:
+				padding:0,0,20,0
+				size_hint_y:.3
+				anchor_x:"right"
+				MDRaisedButton:
+					text:"Ok"
+					on_release:
+						root.dismiss()
 
 #-------------------------Drop Downs Buttons--------------------------#
 

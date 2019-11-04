@@ -6,6 +6,7 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.label import Label
 
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.picker import MDThemePicker
 
 from database import Database
 from animator.attention import ShakeAnimator
@@ -15,15 +16,32 @@ passwordHash = ""
 
 # sidenav class
 class SideNav(ModalView, Database):
-    pass
+    def open_personalisation(self):
+        Personalisation().open()
 
 
 class AddDataLayout(ModalView, Database):
-    def next_focus(self, text, ele):
-        if ele == "dd" and len(text) == 2:
-            self.ids.date.ids.mm.focus = True
-        if ele == "mm" and len(text) == 2:
-            self.ids.date.ids.yy.focus = True
+    previous_date=None
+    def open_date_picker(self):
+        """Show MDDatePicker from the screen Pickers."""
+
+        from kivymd.uix.picker import MDDatePicker
+        if self.previous_date is not None:
+            pd = self.previous_date
+            try:
+                MDDatePicker(
+                    self.set_previous_date, pd.year, pd.month, pd.day
+                ).open()
+            except AttributeError:
+                MDDatePicker(self.set_previous_date).open()
+        else:
+            MDDatePicker(self.set_previous_date).open()
+
+    def set_previous_date(self, date_obj):
+        """Set previous date for MDDatePicker from the screen Pickers."""
+
+        self.previous_date = date_obj
+        self.ids.date.text = '-'.join(str(date_obj).split("-")[::-1])
 
 
 # popups class
@@ -185,3 +203,9 @@ class DeleteWarning(ModalView, Database):
     def anim_out(self, instance):
         anim = Animation(pos_hint={"x": 0.6}, t="out_cubic", d=0.3)
         anim.start(instance)
+
+
+
+class Personalisation(ModalView):
+    def theme_picker_open(self):
+        MDThemePicker().open()

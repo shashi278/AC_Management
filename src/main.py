@@ -16,7 +16,6 @@ from database import Database
 from screens import HomeScreen
 from custom_buttons import CircularToggleButton
 
-
 # Main App
 class AccountManagementSystem(App, Database):
     theme_cls = ThemeManager()
@@ -33,7 +32,7 @@ class AccountManagementSystem(App, Database):
 
 
 if __name__ == "__main__":
-    #Window.maximize()
+    Window.maximize()
     #Window.minimum_width = 900
     #Window.minimum_height = 700
 
