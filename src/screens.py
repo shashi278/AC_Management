@@ -449,14 +449,12 @@ class AdminScreen(Screen, Database):
             self.ids.top_bar.text= "Admin: "+instance.text
             self.ids.scrManager.current = "adminSetting"
 
-        elif instance.text == "App Setting" and self.check_edits_admin() and self.check_edits_users():
-            self.ids.top_bar.text= "Admin: "+instance.text
-            self.ids.scrManager.current = "appSetting"
-
     def check_edits_admin(self):
         if(self.ids.adminInfoEditBtn.icon=="check" \
             or self.ids.adminPasswordEditBtn.icon=="check"\
-            or self.ids.adminUsernameEditBtn.icon=="check" ):
+            or self.ids.adminUsernameEditBtn.icon=="check" \
+            or self.ids.notMailEditBtn.icon=="check" \
+            or self.ids.notMailPassEditBtn.icon=="check" ):
             Snackbar(
                 text="Cannot go back while in edit mode. Save ongoing edits.",
                 duration=2,
@@ -470,10 +468,6 @@ class AdminScreen(Screen, Database):
             Code Requires here
         """
         return True
-
-
-    def theme_picker_open(self):
-        MDThemePicker().open()
 
     def add_user_layout(self):
         target = self.ids.dyn_input
