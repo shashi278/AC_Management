@@ -164,3 +164,6 @@ class Rowinfo(BoxLayout, Database):
             }
             tableName = "_" + str(self.parent.reg_no)
             DeleteWarning("fee",data,"fee_main.db",tableName, callback=app.root.current_screen.populate_screen).open()
+
+class RowFeeRecipt(BoxLayout):
+    pass
