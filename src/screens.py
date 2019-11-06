@@ -1003,4 +1003,27 @@ class ForgotPasswordUser(Screen):
     pass
 
 class NotificationScreen(Screen):
-    pass
+
+    def openCourseList(self, instance):
+        dropdown = CourseDrop()
+        dropdown.open(instance)
+        dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
+
+    def openStreamList(self, instance):
+        dropdown = StreamDrop()
+        dropdown.open(instance)
+        dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
+
+    def openCatagoryList(self, instance):
+        dropdown = CatagoryDrop()
+        dropdown.open(instance)
+        dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
+
+    def onSelect(self, btn, mainBtn):
+        mainBtn.text = btn.text
+
+    def generate_fee_receipt_batch(self):
+        """
+        Fetch From Database and generate pdf
+        """
+        pass

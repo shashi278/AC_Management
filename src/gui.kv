@@ -139,6 +139,54 @@
 	bold: True
 	color:(1,1,1,1) #if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
 	
+#-------------For Fee Reciept data --------------
+
+<RowFeeRecipt>:
+	canvas.before:
+		Color:
+			rgba: [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A") 
+		Rectangle:
+			pos: self.pos
+			size: self.size		
+	spacing: "10dp"
+
+	reg:''
+	name: ''
+	paid: ''
+	due:""
+
+	#-------paid item--------#
+	ListItemLayoutProfile:
+		id: item1
+		#size_hint:(0.10,1)
+		LabelForList:
+			id: lbl1
+			text: root.reg
+			
+	#-------paid item--------#
+	ListItemLayoutProfile:
+		id: item2
+		#size_hint:(0.13,1)
+		LabelForList:
+			id: lbl2
+			text: root.name
+			
+	#-------due item--------#
+	ListItemLayoutProfile:
+		id: item3
+		#size_hint:(0.13,1)
+		LabelForList:
+			id: lbl3
+			text: root.paid
+			
+	#-------late item--------#
+	ListItemLayoutProfile:
+		id: item4
+		#size_hint:(0.13,1)
+		LabelForList:
+			id: lbl4
+			text: root.due
+		
 
 #---------------being used in Profile Page--------#
 <Rowinfo>:
@@ -496,7 +544,7 @@
 				size_hint_x: .45
 				input_filter:"int"
 				id:late
-				hint_text: "Late"
+				hint_text: "Late Fine"
 				on_text:
 					self.text= self.text.strip()
 				on_text_validate:
@@ -691,6 +739,9 @@ ScreenManager:
 		id: adminScreen
 	ProfilePage:
 		id: profilePage
+	NotificationScreen:
+		id: notificationScreen
+	
 
 #-------------------ProfilePage---------------------#
 <ProfilePage>:
@@ -789,7 +840,7 @@ ScreenManager:
 			
 					MDIconButton:
 						id: printbtn
-						icon: "printer"
+						icon: "file-pdf-outline"
 						size_hint: None, None
 						size: 40,40
 						opposite_colors: True
@@ -826,7 +877,7 @@ ScreenManager:
 						BoxLayout:
 							size_hint:.13,1
 							Label:
-								text:"Late"
+								text:"Late Fine"
 						BoxLayout:
 							size_hint:.13,1
 							Label:
@@ -2126,7 +2177,9 @@ ScreenManager:
 #-----------------------Side Navigation ------------------------#
 
 #-----------------------Notification Screen Starts----------------##
+#working
 <NotificationScreen>:
+	id:notificationScreen
 	name:"notificationScreen"
 
 	BoxLayout:
@@ -2134,20 +2187,223 @@ ScreenManager:
 #---------------------------header Area--------------------------------------###
 		BoxLayout:
 			id:header
-			size_hint: (1, 0.07)
+			size_hint: (1, 0.08)
 			canvas:
 				Color:
 					rgba: app.theme_cls.primary_color
 				Rectangle:
 					pos: self.pos
 					size: self.size
+			AnchorLayout:
+				size_hint_x:None
+				width:50
+				MDIconButton:
+					icon:"arrow-left"
+					on_release:
+						app.root.current="userScreen"
 			Label:
-				text:"Notification Center"
+				text:"Utilities"
+				bold:True
+				font_size:25
 				
 		BoxLayout:
 			id:main_area
-			Label:
-				text:"Notification Area"
+			BoxLayout:
+				size_hint_x:.2
+				canvas:
+					Color:
+						rgba:(.9,.9,.9,1) if app.theme_cls.theme_style=="Light" else (.1,.1,.1,1)
+					Rectangle:
+						pos:self.pos
+						size:self.size
+				ScrollView:
+					MDList:
+						OneLineIconListItem:
+							text:"Notification Panel"
+							on_release:
+								root.ids.scr_manager_tools.current="notificationScreen"
+							IconLeftWidget:
+								icon:"email-edit-outline"
+
+						OneLineIconListItem:
+							text:"Generate PDF"
+							on_release:
+								root.ids.scr_manager_tools.current="pdfgenerationScreen"
+							IconLeftWidget:
+								icon:"file-pdf-outline"
+			BoxLayout:
+				size_hint_x:.80
+				ScreenManager:
+					id:scr_manager_tools
+
+					#---Notification Screen-----
+					Screen:
+						name:"notificationScreen"
+						BoxLayout:
+							orientation:"vertical"
+							BoxLayout:
+								size_hint_y:.08
+								AnchorLayout:
+									anchor_x:"left"
+									BoxLayout:
+										MDIconButton:
+											icon:"email-edit-outline"
+											user_font_size: sp(root.height/20)
+										MDLabel:
+											text:"Notification Panel"
+											color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+							BoxLayout:
+								size_hint_y:.01
+								canvas:
+									Color:
+										rgba:app.theme_cls.primary_color
+									SmoothLine:
+										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+							BoxLayout:
+								size_hint_y:.91
+								
+
+					#---Pdf Generator Screen----
+					Screen:
+						name:"pdfgenerationScreen"
+						BoxLayout:
+							orientation:"vertical"
+							BoxLayout:
+								size_hint_y:.08
+								AnchorLayout:
+									anchor_x:"left"
+									BoxLayout:
+										MDIconButton:
+											icon:"file-pdf-outline"
+											user_font_size: sp(root.height/20)
+										MDLabel:
+											text:"Generate Pdf"
+											color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+
+							BoxLayout:
+								size_hint_y:.01
+								canvas:
+									Color:
+										rgba:app.theme_cls.primary_color
+									SmoothLine:
+										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+
+							BoxLayout:
+								size_hint_y:.91
+								orientation: 'vertical'
+								BoxLayout:
+									padding:20,0,20,0
+									spacing:40						
+									size_hint_y:.1
+									MDTextField:
+										id:fromyear
+										size_hint_x:None
+										width:100
+										hint_text:"From Year"
+										write_tab:False
+										filter_type:"int"
+										multiline:False
+										on_text:
+											self.text =self.text[:4] if len(self.text)>4 else self.text
+									MDTextField:
+										id:toyear
+										size_hint_x:None
+										width:100
+										hint_text:"To Year"
+										write_tab:False
+										filter_type:"int"
+										multiline:False
+										on_text:
+											self.text =self.text[:4] if len(self.text)>4 else self.text
+
+									MDTextField:
+										id:sem
+										size_hint_x:None
+										width:100
+										hint_text:"Semester"
+										write_tab:False
+										filter_type:"int"
+										multiline:False
+										on_text:
+											self.text =self.text[:2] if len(self.text)>2 else self.text
+
+									MDRaisedButton:
+										id:course
+										text:"Select Course"
+										on_release:
+											root.openCourseList(self)
+									MDRaisedButton:
+										id:stream
+										text:"Select Stream"
+										on_release:
+											root.openStreamList(self)
+									MDRaisedButton:
+										id:catgory
+										text:"Select Catagory"
+										on_release:
+											root.openCatagoryList(self)
+
+									MDRaisedButton:
+										text:"Generate Pdf"
+										on_release:
+											root.generate_fee_receipt_batch()
+									
+								Widget:
+									size_hint_y:.01
+								BoxLayout:
+									size_hint_y:.06
+									canvas:
+										Color:
+											rgba:0,0,0,1
+										Rectangle:
+											pos:self.pos
+											size:self.size
+									MDLabel:
+										text:"Reg No."
+										color:1,1,1,1
+										bold:True
+										halign:"center"
+									MDLabel:
+										text:"Name"
+										color:1,1,1,1
+										bold:True
+										halign:"center"
+									MDLabel:
+										text:"Paid"
+										color:1,1,1,1
+										bold:True
+										halign:"center"
+									MDLabel:
+										text:"Due"
+										color:1,1,1,1
+										bold:True
+										halign:"center"
+
+								BoxLayout:
+									size_hint_y:.83
+									#spacing:1
+									RecycleView:
+										id: rv
+										scroll_type: ['bars', 'content']
+										scroll_wheel_distance: dp(80)
+										bar_width: dp(7)
+										viewclass: 'RowFeeRecipt'
+										#data:[{"reg":"213","name":"Anand Kumar","paid":"10000","due":"20111"},{"reg":"213","name":"Anand Kumar","paid":"10000","due":"20111"}]
+										RecycleBoxLayout:
+											id: rb
+											default_size: None, dp(45)
+											default_size_hint: 1, None
+											size_hint_y: None
+											height: self.minimum_height
+											orientation: "vertical"
+											spacing: dp(1)
+								
+									
+									
+										
+
+							
+
 
 
 <SideNav>:
@@ -2205,7 +2461,7 @@ ScreenManager:
 					MDSeparator:
 
 					OneLineIconListItem:
-						text:"Pesonalisation"
+						text:"Personalization"
 						on_release:
 							root.open_personalisation()
 						IconLeftWidget:
@@ -2214,11 +2470,12 @@ ScreenManager:
 					MDSeparator:
 					
 					OneLineIconListItem:
-						text:"Notification Panel"
+						text:"Utilities"
 						on_release:
-							print("Hello Boy")
+							app.root.current="notificationScreen"
+							root.dismiss()
 						IconLeftWidget:
-							icon:"email-edit"
+							icon:"toolbox-outline"
 
 ###Popup Where User can change theme 
 <Personalisation>:
@@ -2295,3 +2552,12 @@ ScreenManager:
 	DropBtn:
 		text:"ECE"
 		on_release: root.select(self)
+
+<CatagoryDrop>:
+	DropBtn:
+		text:"All"
+		on_release: root.select(self)
+	DropBtn:
+		text:"Due"
+		on_release: root.select(self)
+		
