@@ -132,3 +132,6 @@ class AddUserDataLayout(FloatLayout):
             btn.icon="check"
         elif not btn.icon=="plus":
             btn.icon="window-close"
+            
+class RowFeeRecipt(BoxLayout):
+    pass
