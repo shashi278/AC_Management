@@ -31,7 +31,7 @@ class PDF(FPDF):
 
         self.set_draw_color(0, 1, 1)
         self.line(10, 50, 200, 50)
-        self.ln(30)
+        self.ln(13)
 
     # Page footer
     def footer(self):
@@ -53,7 +53,7 @@ def generate_pdf(personalinfo, feeinfo):
 
     
 
-    pdf.ln(1)
+    pdf.ln(9)
     pdf.set_font("Times", "B", 12)
     
     print("\n\n\n\nI'm from generate_pdf_1\n\n\n")
@@ -72,7 +72,7 @@ def generate_pdf(personalinfo, feeinfo):
         + personalinfo["course"]
         + "("
         + personalinfo["stream"]
-        + (")" if personalinfo["course"]=="B.TECH" else ")     ")
+        + (")   " if personalinfo["course"]=="B.Tech" else ")     ")
         + "                                                                                    \
 		Tution Fee: "
         + personalinfo["fee"],
@@ -93,19 +93,78 @@ def generate_pdf(personalinfo, feeinfo):
     pdf.cell(-140)
     pdf.ln(10)
     for info in feeinfo:
-        pdf.cell(25, 14, info["sem"], 1, 0, "C")
-        pdf.cell(31, 14, info["paid"], 1, 0, "C")
-        pdf.cell(31, 14, info["due"], 1, 0, "C")
-        pdf.cell(27, 14, info["late"], 1, 0, "C")
-        pdf.cell(32, 14, info["date"], 1, 0, "C")
-        pdf.cell(46, 14, info["tid"], 1, 0, "C")
-        pdf.ln(14)
+        pdf.cell(25, 10, info["sem"], 1, 0, "C")
+        pdf.cell(31, 10, info["paid"], 1, 0, "C")
+        pdf.cell(31, 10, info["due"], 1, 0, "C")
+        pdf.cell(27, 10, info["late"], 1, 0, "C")
+        pdf.cell(32, 10, info["date"], 1, 0, "C")
+        pdf.cell(46, 10, info["tid"] if len(info["tid"])<=18 else (info["tid"])[:13]+"..." , 1, 0, "C")
+        pdf.ln(10)
 
     pdf.set_y(-35)
     pdf.cell(0, 10, "Singnature of Accountant", 0, 0, "R")
     pdf.output(personalinfo["reg"] + ".pdf", "F")
 
-    
+
+
+def generate_batch_fee_pdf(basic_details,students_fee_data):
+    pdf = PDF()
+    pdf.alias_nb_pages()
+    pdf.add_page()
+
+    pdf.set_font("Times", "B", 15)
+    pdf.cell(0, 5, "Batch Fee Details", 0, 1, "C")
+
+    pdf.ln(10)
+    pdf.set_font("Times", "B", 12)
+
+
+    pdf.multi_cell(
+        0.0,
+        7.0,
+        "Semester: "
+        + basic_details["sem"]
+        + "                                                                             \
+	                                            Batch: "
+        + basic_details["batch"]
+        + "\nCourse & Stream: "
+        + basic_details["course"]
+        + "("
+        + basic_details["stream"]
+        + (")" if basic_details["course"]=="B.Tech" else ")     ")
+        + "                                                                                  \
+		Tution Fee: "
+        + basic_details["fee"],
+    )
+
+    pdf.ln(10)
+
+    pdf.cell(
+        188,
+        9,
+        "           Reg. No.            \
+                    Name                    \
+                    Paid                \
+                    Due ",
+        1,
+    )
+    pdf.ln(10)
+    for student in students_fee_data:
+        pdf.cell(40, 10, student["reg"], 1, 0, "C")
+        pdf.cell(60, 10, student["name"], 1, 0, "C")
+        pdf.cell(41, 10, student["paid"], 1, 0, "C")
+        pdf.cell(47, 10, student["due"], 1, 0, "C")
+        pdf.ln(10)
+
+
+
+
+
+    pdf.output(basic_details["batch"]+"_"+\
+               basic_details["course"]+\
+               basic_details["stream"]+"_Sem-"+\
+               basic_details["sem"]+".pdf", "F")
+                        
 
 
 if __name__ == "__main__":
@@ -124,7 +183,7 @@ if __name__ == "__main__":
             "due": "200",
             "late": "1000",
             "date": "12-12-2018",
-            "tid": "QAG4545",
+            "tid": "QAG45453DSDFSDFSDFSDFSD",
         },
         {
             "sem": "3",
@@ -175,7 +234,7 @@ if __name__ == "__main__":
             "tid": "LAG4545",
         },
         {
-            "sem": "5",
+            "sem": "9",
             "paid": "94700",
             "due": "1000",
             "late": "0",
@@ -183,7 +242,7 @@ if __name__ == "__main__":
             "tid": "SAG4555",
         },
         {
-            "sem": "6",
+            "sem": "10",
             "paid": "64700",
             "due": "1000",
             "late": "0",
@@ -191,7 +250,7 @@ if __name__ == "__main__":
             "tid": "SAJ4545",
         },
         {
-            "sem": "7",
+            "sem": "11",
             "paid": "91730",
             "due": "1000",
             "late": "1000",
@@ -199,28 +258,177 @@ if __name__ == "__main__":
             "tid": "SAG4545",
         },
         {
-            "sem": "8",
+            "sem": "12",
             "paid": "14500",
             "due": "1000",
             "late": "1000",
             "date": "12-12-2019",
             "tid": "LAG4545",
         },
-        {
-            "sem": "9",
-            "paid": "67740",
-            "due": "1000",
-            "late": "1000",
-            "date": "12-12-2019",
-            "tid": "SAH4545",
-        },
+        
     ]
     personal_info = {
         "name": "Anand Kumar",
         "reg": "213",
         "batch": "2017-2021",
-        "course": "B.TECH",
+        "course": "B.Tech",
         "stream": "CSE",
-        "fee": "94700",
+        "fee": "947000",
     }
     generate_pdf(personal_info, fee_info)
+
+    batch_details= {
+        "batch":"2017-2021",
+        "course":"B.Tech",
+        "stream":"CSE",
+        "sem":"1",
+        "fee":"947000",
+    }
+    students_fee_data= [
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"214",
+        "name":"Anish kumar Kharwar",
+        "paid":"97400",
+        "due":"0",
+        },
+        {
+        "reg":"278",
+        "name":"Shashi Ranjan",
+        "paid":"80400",
+        "due":"13000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"214",
+        "name":"Anish kumar Kharwar",
+        "paid":"97400",
+        "due":"0",
+        },
+        {
+        "reg":"278",
+        "name":"Shashi Ranjan",
+        "paid":"80400",
+        "due":"13000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"214",
+        "name":"Anish kumar Kharwar",
+        "paid":"97400",
+        "due":"0",
+        },
+        {
+        "reg":"278",
+        "name":"Shashi Ranjan",
+        "paid":"80400",
+        "due":"13000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"214",
+        "name":"Anish kumar Kharwar",
+        "paid":"97400",
+        "due":"0",
+        },
+        {
+        "reg":"278",
+        "name":"Shashi Ranjan",
+        "paid":"80400",
+        "due":"13000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"214",
+        "name":"Anish kumar Kharwar",
+        "paid":"97400",
+        "due":"0",
+        },
+        {
+        "reg":"278",
+        "name":"Shashi Ranjan",
+        "paid":"80400",
+        "due":"13000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        {
+        "reg":"214",
+        "name":"Anish kumar Kharwar",
+        "paid":"97400",
+        "due":"0",
+        },
+        {
+        "reg":"278",
+        "name":"Shashi Ranjan",
+        "paid":"80400",
+        "due":"13000",
+        },
+        {
+        "reg":"213",
+        "name":"Anand kumar",
+        "paid":"87400",
+        "due":"6000",
+        },
+        
+    ]
+    generate_batch_fee_pdf(batch_details,students_fee_data)

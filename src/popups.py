@@ -22,9 +22,8 @@ class SideNav(ModalView, Database):
 
 class AddDataLayout(ModalView, Database):
     previous_date=None
+    
     def open_date_picker(self):
-        """Show MDDatePicker from the screen Pickers."""
-
         from kivymd.uix.picker import MDDatePicker
         if self.previous_date is not None:
             pd = self.previous_date
@@ -38,8 +37,7 @@ class AddDataLayout(ModalView, Database):
             MDDatePicker(self.set_previous_date).open()
 
     def set_previous_date(self, date_obj):
-        """Set previous date for MDDatePicker from the screen Pickers."""
-
+       
         self.previous_date = date_obj
         self.ids.date.text = '-'.join(str(date_obj).split("-")[::-1])
 
