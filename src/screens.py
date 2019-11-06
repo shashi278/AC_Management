@@ -274,36 +274,63 @@ class ProfilePage(Screen, Database):
         AddDataLayout().open()
 
     def add_fee_data(self, ins):
-        if ins.ids.rem.text == "":
-            ins.ids.rem.text = "NA"
-        if ins.ids.late.text == "":
-            ins.ids.late.text = "0"
-
-        data_tuple = (
-            int(ins.ids.sem.text),
-            int(ins.ids.paid.text),
-            int(self.total_fee - int(ins.ids.paid.text)),
-            int(ins.ids.late.text),
-            ins.ids.date.text,
-            ins.ids.tid.text,
-            ins.ids.rem.text,
-        )
+        table_name= '_'+str(self.reg_no)
         conn = self.connect_database("fee_main.db")
+        #c = conn.execute("select * from {}".format(table_name))
+        #fields_names = tuple([des[0] for des in c.description][1:])
 
-        if self.insert_into_database("_" + str(self.reg_no), conn, data_tuple):
+        sem= None if not ins.ids.sem.text or int(ins.ids.sem.text)==0 else ins.ids.sem.text
+        paid= 0 if not ins.ids.paid.text else ins.ids.paid.text
+        late= 0 if not ins.ids.late.text else ins.ids.late.text
+        date= None if "date" in ins.ids.date.text.lower() else ins.ids.date.text
+        tid= None if not ins.ids.tid.text.strip() else ins.ids.tid.text.strip()
+        rem= "NA" if not ins.ids.rem.text else ins.ids.rem.text.strip()
 
-            _temp = {
-                "sem": str(data_tuple[0]),
-                "paid": str(data_tuple[1]),
-                "due": str(data_tuple[2]),
-                "late": str(data_tuple[3]),
-                "date": data_tuple[4],
-                "tid": data_tuple[5],
-                "remarks": data_tuple[6],
-            }
+        if not sem :
+            Snackbar(text="Semester is either empty or 0", duration=.8).show()
+            return
+        if not date:
+            Snackbar(text="No date selected", duration=.8).show()
+            return
+        if not tid:
+            Snackbar(text="Transaction id cannot be empty", duration=.8).show()
+            return
 
-            self.ids.rv.data.append(_temp)
+        due=self.total_fee-int(paid)
+        data=(sem,paid,due,late,date,tid,rem)
+
+        if self.insert_into_database(table_name,conn,data) is not None:
             self.populate_screen()
+            ins.dismiss()
+        else:
+            Snackbar(text="Data for semester {} already exists.".format(sem),duration=1).show()
+        
+
+    def update_fee_data(self, ins):
+        table_name= '_'+str(self.reg_no)
+        conn = self.connect_database("fee_main.db")
+        c = conn.execute("select * from {}".format(table_name))
+        fields_names = tuple([des[0] for des in c.description][1:])
+
+        sem= ins.ids.sem.text
+        paid= 0 if not ins.ids.paid.text else ins.ids.paid.text
+        late= 0 if not ins.ids.late.text else ins.ids.late.text
+        date= None if "date" in ins.ids.date.text.lower() else ins.ids.date.text
+        tid= None if not ins.ids.tid.text.strip() else ins.ids.tid.text.strip()
+        rem= "NA" if not ins.ids.rem.text else ins.ids.rem.text.strip()
+
+        if not date:
+            Snackbar(text="No date selected", duration=.8).show()
+            return
+        if not tid:
+            Snackbar(text="Transaction id cannot be empty", duration=.8).show()
+            return
+
+        due=self.total_fee-int(paid)
+        data=(paid,due,late,date,tid,rem)
+        self.update_database(table_name,conn,fields_names,data,"sem",sem)
+        self.populate_screen()
+        ins.dismiss()
 
     def populate_screen(self):
         #print("\n\n\n\nrv.data before: {}\n\n\n\n".format(self.ids.rv.data))
@@ -408,8 +435,8 @@ class AdminScreen(Screen, Database):
     progress_total = 0
 
     admin_password=""
-    not_mail="AJljljldkjskldj"
-    not_mail_password="Adf45464"
+    not_mail=""
+    not_mail_password="  "
     
     def onStartAdminScr(self):
 
@@ -423,7 +450,7 @@ class AdminScreen(Screen, Database):
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
         data_list_users = self.extractAllData("user_main.db", "users", order_by="id")
-        
+        print(self.ids.rv.data)
         try:
             for counter, each in enumerate(data_list_users, 1):
                 x = {
@@ -433,7 +460,9 @@ class AdminScreen(Screen, Database):
                     "username": each[3],
                     "password": each[4],
                 }
+                #print(x)
                 self.ids.rv.data.append(x)
+                print(self.ids.rv.data)
         except TypeError:
             pass
         # --------------------------------------------#
