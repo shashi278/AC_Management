@@ -32,6 +32,7 @@ from kivymd.uix.list import (
 
 #internal imports
 import os
+import threading 
 from os.path import sep, expanduser, isdir, dirname
 from random import choice
 from sqlite3 import Error
@@ -901,27 +902,19 @@ class AdminScreen(Screen, Database):
 class ForgotPasswordScreen(Screen, Database):
 
     otp_recieved="OTP"
-    mail_sent=False
     def call_code_submit_layout(self):
-        print("\n\n\nI've been calleddddddddddd!!\n\n")
+        #print("\n\n\nI've been calleddddddddddd!!\n\n")
         self.ids.codeSubmitBox.clear_widgets()
         self.ids.resetPasswordBox.clear_widgets()
         textfld=MDTextField()
         textfld.hint_text="Enter OTP"
-        print("\n\n\nI'm hereeeeeeeeeeeeeeeeeee\n\n")
-        Clock.schedule_once(self.get_email_status, 0)
-        #Clock.schedule_once(partial(asyncio.run,self.get_email_status()),0)
-        #r=asyncio.run(self.get_email_status())
-        print("\n\n\ndadasdasdada\n\n")
-        if(self.mail_sent):
-            self.ids.codeSubmitBox.add_widget(textfld)
-            self.ids.codeSubmitBox.add_widget(MDRaisedButton(text="Submit",on_release=partial(self.verify_code,textfld)))
-            textfld.on_text_validate=partial(self.verify_code,textfld)
-            return True
+        t1 = threading.Thread(target=self.get_email_status, args=(self.ids.codeSubmitBox,textfld))
+        t1.start() 
 
     def verify_code(self,inst,*args):
         #self.ids.resetPasswordBox.clear_widgets()
-        if inst.text==self.otp_recieved :
+        print(inst.text,self.otp_recieved)
+        if inst.text==str(self.otp_recieved) :
             if len(self.ids.resetPasswordBox.children)==0:
                 self.ids.statusLabel.text=""
                 nwpsd_fld=MDTextField()
@@ -973,31 +966,38 @@ class ForgotPasswordScreen(Screen, Database):
         self.parent.parent.opacity=0.6
         self.parent.current='login'
 
-    def get_email_status(self, *args):
+    def get_email_status(self,Container,textfld, *args):
         """
             Code for send email 
             if email sent return True 
             and status label to be
             set here
         """
+        self.ids.sendBtn.disabled=True
+        self.ids.statusLabel.color=(1,1,1,1)
+        self.ids.statusLabel.text="Sending ..."
         x=OTPMail()
         if x.login('shashir@iiitkalyani.ac.in','Shashi@1531'):
             #extract admin email
             admin_email=self.extractAllData("user_main.db","admin",order_by="id")[0][2]
             print("\n\n\n\nAdmin Email: {}\n\n\n\n".format(admin_email))
-            #c= Clock.schedule_once(partial(x.send_otp, admin_email),5)
-            #print(help(c))
             self.otp_recieved= x.send_otp(admin_email)
             print("OTP: ",self.otp_recieved)
-            self.ids.statusLabel.text="Code Sent"
             self.ids.statusLabel.color=(1,1,1,1)
-            self.mail_sent=True
-            #return True
+            self.ids.statusLabel.text="Code Sent"
+            self.ids.sendBtn.text="Resend Code"
+            self.ids.sendBtn.disabled=False
+            Container.add_widget(textfld)
+            Container.add_widget(MDRaisedButton(text="Submit",on_release=partial(self.verify_code,textfld)))
+            textfld.on_text_validate=partial(self.verify_code,textfld)
+
         else:
             self.mail_sent=False
             Snackbar(text="Could not sent mail. Check your connection", duration=2).show()
+            self.ids.statusLabel.color=(1,0,0,1)
+            self.ids.statusLabel.text="Network Error"
+            self.ids.sendBtn.disabled=False
         
-        #return  False
 
 class ForgotPasswordUser(Screen):
     pass

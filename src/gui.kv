@@ -1050,9 +1050,7 @@ ScreenManager:
 				id:sendBtn
 				text:"Send Code"
 				on_release:
-					x= root.call_code_submit_layout()
-					print(x)
-					if x==True: root.ids.sendBtn.text="Resend Code"
+					root.call_code_submit_layout()
 
 			MDLabel:
 				id:statusLabel
@@ -1618,7 +1616,7 @@ ScreenManager:
 
 								text:"Logout"
 								font_size:self.width/4
-								color:(0,0,0,1)
+								color:(0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
 								bold: True
 								on_release:
 									app.root.transition= SlideTransition(direction="right")
