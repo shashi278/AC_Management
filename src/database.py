@@ -64,15 +64,24 @@ class Database():
                         (field_val, index),
                     )
                     conn.commit()
-
+                return True
             except Exception as e:
                 print("Error in updating data: {}".format(e))
+        return None
 
     # Delete from Database
     def delete_from_database(self, tableName, conn, condition):
         if conn is not None:
             try:
                 cur = conn.cursor()
+                # just to track if deletion was successful
+                count= len(cur.execute("""
+						SELECT * FROM {} WHERE {}
+						""".format(
+                        tableName, condition)
+                ).fetchall())
+                if not count:
+                    return False
                 cur.execute(
                     """
 						DELETE FROM {} WHERE {}
@@ -81,11 +90,9 @@ class Database():
                     )
                 )
                 conn.commit()
+                return True
             except Error as e:
                 print("Error in deleting data: {}".format(e))
-                return False
-
-            return True
         return False
 
     # Search in the database
@@ -145,27 +152,31 @@ class Database():
     def readFile(self, db_file, table, tableName, file_name, **kwargs):
 
         table = table.format(tableName)
+        try:
+            wb = xlrd.open_workbook(file_name)
+            sheet = wb.sheet_by_index(0)
+            rows = sheet.nrows
 
-        wb = xlrd.open_workbook(file_name)
-        sheet = wb.sheet_by_index(0)
-        rows = sheet.nrows
+            conn = self.connect_database(db_file)
 
-        conn = self.connect_database(db_file)
+            if conn is not None:
+                self.create_table(table, conn)
 
-        if conn is not None:
-            self.create_table(table, conn)
+                for i in range(1, rows):
+                    data = (
+                        sheet.cell_value(i, 1),
+                        sheet.cell_value(i, 2),
+                        kwargs["course"],
+                        kwargs["stream"],
+                        kwargs["fromYear"] + "-" + kwargs["toYear"],
+                        kwargs["fee"],
+                    )
 
-            for i in range(1, rows):
-                data = (
-                    sheet.cell_value(i, 1),
-                    sheet.cell_value(i, 2),
-                    kwargs["course"],
-                    kwargs["stream"],
-                    kwargs["fromYear"] + "-" + kwargs["toYear"],
-                    kwargs["fee"],
-                )
-
-                self.insert_into_database(tableName, conn, data)
+                    self.insert_into_database(tableName, conn, data)
+                return True
+        
+            return False
+        except: return False
 
     def addData(self, db_file, table, tableName, data):
 
@@ -174,7 +185,8 @@ class Database():
 
         if conn is not None:
             self.create_table(table, conn)
-            self.insert_into_database(tableName, conn, data)
+            return self.insert_into_database(tableName, conn, data)
+        return None
 
     def extractAllData(self, db_file, tableName, order_by="reg"):
         conn = self.connect_database(db_file)

@@ -1,9 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.behaviors.touchripple import TouchRippleBehavior
 from kivy.properties import (
-    # ObjectProperty,
-    # NumericProperty,
-    # StringProperty,
     ListProperty,
 )
 from kivy.uix.screenmanager import RiseInTransition
@@ -59,55 +57,10 @@ class ListItemLayout(TouchRippleBehavior, BoxLayout):
 
 
 class UserInfo(BoxLayout, Database):
-    #db table name
-    tableName = "users"
-    def edit(self, root, icon, app):
-        fields = [child.children[0].text for child in root.children[-2:0:-1]]
-        
-        username= root.children[-4].children[0].text
-
-        if icon=="pencil":
-            #extract data for this user from database
-            conn= self.connect_database("user_main.db")
-            data= self.search_from_database(self.tableName,conn,"username",username,order_by="id")[0]
-            fields= list(data[1:])
-
-        conn = self.connect_database("user_main.db")
-        c = conn.execute("select * from {}".format(self.tableName))
-        fields_names = tuple([des[0] for des in c.description][1:])
-
-        for each, text, fn in zip(root.children[::-1][1:], fields, fields_names):
-            #each.clear_widgets()
-            
-            # if user wants to edit
-            if icon == "pencil":
-                self.color = [0.1, 0.1, 0.1, 1]
-                self._temp = TextInputForList()
-                if fn=="username":
-                    self._temp.disabled=True
-                
-                self._temp.text = text
-
-                each.add_widget(self._temp)
-                del self._temp
-            else:
-                self.color = (
-                    [0.7, 0.7, 0.7, 1]
-                    if app.theme_cls.theme_style == "Dark"
-                    else C("#17202A")
-                )
-                self._temp1 = LabelForList()
-
-                if fn=="pass":
-                    self._temp1.text= "********"
-                else:
-                    self._temp1.text = text
-
-                #each.add_widget(self._temp1)
-                self.update_database(self.tableName, conn, fn, text, "username", username)
 
     def delete(self, app, root, icon):
-        if icon != "pencil":
+        icon= app.root.ids.adminScreen.ids.plus.icon
+        if icon != "plus":
             Snackbar(
                 text="Cannot delete while in edit mode. Save ongoing edits first.",
                 duration=2.5,
@@ -119,7 +72,7 @@ class UserInfo(BoxLayout, Database):
                 "username": fields[2],
                 "password": fields[3]
             }
-            DeleteWarning("users",data,"user_main.db","users", callback=app.root.ids.adminScreen.onStartAdminScr).open()
+            DeleteWarning("users",data,"user_main.db","users", callback=app.root.ids.adminScreen.populate_user_data).open()
 
 
 # Being used in profile page
@@ -164,3 +117,18 @@ class Rowinfo(BoxLayout, Database):
             }
             tableName = "_" + str(self.parent.reg_no)
             DeleteWarning("fee",data,"fee_main.db",tableName, callback=app.root.current_screen.populate_screen).open()
+
+
+class AddUserDataLayout(FloatLayout):
+    def manage_icon(self, btn):
+        name= self.ids.name.text
+        email= self.ids.email.text
+        username= self.ids.username.text
+        password= self.ids.password.text
+
+        data=[name, email, username, password]
+
+        if any([len(each) for each in data]):
+            btn.icon="check"
+        elif not btn.icon=="plus":
+            btn.icon="window-close"

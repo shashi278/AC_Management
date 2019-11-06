@@ -390,7 +390,7 @@
 	ListItemLayoutProfile:
 		#size_hint:(0.23,1)
 		LabelForList:
-			text: root.false_pass
+			text: root.password
 			bold: True
 
 	BoxLayout:
@@ -416,8 +416,12 @@
 				#opposite_colors: True
 				on_release:
 					#root.verify_prev(root, self.icon, app)
-					root.edit(root, self.icon, app)
-					self.icon= "check" if self.icon=="pencil" else "pencil"
+					#root.edit(root, self.icon, app)
+					app.root.ids.adminScreen.ids.user_layout.from_update=True
+					app.root.ids.adminScreen.update_user_info(app.root.ids.adminScreen.ids.user_layout.ids.box,\
+					app.root.ids.adminScreen.ids.plus, root
+					)
+					#self.icon= "check" if self.icon=="pencil" else "pencil"
 		HoverLayout:
 			on_enter:
 				btn2.text_color=[1,0,0,1]
@@ -462,12 +466,6 @@
 			size_hint: (1, .6)
 			padding: 10
 			spacing: 20
-			canvas:
-				Color:
-					rgba: (1, 0, 0, 0)
-				RoundedRectangle:
-					size:self.size
-					pos: self.pos
 			InputFields:
 				size_hint_x: .4
 				input_filter:"int"
@@ -1071,7 +1069,7 @@ ScreenManager:
 							
 ####--------------------------Login Popup Class------------------------------------####
 
-<LoginPopup>:	
+<LoginPopup>:
 	#size_hint: (0.4, 0.7)
 	size_hint: (0.3, 0.5)
 	auto_dismiss: True
@@ -1230,7 +1228,7 @@ ScreenManager:
 												text_validate_unfocus:False
 												on_text_validate:
 													x= root.login(root.ids.username_.text, root.ids.password_.text,\
-													root.ids.loginTitle.text)
+													root.ids.loginTitle.text, app.root)
 													if (x and root.ids.loginTitle.text=="User Login"):\
 													app.root.transition= SlideTransition(direction="right");\
 													app.root.current= "userScreen";\
@@ -1282,7 +1280,7 @@ ScreenManager:
 
 												on_text_validate:
 													x= root.login(root.ids.username_.text, root.ids.password_.text,\
-													root.ids.loginTitle.text)
+													root.ids.loginTitle.text, app.root)
 													if (x and root.ids.loginTitle.text=="User Login"):\
 													app.root.transition= SlideTransition(direction="right");\
 													app.root.current= "userScreen";\
@@ -1334,7 +1332,7 @@ ScreenManager:
 											text: "Login"
 											on_release:
 												x= root.login(root.ids.username_.text, root.ids.password_.text,\
-												root.ids.loginTitle.text)
+												root.ids.loginTitle.text, app.root)
 												if (x and root.ids.loginTitle.text=="User Login"):\
 												app.root.transition= SlideTransition(direction="right");\
 												app.root.current= "userScreen";\
@@ -1415,6 +1413,7 @@ ScreenManager:
 
 <UserScreen>:
 	name: "userScreen"
+	user_name:''
 
 	BoxLayout:
 		orientation: 'vertical'
@@ -1640,9 +1639,23 @@ ScreenManager:
 					#---------------Manage User Screen-----------#
 					Screen:
 						name:"manageUser"
+						
+						MDFloatingActionButton:
+							id:plus
+							icon:"plus"
+							ratio_x: self.width/root.ids.user_layout.ids.box.width
+							ratio_y: self.height/self.parent.height
+							pos_x: self.ratio_x*1/1.8
+							pos_y: self.ratio_y*1/1.8
+							curr_height: root.ids.user_layout.ids.box.height+root.ids.user_layout.ids.box.y
+							height_rat: self.curr_height/self.parent.height
+							pos_hint:{"center_x":1-self.pos_x, "center_y":self.pos_y+self.height_rat}
+
+							on_release:
+								root.add_user_layout(root.ids.user_layout.ids.box, self)
+
 						BoxLayout:
 							spacing:8
-							padding:8
 							orientation: 'vertical'
 							#------------------Users Data types Label------------------#
 							BoxLayout:
@@ -1710,30 +1723,10 @@ ScreenManager:
 								id:dyn_input
 								spacing:5
 								padding:2
-								
-							#-------------buttons Add,Update & Delete----------#
-							AnchorLayout:
-								size_hint: (1,0.145)
-								anchor_x: 'right'
-								padding: 5
-								CircularToggleButton:
-									id:addusrBtn
-									size_hint:(None,None)
-									size:(60,60)
-									background_color:(0,0,0,0)
-									text:"+"
-									font_size:30
-									color:1,1,1,1
-									background_normal:""
-									canvas.before:
-										Color:
-											rgba:app.theme_cls.primary_color
-										Ellipse:
-											size:self.size
-											pos:self.pos
-									on_release:
-										if (self.state=="down") :root.add_user_layout()
-										if(self.state=="normal"):root.ids.dyn_input.clear_widgets()
+
+							AddUserDataLayout:
+								id: user_layout
+
 
 					#----------------manage Student Screen-------------##
 					Screen:
@@ -2123,15 +2116,12 @@ ScreenManager:
 										
 
 
-#-----------------------Side Navigation ------------------------#
-
 #-----------------------Notification Screen Starts----------------##
 <NotificationScreen>:
 	name:"notificationScreen"
-
 	BoxLayout:
 		orientation:"vertical"
-#---------------------------header Area--------------------------------------###
+		#---------------------------header Area--------------------------------------###
 		BoxLayout:
 			id:header
 			size_hint: (1, 0.07)
@@ -2184,14 +2174,15 @@ ScreenManager:
 			ScrollView:
 				MDList:
 					TwoLineAvatarIconListItem:
+						id: user_name
 						canvas.before:
 							Color:
 								rgba:app.theme_cls.primary_color
 							Rectangle:
 								pos:self.pos
 								size:self.size
-						text:"Shashi Ranjan"
-						secondary_text:"username"
+						text:""
+						secondary_text:"User"
 						ListLeftIconButton:
 							icon:"account"
 							user_font_size: "30sp"
@@ -2278,8 +2269,77 @@ ScreenManager:
 					on_release:
 						root.dismiss()
 
-#-------------------------Drop Downs Buttons--------------------------#
 
+<AddUserDataLayout>:
+	#Layout to add/update users
+	from_update: False
+	
+	size_hint_y:None
+	height: dp(65)
+	#canvas:
+	#	Color:
+	#		rgba:1,0,0,0
+	#	Rectangle:
+	#		pos: self.pos
+	#		size: self.size
+
+	BoxLayout:
+		id: box
+		size_hint_y:None
+		height: dp(60)
+		y: -self.height
+
+		padding:60,0
+		spacing:60
+
+		canvas:
+			Color:
+				rgba: app.theme_cls.accent_color
+			Rectangle:
+				pos:self.pos
+				size:self.size
+
+		InputFields:
+			size_hint_x: .2
+			id:name
+			hint_text: "Name"
+			on_text:
+				btn= app.root.ids.adminScreen.ids.plus
+				root.manage_icon(btn)
+			on_text_validate:
+				pass
+		
+		InputFields:
+			size_hint_x: .2
+			id:email
+			hint_text: "Email"
+			on_text:
+				btn= app.root.ids.adminScreen.ids.plus
+				root.manage_icon(btn)
+			on_text_validate:
+				pass
+		
+		InputFields:
+			size_hint_x: .2
+			id:username
+			hint_text: "Username"
+			on_text:
+				btn= app.root.ids.adminScreen.ids.plus
+				root.manage_icon(btn)
+			on_text_validate:
+				pass
+		
+		InputFields:
+			size_hint_x: .2
+			id:password
+			hint_text: "Password"
+			on_text:
+				btn= app.root.ids.adminScreen.ids.plus
+				root.manage_icon(btn)
+			on_text_validate:
+				pass
+
+#-------------------------Drop Downs Buttons--------------------------#
 <CourseDrop>:
 	DropBtn:
 		text:"B.Tech"

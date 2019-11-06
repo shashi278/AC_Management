@@ -120,6 +120,8 @@ class UserScreen(Screen, Database):
 
     def open_sideNav(self):
         sn = SideNav()
+        print(self.user_name)
+        sn.ids.user_name.text=self.user_name
         sn.open()
 
     def search(self, text):
@@ -446,25 +448,7 @@ class AdminScreen(Screen, Database):
 
         self.ids.logoutbtn.ids.lbl_txt.text_size = (sp(80), sp(80))
         self.ids.logoutbtn.ids.lbl_txt.font_size = sp(40)
-
-        # --------------Update User info Data List ---------------------#
-        self.ids.rv.data = []
-        data_list_users = self.extractAllData("user_main.db", "users", order_by="id")
-        print(self.ids.rv.data)
-        try:
-            for counter, each in enumerate(data_list_users, 1):
-                x = {
-                    "sno": str(counter),
-                    "name": each[1],
-                    "email": each[2],
-                    "username": each[3],
-                    "password": each[4],
-                }
-                #print(x)
-                self.ids.rv.data.append(x)
-                print(self.ids.rv.data)
-        except TypeError:
-            pass
+        self.populate_user_data()
         # --------------------------------------------#
         
     def change_screen(self, instance):
@@ -487,7 +471,7 @@ class AdminScreen(Screen, Database):
             or self.ids.notMailEditBtn.icon=="check" \
             or self.ids.notMailPassEditBtn.icon=="check" ):
             Snackbar(
-                text="Cannot go back while in edit mode. Save ongoing edits.",
+                text="Kindly save ongoing edits.",
                 duration=2,
             ).show()
             return False
@@ -498,52 +482,119 @@ class AdminScreen(Screen, Database):
         """
             Code Requires here
         """
+        if not self.ids.plus.icon=="plus":
+            Snackbar(
+                text="Kindly save ongoing edits.",
+                duration=2,
+            ).show()
+            return False
         return True
 
-    def add_user_layout(self):
-        target = self.ids.dyn_input
-        usr_name = TextInput(size_hint=(0.2, 1), hint_text="Name", write_tab=False)
-        usr_email = TextInput(
-            size_hint=(0.2, 1), hint_text="E-mail id", write_tab=False
+    def add_user_layout(self, layout, btn):
+
+        if btn.icon=="plus":
+            #clear any previous data it might have
+            layout.children[3].text=''
+            layout.children[2].text=''
+            layout.children[1].text=''
+            layout.children[1].disabled=False
+            layout.children[0].text=''
+            self._user_layout_anim_out(layout)
+            btn.icon="window-close"
+
+        elif btn.icon=="check":
+
+            #extract data
+            name= layout.children[3].text.strip()
+            email= layout.children[2].text.strip()
+            username= layout.children[1].text.strip()
+            password= layout.children[0].text.strip()
+
+            data = (name, email, username, password)
+
+            if not all([len(each) for each in data]):
+                Snackbar(text="Fields cannot be empty", duration=.3).show()
+            else:
+                conn= self.connect_database("user_main.db")
+                if layout.parent.from_update:
+                    c = conn.execute("select * from {}".format("users"))
+                    fields = tuple([des[0] for des in c.description][1:])
+                    if not self.update_database("users", conn,fields, data, "username", username):
+                        Snackbar(text="Error updating database", duration=.3).show()
+                    else:
+                        Snackbar(text="Database updated for {}".format(username), duration=.6).show()
+                        self.populate_user_data()
+                        self._user_layout_anim_in(layout)
+                        btn.icon="plus"
+
+                elif not self.insert_into_database("users",conn,data):
+                    Snackbar(text="Username already exists", duration=.3).show()
+
+                else:
+                    self.populate_user_data()
+                    self._user_layout_anim_in(layout)
+                    btn.icon="plus"
+        else:
+            self._user_layout_anim_in(layout)
+            btn.icon="plus"
+
+    
+    def _user_layout_anim_out(self, widget):
+        """
+        Animated opening of layout for adding user
+        """
+        anim= Animation(
+            d=.4,
+            y=0
         )
-        usr_username = TextInput(
-            size_hint=(0.2, 1), hint_text="Username", write_tab=False
+        anim.start(widget)
+        #pass
+
+    def _user_layout_anim_in(self, widget):
+        """
+        Animated closing of layout for adding user
+        """
+        anim= Animation(
+            d=.4,
+            y=-widget.height
         )
-        usr_password = TextInput(
-            size_hint=(0.2, 1), hint_text="Password", write_tab=False
-        )
-        usr_submit = MDRaisedButton(
-            size_hint=(0.2, 1),
-            text="Submit",
-            on_release=lambda x: self.add_user(
-                usr_name.text, usr_email.text, usr_username.text, usr_password.text
-            ),
-        )
+        anim.start(widget)
+        pass
+    
+    def populate_user_data(self):
+        # --------------Update User info Data List ---------------------#
+        self.ids.rv.data = []
+        data_list_users = self.extractAllData("user_main.db", "users", order_by="id")
+        #print(self.ids.rv.data)
+        try:
+            for counter, each in enumerate(data_list_users, 1):
+                x = {
+                    "sno": str(counter),
+                    "name": each[1],
+                    "email": each[2],
+                    "username": each[3],
+                    "password": "********"
+                }
+                self.ids.rv.data.append(x)
+        except TypeError:
+            pass
+    
+    def update_user_info(self, layout, btn, inst):
+        texts = [child.children[0].text for child in inst.children[-2:0:-1]]
+        username= texts[2]
 
-        target.add_widget(usr_name)
-        target.add_widget(usr_email)
-        target.add_widget(usr_username)
-        target.add_widget(usr_password)
-        target.add_widget(usr_submit)
-
-    def add_user(self, name, email, username, password):
-
-        if all([not len(each) for each in [name, email, username, password]]):
-            return
-
-        self.ids.rv.data.append(
-            {"name": name, "email": email, "username": username, "password": password},
-        )
-
-        self.ids.addusrBtn.state = "normal"
-        layout = self.ids.dyn_input
-        layout.clear_widgets()
-
-        data = (name, email, username, password)
-        with open("user_record.sql", "r") as table:
-            self.addData("user_main.db", table.read(), "users", data)
+        conn= self.connect_database("user_main.db")
+        data= self.search_from_database("users",conn,"username",username,order_by="id")[0]
+        data= list(data[1:])
         
-        self.onStartAdminScr()
+        layout.children[3].text=data[0]
+        layout.children[2].text=data[1]
+        layout.children[1].text=data[2]
+        layout.children[1].disabled=True
+        layout.children[0].text=data[3]
+        self._user_layout_anim_out(layout)
+        btn.icon="check"
+
 
     def connectFileSelector(self, fromYear, toYear, course, stream, fee):
         if fromYear == "" or toYear == "" or fee == "":
@@ -597,7 +648,7 @@ class AdminScreen(Screen, Database):
             selected_path = instance.selection[0]
 
             with open("general_record.sql") as table:
-                self.readFile(
+                if self.readFile(
                     "student_main.db",
                     table.read(),
                     "General_record",
@@ -608,7 +659,10 @@ class AdminScreen(Screen, Database):
                     stream=self.fields["stream"],
                     fee=self.fields["fee"],
                     fpopup=fpopup,
-                )
+                ):
+                    Snackbar(text="File uploaded successfully!", duration=2).show()
+                else:
+                    Snackbar(text="Error uploading file.", duration=2).show()
             fpopup.dismiss()
 
         except IndexError:
