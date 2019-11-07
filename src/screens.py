@@ -974,9 +974,11 @@ class ForgotPasswordScreen(Screen, Database):
                 nwpsd_fld=MDTextField()
                 nwpsd_fld.hint_text="New Password"
                 nwpsd_fld.password=True
+                nwpsd_fld.write_tab=False
                 rnwpsd_fld=MDTextField()
                 rnwpsd_fld.hint_text="Re-Enter New Password"
                 rnwpsd_fld.password=True
+                rnwpsd_fld.write_tab=False
                 self.ids.resetPasswordBox.add_widget(nwpsd_fld)
                 self.ids.resetPasswordBox.add_widget(rnwpsd_fld)
                 anchrl=AnchorLayout()
