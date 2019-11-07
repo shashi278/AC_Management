@@ -2,3 +2,4 @@ kivy
 xlrd
 fpdf
 pygame
+kivymd==0.102.0
