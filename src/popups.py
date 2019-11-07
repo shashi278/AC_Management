@@ -19,10 +19,9 @@ class SideNav(ModalView, Database):
     def open_personalisation(self):
         Personalisation().open()
 
-
+#being used to add fee data
 class AddDataLayout(ModalView, Database):
     previous_date=None
-    
     def open_date_picker(self):
         from kivymd.uix.picker import MDDatePicker
         if self.previous_date is not None:
@@ -53,7 +52,7 @@ class LoginPopup(ModalView, Database):
         'angle': 0,
         'origin_':''}
 
-    def login(self, username, password, title):
+    def login(self, username, password, title, root):
 
         db_file= "user_main.db"
         table_name= "users" if title=="User Login" else "admin"
@@ -78,6 +77,7 @@ class LoginPopup(ModalView, Database):
         if validated:
             self.ids.warningInfo.text = ""
             self.dismiss()
+            root.ids.userScreen.user_name=valid_user[1]
             return True
         else:
             self.ids.warningInfo.text = "Wrong username or password"
@@ -149,7 +149,7 @@ class DeleteWarning(ModalView, Database):
 
         elif self.id_ == "users":
             self.condition=(
-                'name = "'+data["name"]+'" AND username = "'+data["username"]+'" AND pass = "'+data["password"]+'"'
+                'name = "'+data["name"]+'" AND username = "'+data["username"]+'"'
             )
             self.delete_detail="User: {} with username {}".format(data["name"],data["username"])
         
@@ -175,7 +175,7 @@ class DeleteWarning(ModalView, Database):
             if self.callback is not None:
                 self.callback()
         else:
-            res_text = "Error in deleting!"
+            res_text = "Error in deletion!\nYou may re-check all the fields."
 
         self.ids.container.clear_widgets()
         layout = GridLayout(cols=1)
