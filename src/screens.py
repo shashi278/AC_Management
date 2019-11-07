@@ -517,6 +517,7 @@ class AdminScreen(Screen, Database):
             else:
                 conn= self.connect_database("user_main.db")
                 if layout.parent.from_update:
+                    layout.parent.from_update=False
                     c = conn.execute("select * from {}".format("users"))
                     fields = tuple([des[0] for des in c.description][1:])
                     if not self.update_database("users", conn,fields, data, "username", username):
@@ -957,16 +958,16 @@ class ForgotPasswordScreen(Screen, Database):
 
     otp_recieved="OTP"
     def call_code_submit_layout(self):
-        #print("\n\n\nI've been calleddddddddddd!!\n\n")
         self.ids.codeSubmitBox.clear_widgets()
         self.ids.resetPasswordBox.clear_widgets()
         textfld=MDTextField()
         textfld.hint_text="Enter OTP"
+        textfld.theme_text_color="Custom"
+        textfld.foreground_color=[1,1,1,1]
         t1 = threading.Thread(target=self.get_email_status, args=(self.ids.codeSubmitBox,textfld))
         t1.start() 
 
     def verify_code(self,inst,*args):
-        #self.ids.resetPasswordBox.clear_widgets()
         print(inst.text,self.otp_recieved)
         if inst.text==str(self.otp_recieved) :
             if len(self.ids.resetPasswordBox.children)==0:
@@ -982,7 +983,8 @@ class ForgotPasswordScreen(Screen, Database):
                 self.ids.resetPasswordBox.add_widget(nwpsd_fld)
                 self.ids.resetPasswordBox.add_widget(rnwpsd_fld)
                 anchrl=AnchorLayout()
-                anchrl.add_widget(MDRaisedButton(text="Reset Password",on_release=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)))
+                anchrl.add_widget(MDRaisedButton(text="Reset Password",\
+                    on_release=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)))
                 self.ids.resetPasswordBox.add_widget(anchrl)
                 nwpsd_fld.on_text_validate=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)
                 rnwpsd_fld.on_text_validate=partial(self.new_password_set,nwpsd_fld,rnwpsd_fld)
@@ -996,10 +998,17 @@ class ForgotPasswordScreen(Screen, Database):
         if(inst1.text==inst2.text):
             if(inst1.text is not ""):
                 """
-                new pass= inst1.text =inst2.text 
                 Database Update
                 code here 
                 """
+                conn= self.connect_database("user_main.db")
+                if not self.update_database("admin",conn,"pass",inst1.text,"id",1):
+                    self.ids.codeSubmitBox.clear_widgets()
+                    lbl1=MDLabel(text="Error updating Database")
+                    lbl1.color=(1,0,0,1)
+                    self.ids.codeSubmitBox.add_widget(lbl1)
+                    return
+
                 self.ids.codeSubmitBox.clear_widgets()
                 self.ids.sendCodeBox.clear_widgets()
                 lbl=MDLabel(text="Password Reset Successfully !")
@@ -1031,12 +1040,11 @@ class ForgotPasswordScreen(Screen, Database):
         """
         self.ids.sendBtn.disabled=True
         self.ids.statusLabel.color=(1,1,1,1)
-        self.ids.statusLabel.text="Sending ..."
+        self.ids.statusLabel.text="Sending..."
         x=OTPMail()
         if x.login('shashir@iiitkalyani.ac.in','Shashi@1531'):
             #extract admin email
             admin_email=self.extractAllData("user_main.db","admin",order_by="id")[0][2]
-            print("\n\n\n\nAdmin Email: {}\n\n\n\n".format(admin_email))
             self.otp_recieved= x.send_otp(admin_email)
             print("OTP: ",self.otp_recieved)
             self.ids.statusLabel.color=(1,1,1,1)
@@ -1058,7 +1066,7 @@ class ForgotPasswordScreen(Screen, Database):
 class ForgotPasswordUser(Screen):
     pass
 
-class NotificationScreen(Screen):
+class NotificationScreen(Screen, Database):
 
     def openCourseList(self, instance):
         dropdown = CourseDrop()
@@ -1083,3 +1091,34 @@ class NotificationScreen(Screen):
         Fetch From Database and generate pdf
         """
         pass
+
+    def apply_filter(self, data):
+        """
+        data should be a dict of keys, vals
+        """
+        print(data)
+        sem= data["sem"]
+        from_year=None
+        to_year=None
+        course= None
+        stream= None
+        category=None
+        
+        filtered_list = []
+        conn = self.connect_database("student_main.db")
+        
+        if from_year:
+            batch= str(from_year)
+            if to_year:
+                batch+="-"+str(to_year)
+            else:
+                batch=str(to_year)
+        
+        if not "Select" in data["course"]:
+            course=data["course"]
+        if not "Select" in data["stream"]:
+            stream=data["stream"]
+        if not "Select" in data["category"]:
+            category=data["category"]
+        
+        #condition=
