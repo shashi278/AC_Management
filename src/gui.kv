@@ -137,14 +137,14 @@
 <LabelForList>:
 	font_size:"20dp"
 	bold: True
-	color:(1,1,1,1) #if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+	color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
 	
 #-------------For Fee Reciept data --------------
 
 <RowFeeRecipt>:
 	canvas.before:
 		Color:
-			rgba: [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A") 
+			rgba: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else (0,0,0,1) 
 		Rectangle:
 			pos: self.pos
 			size: self.size		
@@ -190,7 +190,7 @@
 
 #---------------being used in Profile Page--------#
 <Rowinfo>:
-	color: [.7,.7,.7,1] if app.theme_cls.theme_style=="Dark" else C("#17202A")
+	color: (1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 
 	canvas.before:
 		Color:
@@ -396,9 +396,10 @@
 			text: root.batch
 
 <UserInfo>:
+	txt_color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
 	canvas.before:
 		Color:
-			rgba:(.7,.7,.7,1) if app.theme_cls.theme_style=="Dark" else C("#17202A")
+			rgba:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)#C("#17202A")
 		RoundedRectangle:
 			pos: self.pos
 			size: self.size
@@ -2251,6 +2252,10 @@ ScreenManager:
 										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
 							BoxLayout:
 								size_hint_y:.91
+								MDLabel:
+									text:"Under Construction"
+									font_size:40
+									halign:"center"
 								
 
 					#---Pdf Generator Screen----
