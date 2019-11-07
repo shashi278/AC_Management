@@ -114,6 +114,21 @@ class Database():
                 print("Error in searching: {}".format(e))
 
             return None
+    
+    def search_from_database_many(self, tableName, conn, condition):
+        if conn is not None:
+            try:
+                cur = conn.cursor()
+                # just to track if deletion was successful
+                filtered_list= cur.execute("""
+						SELECT * FROM {} WHERE {}
+						""".format(
+                        tableName, condition)
+                ).fetchall()
+                return filtered_list
+            except Error as e:
+                print("Error in deleting data: {}".format(e))
+        return None
 
     # connect database
     def connect_database(self, db_file):

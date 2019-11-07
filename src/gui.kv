@@ -150,10 +150,10 @@
 			size: self.size		
 	spacing: "10dp"
 
-	reg:''
+	reg: ''
 	name: ''
 	paid: ''
-	due:""
+	due: ''
 
 	#-------paid item--------#
 	ListItemLayoutProfile:
@@ -2286,52 +2286,110 @@ ScreenManager:
 									spacing:40						
 									size_hint_y:.1
 									MDTextField:
+										id:sem
+										size_hint_x:None
+										width:100
+										hint_text:"Semester"
+										write_tab:False
+										input_filter:"int"
+										multiline:False
+										on_text:
+											self.text =self.text[:2] if len(self.text)>2 else self.text
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.apply_filter(data)
+
+									MDTextField:
 										id:fromyear
 										size_hint_x:None
 										width:100
 										hint_text:"From Year"
 										write_tab:False
-										filter_type:"int"
+										input_filter:"int"
 										multiline:False
 										on_text:
 											self.text =self.text[:4] if len(self.text)>4 else self.text
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.apply_filter(data)
+
 									MDTextField:
 										id:toyear
 										size_hint_x:None
 										width:100
 										hint_text:"To Year"
 										write_tab:False
-										filter_type:"int"
+										input_filter:"int"
 										multiline:False
 										on_text:
 											self.text =self.text[:4] if len(self.text)>4 else self.text
-
-									MDTextField:
-										id:sem
-										size_hint_x:None
-										width:100
-										hint_text:"Semester"
-										write_tab:False
-										filter_type:"int"
-										multiline:False
-										on_text:
-											self.text =self.text[:2] if len(self.text)>2 else self.text
+										
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.apply_filter(data)
 
 									MDRaisedButton:
 										id:course
 										text:"Select Course"
 										on_release:
 											root.openCourseList(self)
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.apply_filter(data)
+
 									MDRaisedButton:
 										id:stream
 										text:"Select Stream"
 										on_release:
 											root.openStreamList(self)
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.apply_filter(data)
+
 									MDRaisedButton:
-										id:catgory
+										id:category
 										text:"Select Catagory"
 										on_release:
 											root.openCatagoryList(self)
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.apply_filter(data)
 
 									MDRaisedButton:
 										text:"Generate Pdf"
