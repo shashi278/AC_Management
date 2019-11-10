@@ -46,7 +46,7 @@ from custom_layouts import UpdateStudentLayout
 from custom_widgets import AdminInfoLabel, AdminInfoEditField
 from dropdowns import *
 from mail import OTPMail
-from generate_fee_receipt import generate_pdf
+from generate_fee_receipt import generate_pdf,generate_batch_fee_pdf
 
 #left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
@@ -383,14 +383,6 @@ class ProfilePage(Screen, Database):
 
     def print_pdf(self):
         
-        #conn = self.connect_database("student_main.db")
-        #try:
-        #    self.data_tuple = self.search_from_database(
-        #        "General_record", conn, "reg", self.reg_no
-        #    )[0]
-        #except Error:
-        #    Snackbar(text="Error retrieving student's info.", duration=2).show()
-        #else:
         student_info={
             "name": self.data_tuple[1],
             "reg": str(self.data_tuple[0]),
@@ -404,8 +396,7 @@ class ProfilePage(Screen, Database):
             data_list = self.extractAllData(
                 "fee_main.db", "_" + str(self.reg_no), order_by="sem"
             )
-            print(data_list)
-            
+           
         except Error:
             Snackbar(text="Error retrieving fee data for reg_no {}".format(self.reg_no), duration=2).show()
         else:
@@ -421,8 +412,6 @@ class ProfilePage(Screen, Database):
                         "tid": data_tuple[5]
                     }
                     fee_data.append(_temp)
-                print(fee_data)
-                print("\n\n\n\nReady to print but not yet\n\n\n")
                 generate_pdf(student_info,fee_data)
                 Snackbar(text="PDF generated for reg. no. {}".format(self.reg_no),duration=2).show()
             else:
@@ -1086,39 +1075,88 @@ class NotificationScreen(Screen, Database):
     def onSelect(self, btn, mainBtn):
         mainBtn.text = btn.text
 
-    def generate_fee_receipt_batch(self):
+    def generate_fee_receipt_batch(self, data):
         """
         Fetch From Database and generate pdf
         """
-        pass
+        batch=data["from_year"]+'-'+data["to_year"]
+        basic_details={
+            "batch":batch,
+            "course":data["course"],
+            "stream":data["stream"],
+            "sem":data["sem"],
+            "due":data["category"],
+        }
+        
+        if self.ids.rv.data:
+            generate_batch_fee_pdf(basic_details,self.ids.rv.data)
+            Snackbar(text="PDF generated",duration=1.5).show()
+        else:
+            Snackbar(text="Empty data!",duration=1.5).show()
 
     def apply_filter(self, data):
         """
-        data should be a dict of keys, vals
+        data should be a dict
         """
-        print(data)
-        sem= data["sem"]
-        from_year=None
-        to_year=None
-        course= None
-        stream= None
-        category=None
+        
+        sem= data["sem"] if data["sem"] and int(data["sem"])>0 else None
+        from_year=data["from_year"] if data["from_year"] and int(data["from_year"])>0 else None
+        to_year=data["to_year"] if data["to_year"] and int(data["to_year"])>0 else None
+        course=data["course"] if data["course"] not in("All","Course") else None
+        stream=data["stream"] if data["stream"] not in("All","Stream") else None
+        category=data["category"] if data["category"]!="All" else None
+        
+        reg_cond= None
+        batch_cond=None
+        course_cond=None
+        stream_cond=None
+        cat_cond=None
+        
+        if from_year and to_year:
+            batch= from_year+'-'+to_year
+            batch_cond='batch LIKE "'+batch+'%"'
+        elif from_year:
+            batch_cond='batch LIKE "'+from_year+'%"'
+        elif to_year:
+            batch_cond='batch LIKE "%'+to_year+'"'
+            
+        if course: course_cond='course = "'+course+'"'
+        if stream: stream_cond='stream = "'+stream+'"'
+        if category: cat_cond='due > "0"'
+        
+        reg_cond= " AND ".join([each for each in [batch_cond,course_cond,stream_cond] if each])
         
         filtered_list = []
         conn = self.connect_database("student_main.db")
         
-        if from_year:
-            batch= str(from_year)
-            if to_year:
-                batch+="-"+str(to_year)
-            else:
-                batch=str(to_year)
+        if reg_cond:
+            filtered_list= self.search_from_database_many("General_record",conn,reg_cond)
         
-        if not "Select" in data["course"]:
-            course=data["course"]
-        if not "Select" in data["stream"]:
-            stream=data["stream"]
-        if not "Select" in data["category"]:
-            category=data["category"]
-        
-        #condition=
+        try:
+            #store reg. no. and name
+            reg_list= [(each[0],each[1]) for each in filtered_list]
+            
+            if sem:
+                conn= self.connect_database("fee_main.db")
+                self.ids.rv.data=[]
+                for reg, name in reg_list:
+                    try:
+                        if cat_cond:
+                            tmp_cond=cat_cond+' AND sem = "'+str(sem)+'"'
+                            res= self.search_from_database_many("_"+str(reg),conn,tmp_cond)[0]
+                        else:
+                            res= self.search_from_database("_"+str(reg),conn,"sem",sem,order_by="sem")[0]
+                        
+                        x={
+                            "reg":str(reg),
+                            "name":name,
+                            "paid":str(res[1]),
+                            "due":str(res[2])
+                        }
+                        self.ids.rv.data.append(x)
+                        
+                    except (IndexError, TypeError):
+                        pass
+            else: self.ids.rv.data=[]
+        except IndexError:
+            pass

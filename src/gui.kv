@@ -2292,8 +2292,7 @@ ScreenManager:
 									size_hint_y:.1
 									MDTextField:
 										id:sem
-										size_hint_x:None
-										width:100
+										size_hint_x:1/5
 										hint_text:"Semester"
 										write_tab:False
 										input_filter:"int"
@@ -2312,8 +2311,7 @@ ScreenManager:
 
 									MDTextField:
 										id:fromyear
-										size_hint_x:None
-										width:100
+										size_hint_x:1/5
 										hint_text:"From Year"
 										write_tab:False
 										input_filter:"int"
@@ -2332,8 +2330,7 @@ ScreenManager:
 
 									MDTextField:
 										id:toyear
-										size_hint_x:None
-										width:100
+										size_hint_x:1/5
 										hint_text:"To Year"
 										write_tab:False
 										input_filter:"int"
@@ -2353,7 +2350,10 @@ ScreenManager:
 
 									MDRaisedButton:
 										id:course
-										text:"Select Course"
+										text:"Course"
+										size_hint:None,None
+										width:dp(200)
+										height:dp(40)
 										on_release:
 											root.openCourseList(self)
 											data={\
@@ -2364,11 +2364,13 @@ ScreenManager:
 											"stream":root.ids.stream.text,\
 											"category":root.ids.category.text\
 											}
-											root.apply_filter(data)
-
+											
 									MDRaisedButton:
 										id:stream
-										text:"Select Stream"
+										text:"Stream"
+										size_hint:None,None
+										width:dp(200)
+										height:dp(40)
 										on_release:
 											root.openStreamList(self)
 											data={\
@@ -2379,11 +2381,13 @@ ScreenManager:
 											"stream":root.ids.stream.text,\
 											"category":root.ids.category.text\
 											}
-											root.apply_filter(data)
 
 									MDRaisedButton:
 										id:category
-										text:"Select Catagory"
+										text:"All"
+										size_hint:None,None
+										width:dp(200)
+										height:dp(40)
 										on_release:
 											root.openCatagoryList(self)
 											data={\
@@ -2394,12 +2398,22 @@ ScreenManager:
 											"stream":root.ids.stream.text,\
 											"category":root.ids.category.text\
 											}
-											root.apply_filter(data)
-
+											
 									MDRaisedButton:
 										text:"Generate Pdf"
+										size_hint:None,None
+										width:dp(200)
+										height:dp(40)
 										on_release:
-											root.generate_fee_receipt_batch()
+											data={\
+											"sem":root.ids.sem.text,\
+											"from_year":root.ids.fromyear.text,\
+											"to_year":root.ids.toyear.text,\
+											"course":root.ids.course.text,\
+											"stream":root.ids.stream.text,\
+											"category":root.ids.category.text\
+											}
+											root.generate_fee_receipt_batch(data)
 									
 								Widget:
 									size_hint_y:.01
@@ -2443,21 +2457,12 @@ ScreenManager:
 										viewclass: 'RowFeeRecipt'
 										#data:[{"reg":"213","name":"Anand Kumar","paid":"10000","due":"20111"},{"reg":"213","name":"Anand Kumar","paid":"10000","due":"20111"}]
 										RecycleBoxLayout:
-											id: rb
 											default_size: None, dp(45)
 											default_size_hint: 1, None
 											size_hint_y: None
 											height: self.minimum_height
 											orientation: "vertical"
 											spacing: dp(1)
-								
-									
-									
-										
-
-							
-
-
 
 <SideNav>:
 	size_hint: (0.2, 1)
@@ -2661,6 +2666,21 @@ ScreenManager:
 
 #-------------------------Drop Downs Buttons--------------------------#
 <CourseDrop>:
+	nfs:app.root.ids.notificationScreen
+	on_select:
+		data={\
+		"sem":self.nfs.ids.sem.text,\
+		"from_year":self.nfs.ids.fromyear.text,\
+		"to_year":self.nfs.ids.toyear.text,\
+		"course":args[1].text,\
+		"stream":self.nfs.ids.stream.text,\
+		"category":self.nfs.ids.category.text\
+		}
+		self.nfs.apply_filter(data)
+
+	DropBtn:
+		text:"All"
+		on_release: root.select(self)
 	DropBtn:
 		text:"B.Tech"
 		on_release: root.select(self)
@@ -2668,7 +2688,24 @@ ScreenManager:
 		text:"Ph.D"
 		on_release: root.select(self)
 
+	
+
 <StreamDrop>:
+	nfs:app.root.ids.notificationScreen
+	on_select:
+		data={\
+		"sem":self.nfs.ids.sem.text,\
+		"from_year":self.nfs.ids.fromyear.text,\
+		"to_year":self.nfs.ids.toyear.text,\
+		"course":self.nfs.ids.course.text,\
+		"stream":args[1].text,\
+		"category":self.nfs.ids.category.text\
+		}
+		self.nfs.apply_filter(data)
+	
+	DropBtn:
+		text:"All"
+		on_release: root.select(self)
 	DropBtn:
 		text:"CSE"
 		on_release: root.select(self)
@@ -2677,6 +2714,18 @@ ScreenManager:
 		on_release: root.select(self)
 
 <CatagoryDrop>:
+	nfs:app.root.ids.notificationScreen
+	on_select:
+		data={\
+		"sem":self.nfs.ids.sem.text,\
+		"from_year":self.nfs.ids.fromyear.text,\
+		"to_year":self.nfs.ids.toyear.text,\
+		"course":self.nfs.ids.course.text,\
+		"stream":self.nfs.ids.stream.text,\
+		"category":args[1].text\
+		}
+		self.nfs.apply_filter(data)
+
 	DropBtn:
 		text:"All"
 		on_release: root.select(self)

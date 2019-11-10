@@ -40,7 +40,8 @@ class Database():
                 conn.commit()
                 return True
             except Error as e:
-                print("Error in data insertion: {}".format(e))
+                pass
+                #print("Error in data insertion: {}".format(e))
         return None
 
     # Update Database
@@ -66,7 +67,8 @@ class Database():
                     conn.commit()
                 return True
             except Exception as e:
-                print("Error in updating data: {}".format(e))
+                pass
+                #print("Error in updating data: {}".format(e))
         return None
 
     # Delete from Database
@@ -92,7 +94,8 @@ class Database():
                 conn.commit()
                 return True
             except Error as e:
-                print("Error in deleting data: {}".format(e))
+                pass
+                #print("Error in deleting data: {}".format(e))
         return False
 
     # Search in the database
@@ -111,15 +114,15 @@ class Database():
                 ).fetchall()
                 return filtered_list
             except Error as e:
-                print("Error in searching: {}".format(e))
+                pass
+                #print("Error in searching: {}".format(e))
 
-            return None
+        return None
     
     def search_from_database_many(self, tableName, conn, condition):
         if conn is not None:
             try:
                 cur = conn.cursor()
-                # just to track if deletion was successful
                 filtered_list= cur.execute("""
 						SELECT * FROM {} WHERE {}
 						""".format(
@@ -127,7 +130,8 @@ class Database():
                 ).fetchall()
                 return filtered_list
             except Error as e:
-                print("Error in deleting data: {}".format(e))
+                pass
+                #print("Error in deleting data: {}".format(e))
         return None
 
     # connect database
@@ -137,7 +141,8 @@ class Database():
             return conn
 
         except Error as e:
-            print("Error in database: {}".format(e))
+            pass
+            #print("Error in database: {}".format(e))
 
         return None
 
@@ -151,10 +156,8 @@ class Database():
                 conn.commit()
 
             except Error as e:
-                print("Error in creating table: {}".format(e))
-
-        else:
-            print("conn is none")
+                pass
+                #print("Error in creating table: {}".format(e))
 
     def findTables(self, db_file):
         conn = self.connect_database(db_file)

@@ -51,8 +51,6 @@ def generate_pdf(personalinfo, feeinfo):
     pdf.set_font("Times", "B", 14)
     pdf.cell(0, 5, "Fee Details", 0, 1, "C")
 
-    
-
     pdf.ln(9)
     pdf.set_font("Times", "B", 12)
     
@@ -77,8 +75,6 @@ def generate_pdf(personalinfo, feeinfo):
 		Tution Fee: "
         + personalinfo["fee"],
     )
-
-    print("\n\n\n\nI'm from generate_pdf_2\n\n\n")
 
     pdf.ln(10)
     pdf.set_font("Times", "B", 13)
@@ -132,9 +128,9 @@ def generate_batch_fee_pdf(basic_details,students_fee_data):
         + "("
         + basic_details["stream"]
         + (")" if basic_details["course"]=="B.Tech" else ")     ")
-        + "                                                                                  \
-		Tution Fee: "
-        + basic_details["fee"],
+        +"                                                                              \
+        Category: "
+        + basic_details["due"]
     )
 
     pdf.ln(10)
@@ -279,10 +275,10 @@ if __name__ == "__main__":
 
     batch_details= {
         "batch":"2017-2021",
-        "course":"B.Tech",
+        "course":"Ph.D",
         "stream":"CSE",
         "sem":"1",
-        "fee":"947000",
+        "due":"947000",
     }
     students_fee_data= [
         {
