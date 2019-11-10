@@ -2666,21 +2666,6 @@ ScreenManager:
 
 #-------------------------Drop Downs Buttons--------------------------#
 <CourseDrop>:
-	nfs:app.root.ids.notificationScreen
-	on_select:
-		data={\
-		"sem":self.nfs.ids.sem.text,\
-		"from_year":self.nfs.ids.fromyear.text,\
-		"to_year":self.nfs.ids.toyear.text,\
-		"course":args[1].text,\
-		"stream":self.nfs.ids.stream.text,\
-		"category":self.nfs.ids.category.text\
-		}
-		self.nfs.apply_filter(data)
-
-	DropBtn:
-		text:"All"
-		on_release: root.select(self)
 	DropBtn:
 		text:"B.Tech"
 		on_release: root.select(self)
@@ -2688,24 +2673,7 @@ ScreenManager:
 		text:"Ph.D"
 		on_release: root.select(self)
 
-	
-
 <StreamDrop>:
-	nfs:app.root.ids.notificationScreen
-	on_select:
-		data={\
-		"sem":self.nfs.ids.sem.text,\
-		"from_year":self.nfs.ids.fromyear.text,\
-		"to_year":self.nfs.ids.toyear.text,\
-		"course":self.nfs.ids.course.text,\
-		"stream":args[1].text,\
-		"category":self.nfs.ids.category.text\
-		}
-		self.nfs.apply_filter(data)
-	
-	DropBtn:
-		text:"All"
-		on_release: root.select(self)
 	DropBtn:
 		text:"CSE"
 		on_release: root.select(self)
@@ -2733,3 +2701,50 @@ ScreenManager:
 		text:"Due"
 		on_release: root.select(self)
 		
+<CourseDropFee>:
+	nfs:app.root.ids.notificationScreen
+	on_select:
+		data={\
+		"sem":self.nfs.ids.sem.text,\
+		"from_year":self.nfs.ids.fromyear.text,\
+		"to_year":self.nfs.ids.toyear.text,\
+		"course":args[1].text,\
+		"stream":self.nfs.ids.stream.text,\
+		"category":self.nfs.ids.category.text\
+		}
+		self.nfs.apply_filter(data)
+
+	DropBtn:
+		text:"All"
+		on_release: root.select(self)
+	DropBtn:
+		text:"B.Tech"
+		on_release: root.select(self)
+	DropBtn:
+		text:"Ph.D"
+		on_release: root.select(self)
+
+	
+
+<StreamDropFee>:
+	nfs:app.root.ids.notificationScreen
+	on_select:
+		data={\
+		"sem":self.nfs.ids.sem.text,\
+		"from_year":self.nfs.ids.fromyear.text,\
+		"to_year":self.nfs.ids.toyear.text,\
+		"course":self.nfs.ids.course.text,\
+		"stream":args[1].text,\
+		"category":self.nfs.ids.category.text\
+		}
+		self.nfs.apply_filter(data)
+	
+	DropBtn:
+		text:"All"
+		on_release: root.select(self)
+	DropBtn:
+		text:"CSE"
+		on_release: root.select(self)
+	DropBtn:
+		text:"ECE"
+		on_release: root.select(self)

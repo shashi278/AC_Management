@@ -1069,12 +1069,12 @@ class ForgotPasswordUser(Screen):
 class NotificationScreen(Screen, Database):
 
     def openCourseList(self, instance):
-        dropdown = CourseDrop()
+        dropdown = CourseDropFee()
         dropdown.open(instance)
         dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
 
     def openStreamList(self, instance):
-        dropdown = StreamDrop()
+        dropdown = StreamDropFee()
         dropdown.open(instance)
         dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
 
