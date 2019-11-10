@@ -12,6 +12,8 @@ Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 
 from kivymd.theming import ThemeManager
 
+from sqlite3 import Error
+
 from database import Database
 from screens import HomeScreen
 from custom_buttons import CircularToggleButton
@@ -21,8 +23,18 @@ class AccountManagementSystem(App, Database):
     theme_cls = ThemeManager()
 
     def on_start(self):
-    	Window.bind(on_close=self.close)
-    	Window.set_title("Account Management System: IIIT Kalyani")
+        Window.bind(on_close=self.close)
+        Window.set_title("Account Management System: IIIT Kalyani")
+        db_file="user_main.db"
+        conn= self.connect_database(db_file)
+        try:
+            self.extractAllData(db_file,'admin',order_by="id")
+
+        except Error:
+            with open("admin_record.sql") as table:
+                self.create_table(table.read(), conn)
+                self.insert_into_database('admin', conn, ('','admin@example.com','admin','admin',''))
+
 
     def build(self):
     	return Builder.load_file("gui.kv")

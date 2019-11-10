@@ -8,6 +8,8 @@ from kivy.uix.label import Label
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.picker import MDThemePicker
 
+from sqlite3 import Error
+
 from database import Database
 from animator.attention import ShakeAnimator
 
@@ -66,14 +68,6 @@ class LoginPopup(ModalView, Database):
         else:
             validated=True if username==valid_user[3] and password==valid_user[4] else False
         
-        #Run this below code just once to create an admin with  default credentials
-        '''
-        with open("admin_record.sql") as table:
-            self.create_table(table.read(), conn)
-            self.insert_into_database('admin', conn, ('','admin@example.com','admin','admin',''))
-        '''
-
-
         if validated:
             self.ids.warningInfo.text = ""
             self.dismiss()
