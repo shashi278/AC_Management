@@ -33,7 +33,7 @@ class AccountManagementSystem(App, Database):
 
 if __name__ == "__main__":
     Window.maximize()
-    #Window.minimum_width = 900
-    #Window.minimum_height = 700
+    Window.minimum_width = 900
+    Window.minimum_height = 700
 
     AccountManagementSystem().run()

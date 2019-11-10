@@ -1031,7 +1031,11 @@ class ForgotPasswordScreen(Screen, Database):
         self.ids.statusLabel.color=(1,1,1,1)
         self.ids.statusLabel.text="Sending..."
         x=OTPMail()
-        if x.login('shashir@iiitkalyani.ac.in','Shashi@1531'):
+        
+        #extract notification mail from database
+        not_mail=''
+        not_pass=''
+        if x.login(not_mail,not_pass):
             #extract admin email
             admin_email=self.extractAllData("user_main.db","admin",order_by="id")[0][2]
             self.otp_recieved= x.send_otp(admin_email)
