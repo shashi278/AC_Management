@@ -508,13 +508,27 @@ class AdminScreen(Screen, Database):
                         self._user_layout_anim_in(layout)
                         btn.icon="plus"
 
-                elif not self.insert_into_database("users",conn,data):
-                    Snackbar(text="Username already exists", duration=.3).show()
-
                 else:
-                    self.populate_user_data()
-                    self._user_layout_anim_in(layout)
-                    btn.icon="plus"
+                    try:
+                        if not self.insert_into_database("users",conn,data):
+                            raise Error
+                        else:
+                            self.populate_user_data()
+                            self._user_layout_anim_in(layout)
+                            btn.icon="plus"
+                    except Error:
+                        #if table doesn't exist
+                        with open("user_record.sql", "r") as table:
+                            self.create_table(table.read().format("users"),conn)
+                            if not self.insert_into_database("users",conn,data):
+                                Snackbar(text="Username already exists", duration=.3).show()
+                            else:
+                                self.populate_user_data()
+                                self._user_layout_anim_in(layout)
+                                btn.icon="plus"
+
+
+                    
         else:
             self._user_layout_anim_in(layout)
             btn.icon="plus"
@@ -545,9 +559,11 @@ class AdminScreen(Screen, Database):
     def populate_user_data(self):
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
-        data_list_users = self.extractAllData("user_main.db", "users", order_by="id")
+        
         #print(self.ids.rv.data)
         try:
+            #data may not be present
+            data_list_users = self.extractAllData("user_main.db", "users", order_by="id")
             for counter, each in enumerate(data_list_users, 1):
                 x = {
                     "sno": str(counter),
@@ -557,7 +573,7 @@ class AdminScreen(Screen, Database):
                     "password": "********"
                 }
                 self.ids.rv.data.append(x)
-        except TypeError:
+        except (TypeError,Error):
             pass
     
     def update_user_info(self, layout, btn, inst):
