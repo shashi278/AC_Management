@@ -84,11 +84,6 @@ class HomeScreen(Screen):
 class UserScreen(Screen, Database):
     def onStartUserScr(self):
 
-        # should be fixed inside MDIconButton in md library itself
-        #self.ids.hamburger.ids.lbl_txt.text_size = (sp(80), sp(80))
-        #self.ids.hamburger.ids.lbl_txt.font_size = sp(35)
-        #self.ids.search.text = ""
-
         # --------------Update Student list---------------------#
         self.ids.rv.data = []
         try:
@@ -278,8 +273,6 @@ class ProfilePage(Screen, Database):
     def add_fee_data(self, ins):
         table_name= '_'+str(self.reg_no)
         conn = self.connect_database("fee_main.db")
-        #c = conn.execute("select * from {}".format(table_name))
-        #fields_names = tuple([des[0] for des in c.description][1:])
 
         sem= None if not ins.ids.sem.text or int(ins.ids.sem.text)==0 else ins.ids.sem.text
         paid= 0 if not ins.ids.paid.text else ins.ids.paid.text
@@ -335,7 +328,6 @@ class ProfilePage(Screen, Database):
         ins.dismiss()
 
     def populate_screen(self):
-        #print("\n\n\n\nrv.data before: {}\n\n\n\n".format(self.ids.rv.data))
         self.ids.rv.data = []
         # try to populate the screen with data already available in the corresponding
         # reg. no. table
@@ -360,7 +352,6 @@ class ProfilePage(Screen, Database):
             if conn is not None:
                 with open("fee_record.sql") as table:
                     self.create_table(table.read().format("_" + str(self.reg_no)), conn)
-        #print("\n\n\n\nrv.data after: {}\n\n\n\n".format(self.ids.rv.data))
 
     def anim_in(self, instance):
 
@@ -1031,7 +1022,11 @@ class ForgotPasswordScreen(Screen, Database):
         self.ids.statusLabel.color=(1,1,1,1)
         self.ids.statusLabel.text="Sending..."
         x=OTPMail()
-        if x.login('shashir@iiitkalyani.ac.in','Shashi@1531'):
+        
+        #extract notification mail from database
+        not_mail=''
+        not_pass=''
+        if x.login(not_mail,not_pass):
             #extract admin email
             admin_email=self.extractAllData("user_main.db","admin",order_by="id")[0][2]
             self.otp_recieved= x.send_otp(admin_email)
