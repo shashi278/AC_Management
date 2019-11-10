@@ -23,11 +23,11 @@ If your error looks like this
 
 <pre>
 
-`/tmp/pip-install-yqca572t/kivy/kivy/include/gl_redirect.h:72:13: fatal error: GL/gl.h: No such file or directory
-       72 | #   include <GL/gl.h>
+/tmp/pip-install-yqca572t/kivy/kivy/include/gl_redirect.h:72:13: fatal error: GL/gl.h: No such file or directory
+       72 | #   include &lt;GL/gl.h&gt;
           |             ^~~~~~~~~
     compilation terminated.
-     error: command 'x86_64-linux-gnu-gcc' failed with exit status 1`
+     error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
      
  </pre>
 
