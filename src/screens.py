@@ -412,7 +412,7 @@ class ProfilePage(Screen, Database):
                         "tid": data_tuple[5]
                     }
                     fee_data.append(_temp)
-                generate_pdf(student_info,fee_data)
+                generate_pdf(student_info,fee_data,None)
                 Snackbar(text="PDF generated for reg. no. {}".format(self.reg_no),duration=2).show()
             else:
                 Snackbar(text="No fee data found for reg. no. {}".format(self.reg_no),duration=2).show()
@@ -1089,7 +1089,7 @@ class NotificationScreen(Screen, Database):
         }
         
         if self.ids.rv.data:
-            generate_batch_fee_pdf(basic_details,self.ids.rv.data)
+            generate_batch_fee_pdf(basic_details,self.ids.rv.data,None)
             Snackbar(text="PDF generated",duration=1.5).show()
         else:
             Snackbar(text="Empty data!",duration=1.5).show()
