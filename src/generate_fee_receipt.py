@@ -4,8 +4,9 @@ from fpdf import FPDF
 import os
 import platform
 
+
 class PDF(FPDF):
-    def header(self): 
+    def header(self):
         # Logo
         self.image("media/images/logo.png", 10, 8, 33)
 
@@ -41,24 +42,24 @@ class PDF(FPDF):
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
 
 
-def generate_pdf(personalinfo, feeinfo,dir):
+def generate_pdf(personalinfo, feeinfo, dir):
 
-    #if dir is not provided then it will saved at desktop in Fee Reciepts Folder 
-    if dir==None:
-        if platform.system()=="Windows":
-            desktop= os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
-            if(not os.path.exists(desktop+"/Fee Reciepts")):
-                os.mkdir(desktop+"/Fee Reciepts")
-                dir= desktop+"/Fee Reciepts"
+    # if dir is not provided then it will saved at desktop in Fee Reciepts Folder
+    if dir == None:
+        if platform.system() == "Windows":
+            desktop = os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop")
+            if not os.path.exists(desktop + "/Fee Reciepts"):
+                os.mkdir(desktop + "/Fee Reciepts")
+                dir = desktop + "/Fee Reciepts"
             else:
-                dir= desktop+"/Fee Reciepts"
-        elif platform.system()=="Linux":
-            desktop= os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')
-            if(not os.path.exists(desktop+"/Fee Reciepts")):
-                os.mkdir(desktop+"/Fee Reciepts")
-                dir= desktop+"/Fee Reciepts"
+                dir = desktop + "/Fee Reciepts"
+        elif platform.system() == "Linux":
+            desktop = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
+            if not os.path.exists(desktop + "/Fee Reciepts"):
+                os.mkdir(desktop + "/Fee Reciepts")
+                dir = desktop + "/Fee Reciepts"
             else:
-                dir= desktop+"/Fee Reciepts"
+                dir = desktop + "/Fee Reciepts"
     # Instantiation of inherited class
 
     pdf = PDF()
@@ -71,7 +72,7 @@ def generate_pdf(personalinfo, feeinfo,dir):
 
     pdf.ln(9)
     pdf.set_font("Times", "B", 12)
-    
+
     print("\n\n\n\nI'm from generate_pdf_1\n\n\n")
     print(personalinfo)
     pdf.multi_cell(
@@ -88,7 +89,7 @@ def generate_pdf(personalinfo, feeinfo,dir):
         + personalinfo["course"]
         + "("
         + personalinfo["stream"]
-        + (")   " if personalinfo["course"]=="B.Tech" else ")     ")
+        + (")   " if personalinfo["course"] == "B.Tech" else ")     ")
         + "                                                                                    \
 		Tution Fee: "
         + personalinfo["fee"],
@@ -112,37 +113,43 @@ def generate_pdf(personalinfo, feeinfo,dir):
         pdf.cell(31, 10, info["due"], 1, 0, "C")
         pdf.cell(27, 10, info["late"], 1, 0, "C")
         pdf.cell(32, 10, info["date"], 1, 0, "C")
-        pdf.cell(46, 10, info["tid"] if len(info["tid"])<=18 else (info["tid"])[:13]+"..." , 1, 0, "C")
+        pdf.cell(
+            46,
+            10,
+            info["tid"] if len(info["tid"]) <= 18 else (info["tid"])[:13] + "...",
+            1,
+            0,
+            "C",
+        )
         pdf.ln(10)
 
     pdf.set_y(-35)
     pdf.cell(0, 10, "Singnature of Accountant", 0, 0, "R")
 
-    if(not os.path.exists(dir+"/Students")):
-        os.mkdir(dir+"/Students")
+    if not os.path.exists(dir + "/Students"):
+        os.mkdir(dir + "/Students")
 
-    pdf.output(dir+"/Students/"+personalinfo["reg"] + ".pdf", "F")
+    pdf.output(dir + "/Students/" + personalinfo["reg"] + ".pdf", "F")
 
 
+def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
 
-def generate_batch_fee_pdf(basic_details,students_fee_data,dir):
-
-    #if dir is not provided then it will saved at desktop in Fee Reciepts Folder 
-    if dir==None:
-        if platform.system()=="Windows":
-            desktop= os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
-            if(not os.path.exists(desktop+"/Fee Reciepts")):
-                os.mkdir(desktop+"/Fee Reciepts")
-                dir= desktop+"/Fee Reciepts"
+    # if dir is not provided then it will saved at desktop in Fee Reciepts Folder
+    if dir == None:
+        if platform.system() == "Windows":
+            desktop = os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop")
+            if not os.path.exists(desktop + "/Fee Reciepts"):
+                os.mkdir(desktop + "/Fee Reciepts")
+                dir = desktop + "/Fee Reciepts"
             else:
-                dir= desktop+"/Fee Reciepts"
-        elif platform.system()=="Linux":
-            desktop= os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')
-            if(not os.path.exists(desktop+"/Fee Reciepts")):
-                os.mkdir(desktop+"/Fee Reciepts")
-                dir= desktop+"/Fee Reciepts"
+                dir = desktop + "/Fee Reciepts"
+        elif platform.system() == "Linux":
+            desktop = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
+            if not os.path.exists(desktop + "/Fee Reciepts"):
+                os.mkdir(desktop + "/Fee Reciepts")
+                dir = desktop + "/Fee Reciepts"
             else:
-                dir= desktop+"/Fee Reciepts"
+                dir = desktop + "/Fee Reciepts"
 
     pdf = PDF()
     pdf.alias_nb_pages()
@@ -153,7 +160,6 @@ def generate_batch_fee_pdf(basic_details,students_fee_data,dir):
 
     pdf.ln(10)
     pdf.set_font("Times", "B", 12)
-
 
     pdf.multi_cell(
         0.0,
@@ -167,10 +173,10 @@ def generate_batch_fee_pdf(basic_details,students_fee_data,dir):
         + basic_details["course"]
         + "("
         + basic_details["stream"]
-        + (")" if basic_details["course"]=="B.Tech" else ")     ")
-        +"                                                                              \
+        + (")" if basic_details["course"] == "B.Tech" else ")     ")
+        + "                                                                              \
         Category: "
-        + basic_details["due"]
+        + basic_details["due"],
     )
 
     pdf.ln(10)
@@ -192,17 +198,21 @@ def generate_batch_fee_pdf(basic_details,students_fee_data,dir):
         pdf.cell(47, 10, student["due"], 1, 0, "C")
         pdf.ln(10)
 
+    if not os.path.exists(dir + "/Batch"):
+        os.mkdir(dir + "/Batch")
 
-    if(not os.path.exists(dir+"/Batch")):
-        os.mkdir(dir+"/Batch")
-
-
-    pdf.output(dir+"/Batch/"+\
-                basic_details["batch"]+"_"+\
-               basic_details["course"]+\
-               basic_details["stream"]+"_Sem-"+\
-               basic_details["sem"]+".pdf", "F")
-                        
+    pdf.output(
+        dir
+        + "/Batch/"
+        + basic_details["batch"]
+        + "_"
+        + basic_details["course"]
+        + basic_details["stream"]
+        + "_Sem-"
+        + basic_details["sem"]
+        + ".pdf",
+        "F",
+    )
 
 
 if __name__ == "__main__":
@@ -303,7 +313,6 @@ if __name__ == "__main__":
             "date": "12-12-2019",
             "tid": "LAG4545",
         },
-        
     ]
     personal_info = {
         "name": "Anand Kumar",
@@ -313,160 +322,39 @@ if __name__ == "__main__":
         "stream": "CSE",
         "fee": "947000",
     }
-    generate_pdf(personal_info, fee_info,None)
+    generate_pdf(personal_info, fee_info, None)
 
-    batch_details= {
-        "batch":"2017-2021",
-        "course":"Ph.D",
-        "stream":"CSE",
-        "sem":"1",
-        "due":"947000",
+    batch_details = {
+        "batch": "2017-2021",
+        "course": "Ph.D",
+        "stream": "CSE",
+        "sem": "1",
+        "due": "947000",
     }
-    students_fee_data= [
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"214",
-        "name":"Anish kumar Kharwar",
-        "paid":"97400",
-        "due":"0",
-        },
-        {
-        "reg":"278",
-        "name":"Shashi Ranjan",
-        "paid":"80400",
-        "due":"13000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"214",
-        "name":"Anish kumar Kharwar",
-        "paid":"97400",
-        "due":"0",
-        },
-        {
-        "reg":"278",
-        "name":"Shashi Ranjan",
-        "paid":"80400",
-        "due":"13000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"214",
-        "name":"Anish kumar Kharwar",
-        "paid":"97400",
-        "due":"0",
-        },
-        {
-        "reg":"278",
-        "name":"Shashi Ranjan",
-        "paid":"80400",
-        "due":"13000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"214",
-        "name":"Anish kumar Kharwar",
-        "paid":"97400",
-        "due":"0",
-        },
-        {
-        "reg":"278",
-        "name":"Shashi Ranjan",
-        "paid":"80400",
-        "due":"13000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"214",
-        "name":"Anish kumar Kharwar",
-        "paid":"97400",
-        "due":"0",
-        },
-        {
-        "reg":"278",
-        "name":"Shashi Ranjan",
-        "paid":"80400",
-        "due":"13000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        {
-        "reg":"214",
-        "name":"Anish kumar Kharwar",
-        "paid":"97400",
-        "due":"0",
-        },
-        {
-        "reg":"278",
-        "name":"Shashi Ranjan",
-        "paid":"80400",
-        "due":"13000",
-        },
-        {
-        "reg":"213",
-        "name":"Anand kumar",
-        "paid":"87400",
-        "due":"6000",
-        },
-        
+    students_fee_data = [
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "214", "name": "Anish kumar Kharwar", "paid": "97400", "due": "0",},
+        {"reg": "278", "name": "Shashi Ranjan", "paid": "80400", "due": "13000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "214", "name": "Anish kumar Kharwar", "paid": "97400", "due": "0",},
+        {"reg": "278", "name": "Shashi Ranjan", "paid": "80400", "due": "13000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "214", "name": "Anish kumar Kharwar", "paid": "97400", "due": "0",},
+        {"reg": "278", "name": "Shashi Ranjan", "paid": "80400", "due": "13000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "214", "name": "Anish kumar Kharwar", "paid": "97400", "due": "0",},
+        {"reg": "278", "name": "Shashi Ranjan", "paid": "80400", "due": "13000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "214", "name": "Anish kumar Kharwar", "paid": "97400", "due": "0",},
+        {"reg": "278", "name": "Shashi Ranjan", "paid": "80400", "due": "13000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
+        {"reg": "214", "name": "Anish kumar Kharwar", "paid": "97400", "due": "0",},
+        {"reg": "278", "name": "Shashi Ranjan", "paid": "80400", "due": "13000",},
+        {"reg": "213", "name": "Anand kumar", "paid": "87400", "due": "6000",},
     ]
-    generate_batch_fee_pdf(batch_details,students_fee_data,None)
+    generate_batch_fee_pdf(batch_details, students_fee_data, None)

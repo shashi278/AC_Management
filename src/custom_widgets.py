@@ -16,8 +16,10 @@ class LabelForList(Label):
 class LabelForListStudent(Label):
     pass
 
+
 class AdminInfoLabel(BoxLayout):
     pass
+
 
 class AdminInfoEditField(BoxLayout):
     pass

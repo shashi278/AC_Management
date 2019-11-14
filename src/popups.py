@@ -21,62 +21,70 @@ class SideNav(ModalView, Database):
     def open_personalisation(self):
         Personalisation().open()
 
-#being used to add fee data
+
+# being used to add fee data
 class AddDataLayout(ModalView, Database):
-    previous_date=None
+    previous_date = None
+
     def open_date_picker(self):
         from kivymd.uix.picker import MDDatePicker
+
         if self.previous_date is not None:
             pd = self.previous_date
             try:
-                MDDatePicker(
-                    self.set_previous_date, pd.year, pd.month, pd.day
-                ).open()
+                MDDatePicker(self.set_previous_date, pd.year, pd.month, pd.day).open()
             except AttributeError:
                 MDDatePicker(self.set_previous_date).open()
         else:
             MDDatePicker(self.set_previous_date).open()
 
     def set_previous_date(self, date_obj):
-       
+
         self.previous_date = date_obj
-        self.ids.date.text = '-'.join(str(date_obj).split("-")[::-1])
+        self.ids.date.text = "-".join(str(date_obj).split("-")[::-1])
 
 
 # popups class
 class LoginPopup(ModalView, Database):
 
-    #for animation
-    defaults={
-        'pos_hint': {"center_x":0.5, "center_y": 0.5},
-        'size': '',
-        'opacity':1,
-        'angle': 0,
-        'origin_':''}
+    # for animation
+    defaults = {
+        "pos_hint": {"center_x": 0.5, "center_y": 0.5},
+        "size": "",
+        "opacity": 1,
+        "angle": 0,
+        "origin_": "",
+    }
 
     def login(self, username, password, title, root):
 
-        db_file= "user_main.db"
-        table_name= "users" if title=="User Login" else "admin"
-        validated=False
+        db_file = "user_main.db"
+        table_name = "users" if title == "User Login" else "admin"
+        validated = False
 
-        conn= self.connect_database(db_file)
+        conn = self.connect_database(db_file)
         try:
-            valid_user= self.search_from_database(table_name,conn,"username",username,order_by="id")[0]
-        except (IndexError,TypeError) as e:
-            validated= False
+            valid_user = self.search_from_database(
+                table_name, conn, "username", username, order_by="id"
+            )[0]
+        except (IndexError, TypeError) as e:
+            validated = False
         else:
-            validated=True if username==valid_user[3] and password==valid_user[4] else False
-        
+            validated = (
+                True
+                if username == valid_user[3] and password == valid_user[4]
+                else False
+            )
+
         if validated:
             self.ids.warningInfo.text = ""
             self.dismiss()
-            root.ids.userScreen.user_name=valid_user[1]
+            root.ids.userScreen.user_name = valid_user[1]
             return True
         else:
             self.ids.warningInfo.text = "Wrong username or password"
             self.reset(self.ids.util_box)
-            ShakeAnimator(self.ids.util_box, duration=.6, repeat=False).start_()
+            ShakeAnimator(self.ids.util_box, duration=0.6, repeat=False).start_()
             return False
 
     def show_password(self, field, button):
@@ -84,36 +92,38 @@ class LoginPopup(ModalView, Database):
         field.focus = True
         button.icon = "eye" if button.icon == "eye-off" else "eye-off"
 
-    #for animation
+    # for animation
     def reset(self, widget):
         for key, val in self.defaults.items():
-            if key=='size':
-                val=(widget.parent.width, widget.parent.height)
+            if key == "size":
+                val = (widget.parent.width, widget.parent.height)
             setattr(widget, key, val)
 
-    def check_caller(self,scr_name):
-        if(scr_name=="Admin Login"):
-            self.opacity=.6
-            self.ids.scr.transition=SwapTransition()
-            self.ids.scr.current='reset'
-        elif(scr_name=="User Login"):
-            self.opacity=.6
-            self.ids.scr.transition=SwapTransition()
-            self.ids.scr.current='reset_user'
+    def check_caller(self, scr_name):
+        if scr_name == "Admin Login":
+            self.opacity = 0.6
+            self.ids.scr.transition = SwapTransition()
+            self.ids.scr.current = "reset"
+        elif scr_name == "User Login":
+            self.opacity = 0.6
+            self.ids.scr.transition = SwapTransition()
+            self.ids.scr.current = "reset_user"
+
 
 class DeleteWarning(ModalView, Database):
     def __init__(self, id_, data, db_file, table_name, *args, **kwargs):
-        
+
         self.id_ = id_
         self.data = data
         self.db_file = db_file
         self.table_name = table_name
-        self.success= False     #status of deletion
-        self.callback= None     #can be called after completion of any action, generally after deletion
-        self.delete_detail=''
+        self.success = False  # status of deletion
+        self.callback = None  # can be called after completion of any action, generally after deletion
+        self.delete_detail = ""
         try:
-            self.callback= kwargs["callback"]
-        except: pass
+            self.callback = kwargs["callback"]
+        except:
+            pass
 
         if self.id_ == "batch":
             name1 = "batch"
@@ -139,22 +149,36 @@ class DeleteWarning(ModalView, Database):
                 + val3
                 + '"'
             )
-            self.delete_detail="Batch: "+val1+", Course: "+val2+", Stream: "+val3
+            self.delete_detail = (
+                "Batch: " + val1 + ", Course: " + val2 + ", Stream: " + val3
+            )
 
         elif self.id_ == "users":
-            self.condition=(
-                'name = "'+data["name"]+'" AND username = "'+data["username"]+'"'
+            self.condition = (
+                'name = "'
+                + data["name"]
+                + '" AND username = "'
+                + data["username"]
+                + '"'
             )
-            self.delete_detail="User: {} with username {}".format(data["name"],data["username"])
-        
-        elif self.id_=="fee":
-            self.condition=(
-                'sem = "'+data["sem"]+'" AND tid = "'+data["tid"]+'"'
+            self.delete_detail = "User: {} with username {}".format(
+                data["name"], data["username"]
             )
-            self.delete_detail="Fee detail: Semester "+data["sem"]+", Trans. Id "+data["tid"]+" for reg. no. "+data["reg"]
-        
-        super(DeleteWarning, self).__init__(*args)
 
+        elif self.id_ == "fee":
+            self.condition = (
+                'sem = "' + data["sem"] + '" AND tid = "' + data["tid"] + '"'
+            )
+            self.delete_detail = (
+                "Fee detail: Semester "
+                + data["sem"]
+                + ", Trans. Id "
+                + data["tid"]
+                + " for reg. no. "
+                + data["reg"]
+            )
+
+        super(DeleteWarning, self).__init__(*args)
 
     def delete(self, app, text_color):
         """
@@ -164,7 +188,7 @@ class DeleteWarning(ModalView, Database):
         res = self.delete_from_database(self.table_name, conn, self.condition)
 
         if res:
-            self.success= True
+            self.success = True
             res_text = "Successfully deleted!"
             if self.callback is not None:
                 self.callback()
@@ -195,7 +219,6 @@ class DeleteWarning(ModalView, Database):
     def anim_out(self, instance):
         anim = Animation(pos_hint={"x": 0.6}, t="out_cubic", d=0.3)
         anim.start(instance)
-
 
 
 class Personalisation(ModalView):

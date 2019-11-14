@@ -10,7 +10,7 @@ tm = time.localtime()
 tmStmp = "{}{}{}".format(tm.tm_mday, tm.tm_mon, tm.tm_year)
 
 
-class Database():
+class Database:
     def __init__(self):
         if not os.path.exists("database/"):
             os.makedirs("database/")
@@ -41,7 +41,7 @@ class Database():
                 return True
             except Error as e:
                 pass
-                #print("Error in data insertion: {}".format(e))
+                # print("Error in data insertion: {}".format(e))
         return None
 
     # Update Database
@@ -68,7 +68,7 @@ class Database():
                 return True
             except Exception as e:
                 pass
-                #print("Error in updating data: {}".format(e))
+                # print("Error in updating data: {}".format(e))
         return None
 
     # Delete from Database
@@ -77,11 +77,15 @@ class Database():
             try:
                 cur = conn.cursor()
                 # just to track if deletion was successful
-                count= len(cur.execute("""
+                count = len(
+                    cur.execute(
+                        """
 						SELECT * FROM {} WHERE {}
 						""".format(
-                        tableName, condition)
-                ).fetchall())
+                            tableName, condition
+                        )
+                    ).fetchall()
+                )
                 if not count:
                     return False
                 cur.execute(
@@ -95,7 +99,7 @@ class Database():
                 return True
             except Error as e:
                 pass
-                #print("Error in deleting data: {}".format(e))
+                # print("Error in deleting data: {}".format(e))
         return False
 
     # Search in the database
@@ -103,7 +107,7 @@ class Database():
         if conn is not None:
             try:
                 cur = conn.cursor()
-                #print("cur: {}".format(cur))
+                # print("cur: {}".format(cur))
                 filtered_list = cur.execute(
                     """
 							SELECT * FROM {} WHERE {} LIKE ? ORDER BY {};
@@ -115,23 +119,25 @@ class Database():
                 return filtered_list
             except Error as e:
                 pass
-                #print("Error in searching: {}".format(e))
+                # print("Error in searching: {}".format(e))
 
         return None
-    
+
     def search_from_database_many(self, tableName, conn, condition):
         if conn is not None:
             try:
                 cur = conn.cursor()
-                filtered_list= cur.execute("""
+                filtered_list = cur.execute(
+                    """
 						SELECT * FROM {} WHERE {}
 						""".format(
-                        tableName, condition)
+                        tableName, condition
+                    )
                 ).fetchall()
                 return filtered_list
             except Error as e:
                 pass
-                #print("Error in deleting data: {}".format(e))
+                # print("Error in deleting data: {}".format(e))
         return None
 
     # connect database
@@ -142,7 +148,7 @@ class Database():
 
         except Error as e:
             pass
-            #print("Error in database: {}".format(e))
+            # print("Error in database: {}".format(e))
 
         return None
 
@@ -157,7 +163,7 @@ class Database():
 
             except Error as e:
                 pass
-                #print("Error in creating table: {}".format(e))
+                # print("Error in creating table: {}".format(e))
 
     def findTables(self, db_file):
         conn = self.connect_database(db_file)
@@ -192,9 +198,10 @@ class Database():
 
                     self.insert_into_database(tableName, conn, data)
                 return True
-        
+
             return False
-        except: return False
+        except:
+            return False
 
     def addData(self, db_file, table, tableName, data):
 

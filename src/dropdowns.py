@@ -1,7 +1,14 @@
 from kivy.uix.dropdown import DropDown
 
-__all__ = ("SessionDrop", "CourseDrop", "StreamDrop",\
-    "YearDrop","CatagoryDrop","CourseDropFee","StreamDropFee")
+__all__ = (
+    "SessionDrop",
+    "CourseDrop",
+    "StreamDrop",
+    "YearDrop",
+    "CatagoryDrop",
+    "CourseDropFee",
+    "StreamDropFee",
+)
 
 # dropDown class for Session
 class SessionDrop(DropDown):
@@ -16,6 +23,7 @@ class CourseDrop(DropDown):
 class StreamDrop(DropDown):
     pass
 
+
 class CourseDropFee(DropDown):
     pass
 
@@ -23,9 +31,11 @@ class CourseDropFee(DropDown):
 class StreamDropFee(DropDown):
     pass
 
+
 # dropDown class for year
 class YearDrop(DropDown):
     pass
+
 
 class CatagoryDrop(DropDown):
     pass
