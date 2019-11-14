@@ -1034,9 +1034,15 @@ class ForgotPasswordScreen(Screen, Database):
             self.ids.statusLabel.color = (1, 0, 0, 1)
             self.ids.resetPasswordBox.clear_widgets()
 
+<<<<<<< HEAD
     def new_password_set(self, inst1, inst2, *args):
         if inst1.text == inst2.text:
             if inst1.text is not "":
+=======
+    def new_password_set(self,inst1,inst2,*args):
+        if(inst1.text==inst2.text):
+            if(inst1.text != ""):
+>>>>>>> 561245a626b1f1a26f64ae2b70d5b7e79bfb68da
                 """
                 Database Update
                 code here 
