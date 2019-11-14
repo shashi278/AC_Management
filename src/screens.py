@@ -992,7 +992,7 @@ class ForgotPasswordScreen(Screen, Database):
 
     def new_password_set(self,inst1,inst2,*args):
         if(inst1.text==inst2.text):
-            if(inst1.text is not ""):
+            if(inst1.text != ""):
                 """
                 Database Update
                 code here 
