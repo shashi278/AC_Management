@@ -11,7 +11,6 @@ from kivymd.uix.snackbar import Snackbar
 
 from database import Database
 from hoverable import HoverBehavior
-from custom_textinputs import TextInputForList
 from custom_widgets import LabelForList, LabelForListStudent
 from popups import DeleteWarning, AddDataLayout
 

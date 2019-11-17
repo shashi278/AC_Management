@@ -86,52 +86,10 @@
 			pos: self.pos
 			size: self.size
 
-<TextInputForList>:
-	font_size:"17dp"
-	size_hint: .7,.8
-	foreground_color: [1,1,1,.5] if self.disabled else [1,1,1,1]
-	write_tab: False
-	padding:0,self.height/2-self.line_height/2
-	multiline:False
-	background_color: [.1,.1,.1,1] if self.disabled else [0,0,0,1]
-	cursor_color: C('#ffffff')
-	canvas.before:
-		Color:
-		    rgba:  1,1,1,1
-	canvas.after:
-		Color:
-		    rgba: 0,0,0,1
-		Ellipse:
-		    angle_start:180
-		    angle_end:360
-		    pos:(self.pos[0] - self.size[1]/2.0, self.pos[1])
-		    size: (self.size[1], self.size[1])
-		Ellipse:
-		    angle_start:360
-		    angle_end:540
-		    pos: (self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1])
-		    size: (self.size[1], self.size[1])
-		Color:
-		    rgba:(1,1,1,1) if self.focus==False else app.theme_cls.primary_color
-		Line:
-		    width:1.1
-		    points: self.pos[0] , self.pos[1], self.pos[0] + self.size[0], self.pos[1]
-		Line:
-		    width:1.1
-		    points: self.pos[0], self.pos[1] + self.size[1], self.pos[0] + self.size[0], self.pos[1] + self.size[1]
-		Line:
-		    width:1.1
-		    ellipse: self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 180, 360
-		Line:
-		    width:1.1
-		    ellipse: self.size[0] + self.pos[0] - self.size[1]/2.0, self.pos[1], self.size[1], self.size[1], 360, 540
-
 
 <LabelForListStudent>:
 	font_size:"20dp"
 	bold: True
-	#color:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
-	#test
 	color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 
 <LabelForList>:

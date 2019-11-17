@@ -17,7 +17,6 @@ from sqlite3 import Error
 
 from database import Database
 from screens import HomeScreen
-from custom_buttons import CircularToggleButton
 
 # Main App
 class AccountManagementSystem(App, Database):
