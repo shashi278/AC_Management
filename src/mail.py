@@ -37,7 +37,6 @@ class OTPMail(BaseMail):
         """
 
     def send_otp(self, to, *args):
-        print("Helllooooooo")
         otp = random.randint(000000, 999999)
         msg = EmailMessage()
 
@@ -47,10 +46,9 @@ class OTPMail(BaseMail):
         try:
             msg.set_content(self.otp_content.format(otp))
             self.s.send_message(msg)
-            print("OTP: ", otp)
             return otp
         except Exception as e:
-            print(e)
+            #print(e)
             return None
 
 
@@ -61,14 +59,12 @@ if __name__ == "__main__":
     stat = pool.apply_async(x.login, ("shashir@iiitkalyani.ac.in", "Shashi@1531"))
     stat = stat.get()
     if stat:
-        print("Here")
-
         otp = pool.apply_async(x.send_otp, ("anandnet628@gmail.com",))
         otp = otp.get()
-        print("OTP: here: ", otp)
+        #print("OTP: here: ", otp)
         # while True:
         while True:
-            print("nothing here")
             time.sleep(1)
     else:
-        print("Network Error")
+        #print("Network Error")
+        pass

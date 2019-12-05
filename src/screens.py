@@ -49,6 +49,7 @@ from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
 from custom_widgets import AdminInfoLabel, AdminInfoEditField
+from custom_buttons import DropBtn
 from dropdowns import *
 from mail import OTPMail
 from generate_fee_receipt import generate_pdf, generate_batch_fee_pdf
@@ -110,7 +111,6 @@ class UserScreen(Screen, Database):
 
     def onSelect(self, btn, mainBtn):
         mainBtn.text = btn.text
-        print(btn.id)
 
     def anim_in(self, instance):
         anim = Animation(pos_hint={"x": -0.3}, t="in_cubic", d=0.3)
@@ -122,7 +122,6 @@ class UserScreen(Screen, Database):
 
     def open_sideNav(self):
         sn = SideNav()
-        print(self.user_name)
         sn.ids.user_name.text = self.user_name
         sn.open()
 
@@ -837,7 +836,7 @@ class AdminScreen(Screen, Database):
         admin = self.ids.adminInfoLayout
         for each in admin.children[::-1]:
             texts.append(each.children[0].text)
-        print(texts)
+        #print(texts)
 
         admin.clear_widgets()
         for title, text in zip(
@@ -998,7 +997,7 @@ class ForgotPasswordScreen(Screen, Database):
         t1.start()
 
     def verify_code(self, inst, *args):
-        print(inst.text, self.otp_recieved)
+        #print(inst.text, self.otp_recieved)
         if inst.text == str(self.otp_recieved):
             if len(self.ids.resetPasswordBox.children) == 0:
                 self.ids.statusLabel.text = ""
@@ -1094,7 +1093,7 @@ class ForgotPasswordScreen(Screen, Database):
                 0
             ][2]
             self.otp_recieved = x.send_otp(admin_email)
-            print("OTP: ", self.otp_recieved)
+            #print("OTP: ", self.otp_recieved)
             self.ids.statusLabel.color = (1, 1, 1, 1)
             self.ids.statusLabel.text = "Code Sent"
             self.ids.sendBtn.text = "Resend Code"

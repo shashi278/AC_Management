@@ -3,6 +3,7 @@
 from fpdf import FPDF
 import os
 import platform
+import subprocess
 
 
 class PDF(FPDF):
@@ -41,6 +42,16 @@ class PDF(FPDF):
         self.set_font("Arial", "I", 8)
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
 
+def show_pdf(file_path):
+    try:
+        if platform.system() == "Windows":
+            os.startfile(file_path)
+        elif platform.system()=="Linux":
+            subprocess.call(['xdg-open',file_path])
+    except PermissionError:
+        from kivymd.uix.snackbar import Snackbar
+        Snackbar(text="Already open same file,Please close and Try Again", duration=2).show()
+
 
 def generate_pdf(personalinfo, feeinfo, dir):
 
@@ -73,8 +84,6 @@ def generate_pdf(personalinfo, feeinfo, dir):
     pdf.ln(9)
     pdf.set_font("Times", "B", 12)
 
-    print("\n\n\n\nI'm from generate_pdf_1\n\n\n")
-    print(personalinfo)
     pdf.multi_cell(
         0.0,
         7.0,
@@ -128,8 +137,9 @@ def generate_pdf(personalinfo, feeinfo, dir):
 
     if not os.path.exists(dir + "/Students"):
         os.mkdir(dir + "/Students")
-
-    pdf.output(dir + "/Students/" + personalinfo["reg"] + ".pdf", "F")
+    filepath_and_name=dir + "/Students/" + personalinfo["reg"] + ".pdf"
+    pdf.output(filepath_and_name, "F")
+    show_pdf(filepath_and_name)
 
 
 def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
@@ -201,18 +211,23 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
     if not os.path.exists(dir + "/Batch"):
         os.mkdir(dir + "/Batch")
 
+    
+    filepath_and_name=dir        \
+        + "/Batch/"              \
+        + basic_details["batch"] \
+        + "_"                    \
+        + basic_details["course"]\
+        + basic_details["stream"]\
+        + "_Sem-"                \
+        + basic_details["sem"]   \
+        + ".pdf"
+
     pdf.output(
-        dir
-        + "/Batch/"
-        + basic_details["batch"]
-        + "_"
-        + basic_details["course"]
-        + basic_details["stream"]
-        + "_Sem-"
-        + basic_details["sem"]
-        + ".pdf",
+        filepath_and_name,
         "F",
     )
+
+    show_pdf(filepath_and_name)
 
 
 if __name__ == "__main__":

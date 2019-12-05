@@ -41,7 +41,8 @@ class AccountManagementSystem(App, Database):
         return Builder.load_file("gui.kv")
 
     def close(self, tmp):
-        print("Window Closed")
+        #print("Window Closed")
+        pass
 
 
 if __name__ == "__main__":
