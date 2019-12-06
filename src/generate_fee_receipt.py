@@ -50,12 +50,12 @@ def show_pdf(file_path):
             subprocess.call(['xdg-open',file_path])
     except PermissionError:
         from kivymd.uix.snackbar import Snackbar
-        Snackbar(text="Already open same file,Please close and Try Again", duration=2).show()
+        Snackbar(text="File is already opened!", duration=1.5).show()
 
 
 def generate_pdf(personalinfo, feeinfo, dir):
 
-    # if dir is not provided then it will saved at desktop in Fee Reciepts Folder
+    # if dir is not provided then it will be saved at desktop in Fee Reciepts Folder
     if dir == None:
         if platform.system() == "Windows":
             desktop = os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop")
@@ -144,7 +144,7 @@ def generate_pdf(personalinfo, feeinfo, dir):
 
 def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
 
-    # if dir is not provided then it will saved at desktop in Fee Reciepts Folder
+    # if dir is not provided then it will be saved at desktop in Fee Reciepts Folder
     if dir == None:
         if platform.system() == "Windows":
             desktop = os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop")
