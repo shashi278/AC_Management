@@ -1,0 +1,29 @@
+exe-specification:
+  - pyinstaller.spec
+
+requirements:
+  - requirements.txt
+
+animator:
+  - src/animator/**/*
+
+media:
+  - src/media/**/*
+
+kivy:
+  - src/*.kv
+
+sql:
+  - src/*.sql
+ 
+database:
+  - src/database.py
+ 
+screens:
+  - src/screens.py
+
+pdf-generation:
+  - src/generate*.py
+
+dropdowns:
+   - src/drop*.py
