@@ -1,7 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-#To build Application, Open terminal/cmd prompt in this dir and run=>>  pyinstaller pyinstaller.spec  
-#Application build at dist folder
+#Specification file to generate an exe
+
+#to build, run `pyinstaller pyinstaller.spec`
+#Built exe will be in `dist` folder
 
 block_cipher = None
 
