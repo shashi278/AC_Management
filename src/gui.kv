@@ -1426,7 +1426,7 @@ ScreenManager:
 	user_name:''
 
 	BoxLayout:
-		orientation: 'vertical'
+		orientation: 'vertical' 
 
 		#---------------------------header Area--------------------------------------###
 		BoxLayout:
@@ -1559,6 +1559,12 @@ ScreenManager:
 	id:adminScreen
 	BoxLayout:
 		orientation: 'vertical'
+		canvas:
+			Color:
+				rgba:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+			Rectangle:
+				pos:self.pos
+				size:self.size 
 		#-----------title Bar------------#
 		AnchorLayout:
 			size_hint: (1,0.07)
@@ -2133,6 +2139,12 @@ ScreenManager:
 	name:"notificationScreen"
 	BoxLayout:
 		orientation:"vertical"
+		canvas:
+			Color:
+				rgba:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+			Rectangle:
+				pos:self.pos
+				size:self.size
 		#---------------------------header Area--------------------------------------###
 		BoxLayout:
 			id:header
@@ -2379,7 +2391,7 @@ ScreenManager:
 									size_hint_y:.06
 									canvas:
 										Color:
-											rgba:0,0,0,1
+											rgba:(.8,.8,.8,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 										Rectangle:
 											pos:self.pos
 											size:self.size

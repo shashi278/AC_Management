@@ -510,12 +510,12 @@ if __name__ == "__main__":
             return browser
 
         def _fbrowser_canceled(self, instance):
-            print("cancelled, Close self.")
+            pass
 
         def _fbrowser_success(self, instance):
-            print(instance.selection)
+            pass
 
         def _fbrowser_submit(self, instance):
-            print(instance.selection)
+            pass
 
     TestApp().run()

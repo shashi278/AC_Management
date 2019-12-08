@@ -61,10 +61,12 @@ if __name__ == "__main__":
 
     class HoverLabel(Label, HoverBehavior):
         def on_enter(self, *args):
-            print("You are in, through this point", self.border_point)
+            #print("You are in, through this point", self.border_point)
+            pass
 
         def on_leave(self, *args):
-            print("You left through this point", self.border_point)
+            #print("You left through this point", self.border_point)
+            pass
 
     Builder.load_string(
         """
