@@ -43,14 +43,17 @@ from random import choice
 from sqlite3 import Error
 from functools import partial
 import asyncio
+import random
+import smtplib
+from email.message import EmailMessage
 
 # local imports
 from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
 from custom_widgets import AdminInfoLabel, AdminInfoEditField
+from custom_buttons import DropBtn
 from dropdowns import *
-from mail import OTPMail
 from generate_fee_receipt import generate_pdf, generate_batch_fee_pdf
 
 # left iconbutton
@@ -110,7 +113,6 @@ class UserScreen(Screen, Database):
 
     def onSelect(self, btn, mainBtn):
         mainBtn.text = btn.text
-        print(btn.id)
 
     def anim_in(self, instance):
         anim = Animation(pos_hint={"x": -0.3}, t="in_cubic", d=0.3)
@@ -122,7 +124,6 @@ class UserScreen(Screen, Database):
 
     def open_sideNav(self):
         sn = SideNav()
-        print(self.user_name)
         sn.ids.user_name.text = self.user_name
         sn.open()
 
@@ -837,7 +838,7 @@ class AdminScreen(Screen, Database):
         admin = self.ids.adminInfoLayout
         for each in admin.children[::-1]:
             texts.append(each.children[0].text)
-        print(texts)
+        #print(texts)
 
         admin.clear_widgets()
         for title, text in zip(
@@ -998,7 +999,7 @@ class ForgotPasswordScreen(Screen, Database):
         t1.start()
 
     def verify_code(self, inst, *args):
-        print(inst.text, self.otp_recieved)
+        #print(inst.text, self.otp_recieved)
         if inst.text == str(self.otp_recieved):
             if len(self.ids.resetPasswordBox.children) == 0:
                 self.ids.statusLabel.text = ""
@@ -1083,18 +1084,17 @@ class ForgotPasswordScreen(Screen, Database):
         self.ids.sendBtn.disabled = True
         self.ids.statusLabel.color = (1, 1, 1, 1)
         self.ids.statusLabel.text = "Sending..."
-        x = OTPMail()
 
         # extract notification mail from database
         not_mail = ""
         not_pass = ""
-        if x.login(not_mail, not_pass):
+        if self.login(not_mail, not_pass):
             # extract admin email
             admin_email = self.extractAllData("user_main.db", "admin", order_by="id")[
                 0
             ][2]
-            self.otp_recieved = x.send_otp(admin_email)
-            print("OTP: ", self.otp_recieved)
+            self.otp_recieved = self.send_otp(not_mail,admin_email)
+            #print("OTP: ", self.otp_recieved)
             self.ids.statusLabel.color = (1, 1, 1, 1)
             self.ids.statusLabel.text = "Code Sent"
             self.ids.sendBtn.text = "Resend Code"
@@ -1115,7 +1115,35 @@ class ForgotPasswordScreen(Screen, Database):
             self.ids.statusLabel.color = (1, 0, 0, 1)
             self.ids.statusLabel.text = "Network Error"
             self.ids.sendBtn.disabled = False
+    
+    def login(self,email,password):
+        try:
+            self.s = smtplib.SMTP("smtp.gmail.com", 587)
+            self.s.starttls()
+            self.s.login(email, password)
+            return True
+        except:
+            return False
+    
+    def send_otp(self, from_, to, *args):
+        otp = random.randint(000000, 999999)
 
+        otp_content = """
+        Your OTP to reset password for AMS IIIT Kalyani is {}.
+        The OTP is valid only for this session.
+
+        This is a system generated email. Kindly do not reply. 
+        """
+        msg = EmailMessage()
+        msg["Subject"] = "Reset Password: AMS IIIT Kalyani"
+        msg["From"] = from_
+        msg["To"] = to
+        try:
+            msg.set_content(otp_content.format(otp))
+            self.s.send_message(msg)
+            return otp
+        except Exception as e:
+            return None
 
 class ForgotPasswordUser(Screen):
     pass
