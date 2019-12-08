@@ -1,5 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+#Specification file to generate an exe
+
+#to build, run `pyinstaller pyinstaller.spec`
+#Built exe will be in `dist` folder
+
 block_cipher = None
 
 from kivy.deps import sdl2, glew
