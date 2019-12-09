@@ -28,7 +28,7 @@ class AccountManagementSystem(App, Database):
         Window.set_title("Account Management System: IIIT Kalyani")
         
         default_setting={
-                    "theme_style": "Dark",
+                    "theme_style": "Light",
                     "theme_primary_palette": "Blue",
                     "theme_accent_palette": "Amber"
                     }
