@@ -447,6 +447,92 @@
 				#opposite_colors: True
 				on_release:
 					root.delete(app, root,root.ids.btn1.icon)
+
+###For Notification Panel
+<RowNotification>:
+	canvas.before:
+		Color:
+			rgba: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else (0,0,0,1) 
+		Rectangle:
+			pos: self.pos
+			size: self.size		
+	spacing: "10dp"
+	
+	sem:''
+	toyear: ''
+	fromyear: ''
+	course: ''
+	stream: ''
+	catagory:''
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.sem
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.fromyear+"-"+root.toyear
+			
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text: root.course
+			
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text: root.stream
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text: root.catagory
+	
+	ListItemLayoutProfile:
+		size_hint:(.1,1)
+		MDIconButton:
+			opposite_colors:True
+			icon:"delete"
+			on_release:
+				root.delete(root,app)
+
+<NotificationRecycleView>:
+	scroll_type: ['bars', 'content']
+	scroll_wheel_distance: dp(80)
+	bar_width: dp(7)
+	viewclass: 'RowNotification'
+	RecycleBoxLayout:
+		default_size: None, dp(35)
+		default_size_hint: 1, None
+		size_hint_y: None
+		height: self.minimum_height
+		orientation: "vertical"
+		spacing: dp(1)
+
+<MessageLayout>:
+	spacing:dp(20)
+	padding:20,0,0,0
+	MDTextField:
+		id:lateFine
+		size_hint_x:None
+		width:dp(180)
+		hint_text:"Late Fine After Due Date"
+		write_tab:False
+		input_filter:"int"
+		multiline:False
+	MDTextField:
+		id:dueDate
+		size_hint_x:None
+		width:dp(150)
+		hint_text:"Due Date(dd/mm/yyyy)"
+		write_tab:False
+		multiline:False
+		on_text:
+			self.text =self.text[:10] if len(self.text)>10 else self.text
+			app.root.ids.notificationScreen.load_message(root.ids.lateFine.text,self.text) if len(self.text)==10 else None
+
 #-------------------------Add Data Layout------------------------------------#
 
 <InputFields@MDTextField>:
@@ -2220,12 +2306,205 @@ ScreenManager:
 										rgba:app.theme_cls.primary_color
 									SmoothLine:
 										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+										width:dp(2)
+
 							BoxLayout:
+								orientation:"vertical"
 								size_hint_y:.91
-								MDLabel:
-									text:"Under Construction"
-									font_size:40
-									halign:"center"
+								ScrollView:
+									BoxLayout:
+										id:notificationContainer
+										orientation:"vertical"
+										size_hint_y:None
+										height:dp(880)
+										BoxLayout:
+											size_hint_y:None
+											height:dp(70)
+											spacing:dp(50)
+											padding:20,0,20,0
+											MDTextField:
+												id:notSemester
+												hint_text:"Semester"
+												write_tab:False
+												input_filter:"int"
+												multiline:False
+												on_text:
+													self.text =self.text[:2] if len(self.text)>2 else self.text
+											MDTextField:
+												id:notFromyear
+												hint_text:"From Year"
+												write_tab:False
+												input_filter:"int"
+												multiline:False
+												on_text:
+													self.text =self.text[:4] if len(self.text)>4 else self.text
+											MDTextField:
+												id:notToyear
+												hint_text:"To Year"
+												write_tab:False
+												input_filter:"int"
+												multiline:False
+												on_text:
+													self.text =self.text[:4] if len(self.text)>4 else self.text
+											MDRaisedButton:
+												id:notCourse
+												text:"Select Course"
+												on_release:
+													root.openCourseListNotification(self)
+											MDRaisedButton:
+												id:notStream
+												text:"Select Stream"
+												on_release:
+													root.openStreamListNotification(self)
+
+											MDRaisedButton:
+												id:notCatagory
+												text:"Due"
+												on_release:
+													root.openCatagoryListNotification(self)
+
+											MDIconButton:
+												icon:"plus"
+												md_bg_color:app.theme_cls.primary_color
+												on_release:
+													root.get_data(app)
+
+										#Selected Batches for Email
+										MDLabel:
+											size_hint_y:None
+											height:dp(40)
+											text:"Selected Batches:"
+											color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+											font_size:dp(20)
+										BoxLayout:
+											size_hint_y:None
+											height:dp(1)
+											canvas:
+												Color:
+													rgba:app.theme_cls.primary_color
+												SmoothLine:
+													points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+										Widget:
+											size_hint_y:None
+											height:dp(2)
+
+										BoxLayout:
+											id:listLabel
+											opacity:0
+											size_hint_y:None
+											height:dp(35)
+											canvas:
+												Color:
+													rgba:(0,0,0,1) if app.theme_cls.theme_style=="Light" else (.8,.8,.8,1)
+												Rectangle:
+													pos:self.pos
+													size:self.size
+											LabelForList:
+												size_hint_x:.18
+												text:"Semester"
+												color:(1,1,1,1)
+												bold:True
+											LabelForList:
+												size_hint_x:.18
+												text:"Batch"
+												color:(1,1,1,1)
+												bold:True
+											LabelForList:
+												size_hint_x:.18
+												text:"Course"
+												color:(1,1,1,1)
+												bold:True
+											LabelForList:
+												size_hint_x:.18
+												text:"Stream"
+												color:(1,1,1,1)
+												bold:True
+											LabelForList:
+												size_hint_x:.18
+												text:"Catagory"
+												color:(1,1,1,1)
+												bold:True
+											Widget:
+												size_hint_x:.10
+
+										BoxLayout:
+											id:batchList
+											size_hint_y:None
+											height:dp(43)
+											padding:0,1,0,0
+											Label:
+												text:"No Data Added"
+												color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+
+										#Message Mode 
+										BoxLayout:
+											size_hint_y:None
+											height:dp(100)
+											orientation:"vertical"
+											MDLabel:
+												text:"Message Mode:"
+												font_size:dp(20)
+												color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+											BoxLayout:
+												size_hint_y:None
+												height:dp(1)
+												canvas:
+													Color:
+														rgba:app.theme_cls.primary_color
+													SmoothLine:
+														points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+											BoxLayout:
+												padding:50,0,50,0
+												MDLabel:
+													text:"Self Generated"
+													color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+												MDCheckbox:
+													group:"m"
+													size_hint: None, None
+													size: dp(48), dp(48)
+													active:True
+													on_state:
+														root.mode_selection(0) if self.state=="down" else False
+												Widget:
+													size_hint_x:None
+													width:dp(150)
+												MDLabel:
+													text:"Software Generated"
+													color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+												MDCheckbox:
+													group:"m"
+													size_hint: None, None
+													size: dp(48), dp(48)
+													on_state:
+														root.mode_selection(1) if self.state=="down" else False
+						
+											
+										#This Field Depends on which Message Mode Selected
+										BoxLayout:
+											id:messageMode
+											size_hint_y:None
+											height:60
+											
+											
+
+										#This Container is for message Box
+										BoxLayout:
+											TextInput:
+												id:messageBox
+												size_hint:None,None
+												height:dp(400)
+												width:dp(500)
+												hint_text:"Message"
+												multiline:True
+
+										AnchorLayout:
+											padding:0,0,30,0
+											size_hint_y:None
+											height:dp(100)
+											id:sendBtn
+											anchor_x:"right"
+											MDRaisedButton:
+												text:"Send Notification"
 								
 
 					#---Pdf Generator Screen----
@@ -2252,6 +2531,7 @@ ScreenManager:
 										rgba:app.theme_cls.primary_color
 									SmoothLine:
 										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+										width:dp(2)
 
 							BoxLayout:
 								size_hint_y:.91
@@ -2433,6 +2713,7 @@ ScreenManager:
 											height: self.minimum_height
 											orientation: "vertical"
 											spacing: dp(1)
+
 
 <SideNav>:
 	size_hint: (0.2, 1)

@@ -1271,3 +1271,114 @@ class NotificationScreen(Screen, Database):
                 self.ids.rv.data = []
         except IndexError:
             pass
+
+    def openCourseListNotification(self, instance):
+        dropdown = CourseDrop()
+        dropdown.open(instance)
+        dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
+
+    def openStreamListNotification(self, instance):
+        dropdown = StreamDrop()
+        dropdown.open(instance)
+        dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
+
+    def openCatagoryListNotification(self, instance):
+        dropdown = CatagoryDrop()
+        dropdown.open(instance)
+        dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
+
+    mail_sending_batch=[]
+    def get_data(self,app):
+        """
+        Method to get batches details of which student will be notified
+        in a list of dictionary.  
+        """
+        if self.check_data():
+            if self.ids.notSemester.text is not ""\
+                and self.ids.notFromyear.text is not ""\
+                and self.ids.notToyear.text is not ""\
+                and self.ids.notCourse.text != "Select Course"\
+                and self.ids.notStream.text != "Select Stream":
+                self.mail_sending_batch.append({"sem":self.ids.notSemester.text,
+                                                "fromyear":self.ids.notFromyear.text,
+                                                "toyear":self.ids.notToyear.text,
+                                                "course":self.ids.notCourse.text,
+                                                "stream":self.ids.notStream.text,
+                                                "catagory":self.ids.notCatagory.text
+                })
+                #print(self.mail_sending_batch )
+            else:
+                Snackbar(text="Something not filled or selected !", duration=0.8).show()
+
+        self.populate_not_data(app)
+
+    def check_data(self):
+        """
+        Method to check data whether already present or not ! 
+        or
+        Rescue from same data multiple entry.
+        """
+        count=0
+        for each in self.mail_sending_batch:
+            if each["sem"]==self.ids.notSemester.text and\
+                each["fromyear"]==self.ids.notFromyear.text and\
+                each["toyear"]==self.ids.notToyear.text and\
+                each["course"]==self.ids.notCourse.text and\
+                each["stream"]==self.ids.notStream.text:
+
+                count=count+1
+
+        if count>0:
+            Snackbar(text="Same Data Already Added !", duration=0.8).show()
+            return False
+        else:
+            return True
+
+    def mode_selection(self,key):
+
+        if key==0:
+            self.ids.messageMode.clear_widgets()
+            self.ids.height=0
+
+        elif key==1:
+            self.ids.messageMode.clear_widgets()
+            from custom_layouts import MessageLayout
+            w=MessageLayout()
+            self.ids.messageMode.add_widget(w)
+
+    def delete_data(self,data,app):
+        self.mail_sending_batch.remove(data)
+        self.populate_not_data(app)
+
+    def populate_not_data(self,app):
+        if len(self.mail_sending_batch)==0:
+            self.ids.listLabel.opacity=0
+            self.ids.batchList.clear_widgets()
+            l=Label()
+            l.text="No data Added"
+            l.color=(0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
+            self.ids.batchList.add_widget(l)
+        else:
+            self.ids.batchList.clear_widgets()
+            self.ids.listLabel.opacity=1
+            self.ids.batchList.height=len(self.mail_sending_batch)*36+40
+            self.ids.notificationContainer.height=880+len(self.mail_sending_batch)*36
+            from custom_widgets import NotificationRecycleView
+            w=NotificationRecycleView()
+            self.ids.batchList.add_widget(w)
+            w.data=self.mail_sending_batch.copy()
+
+    def load_message(self,latefine,duedate):
+        msg="""Dear Student,
+                    It is informed you that you have not paid
+                your tution fee yet.
+
+                    Please,pay your tution fee before {} to
+                avoid the extra charges of ₹{}.
+
+                                                    Thanks
+                                            """
+        self.ids.messageBox.text=msg.format(duedate,latefine)
+
+
+            

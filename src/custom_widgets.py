@@ -14,6 +14,7 @@ Availabe classes:
 from kivymd.uix.list import OneLineListItem
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.recycleview import RecycleView
 
 from hoverable import HoverBehavior
 
@@ -50,4 +51,7 @@ class AdminInfoEditField(BoxLayout):
     """
     Custom textfields to allow editing of admin info.
     """
+    pass
+
+class NotificationRecycleView(RecycleView):
     pass
