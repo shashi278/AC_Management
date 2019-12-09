@@ -137,3 +137,19 @@ class AddUserDataLayout(FloatLayout):
 
 class RowFeeRecipt(BoxLayout):
     pass
+
+class RowNotification(BoxLayout):
+    def delete(self,root,app):
+        fields = [child.children[0].text for child in root.children[-1:0:-1]]
+        a=fields[1].split("-")
+        data={"sem":fields[0],
+               "fromyear":a[0],
+               "toyear":a[1],
+               "course":fields[2],
+               "stream":fields[3],
+               "catagory":fields[4]}
+        app.root.ids.notificationScreen.delete_data(data,app)
+
+
+class MessageLayout(BoxLayout):
+    pass
