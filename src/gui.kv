@@ -538,7 +538,7 @@
 		orientation: "vertical"
 		spacing: dp(1)
 
-<MessageLayout>:
+<SoftwareModeLayout>:
 	spacing:dp(20)
 	padding:20,0,0,0
 	MDTextField:
@@ -549,16 +549,16 @@
 		write_tab:False
 		input_filter:"int"
 		multiline:False
-	MDTextField:
+	MDLabel:
 		id:dueDate
 		size_hint_x:None
-		width:dp(150)
-		hint_text:"Due Date(dd/mm/yyyy)"
-		write_tab:False
-		multiline:False
-		on_text:
-			self.text =self.text[:10] if len(self.text)>10 else self.text
-			app.root.ids.notificationScreen.load_message(root.ids.lateFine.text,self.text) if len(self.text)==10 else None
+		width:dp(120)
+		text:"Select Due Date"
+		color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+	MDIconButton:
+		icon:"calendar-range"
+		on_release:
+			root.open_date_picker(app)
 
 #-------------------------Add Data Layout------------------------------------#
 
@@ -2545,12 +2545,13 @@ ScreenManager:
 													text:"Self Generated"
 													color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 												MDCheckbox:
-													group:"m"
+													id:checkbox1
 													size_hint: None, None
 													size: dp(48), dp(48)
 													active:True
 													on_state:
-														root.mode_selection(0) if self.state=="down" else False
+														root.mode_selection(0) if self.state=="down" else None
+														root.ids.checkbox2.active=True if self.state=="normal" else False
 												Widget:
 													size_hint_x:None
 													width:dp(150)
@@ -2558,11 +2559,13 @@ ScreenManager:
 													text:"Software Generated"
 													color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 												MDCheckbox:
-													group:"m"
+													id:checkbox2
 													size_hint: None, None
 													size: dp(48), dp(48)
 													on_state:
-														root.mode_selection(1) if self.state=="down" else False
+														root.mode_selection(1) if self.state=="down" else None
+														root.ids.checkbox1.active=True if self.state=="normal" else False
+
 						
 											
 										#This Field Depends on which Message Mode Selected

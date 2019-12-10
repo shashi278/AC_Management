@@ -1365,12 +1365,14 @@ class NotificationScreen(Screen, Database):
 
         if key==0:
             self.ids.messageMode.clear_widgets()
+            self.ids.messageBox.text=""
             self.ids.height=0
 
         elif key==1:
             self.ids.messageMode.clear_widgets()
-            from custom_layouts import MessageLayout
-            w=MessageLayout()
+            self.ids.messageBox.text=""
+            from custom_layouts import SoftwareModeLayout
+            w=SoftwareModeLayout()
             self.ids.messageMode.add_widget(w)
 
     def delete_data(self,data,app):
