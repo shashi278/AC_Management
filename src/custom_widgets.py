@@ -8,6 +8,7 @@ Availabe classes:
     - LabelForListStudent
     - AdminInfoLabel
     - AdminInfoEditField
+    - CustomRecycleView
 
 """
 
@@ -53,5 +54,5 @@ class AdminInfoEditField(BoxLayout):
     """
     pass
 
-class NotificationRecycleView(RecycleView):
+class CustomRecycleView(RecycleView):
     pass
