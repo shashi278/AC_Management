@@ -447,6 +447,34 @@
 				#opposite_colors: True
 				on_release:
 					root.delete(app, root,root.ids.btn1.icon)
+<RowUsersLogs>:
+	canvas.before:
+		Color:
+			rgba: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else (0,0,0,1) 
+		Rectangle:
+			pos: self.pos
+			size: self.size		
+	spacing: "10dp"
+	
+	name:''
+	date: ''
+	logintime: ''
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.name
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.date
+			
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.logintime
+
 
 ###For Notification Panel
 <RowNotification>:
@@ -498,11 +526,10 @@
 			on_release:
 				root.delete(root,app)
 
-<NotificationRecycleView>:
+<CustomRecycleView>:
 	scroll_type: ['bars', 'content']
 	scroll_wheel_distance: dp(80)
 	bar_width: dp(7)
-	viewclass: 'RowNotification'
 	RecycleBoxLayout:
 		default_size: None, dp(35)
 		default_size_hint: 1, None
@@ -1643,6 +1670,8 @@ ScreenManager:
 <AdminScreen>:
 	name:"adminScreen"
 	id:adminScreen
+	on_enter:
+		root.populate_userslog()
 	BoxLayout:
 		orientation: 'vertical'
 		canvas:
@@ -1697,6 +1726,11 @@ ScreenManager:
 
 						HoverOneLineListItem:
 							text:"Admin Setting"
+							on_release:
+								root.change_screen(self)
+							
+						HoverOneLineListItem:
+							text:"Users Logs"
 							on_release:
 								root.change_screen(self)
 
@@ -2215,7 +2249,59 @@ ScreenManager:
 												text:"**Notification Email is for sending fee notification mail to students"
 												font_size:dp(13)
 												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
-										
+					Screen:
+						name:"usersLogs"
+						
+
+						BoxLayout:
+							orientation:"vertical"
+							BoxLayout:
+								orientation:"vertical"
+								size_hint_y:None
+								height:50
+								padding:20,10,0,4
+								MDLabel:
+									text:"Logs"
+									font_size:dp(25)
+									color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
+							BoxLayout:
+								size_hint_y:None
+								height:dp(1.5)
+								canvas:
+									Color:
+										rgba:app.theme_cls.primary_color
+									SmoothLine:
+										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+										width:dp(1.5)
+							Widget:
+								size_hint_y:None
+								height:dp(5)
+							BoxLayout:
+								size_hint_y:None
+								height:dp(35)
+								canvas:
+									Color:
+										rgba:(0,0,0,1) if app.theme_cls.theme_style=='Light' else (.8,.8,.8,1)
+									Rectangle:
+										pos:self.pos
+										size:self.size
+
+								LabelForList:
+									text:"User Name"
+								LabelForList:
+									text:"Date"
+								LabelForList:
+									text:"Login Time"
+							Widget:
+								size_hint_y:None
+								height:dp(2)
+
+							BoxLayout:
+								id:logList
+								Image:
+									source:"media/images/no_data.png"
+
+
 
 
 #-----------------------Notification Screen Starts----------------##

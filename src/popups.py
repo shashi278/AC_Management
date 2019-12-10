@@ -80,6 +80,17 @@ class LoginPopup(ModalView, Database):
             self.ids.warningInfo.text = ""
             self.dismiss()
             root.ids.userScreen.user_name = valid_user[1]
+            """
+            #userlog
+            #push the log data into database
+            
+            from datetime import datetime,date 
+            log_data={"name":valid_user[1],
+                  "date":date.today().strftime("%B %d, %Y"),
+                  "logintime":datetime.now().strftime("%H:%M:%S")  
+                  }
+            print(log_data)    
+            """
             return True
         else:
             self.ids.warningInfo.text = "Wrong username or password"

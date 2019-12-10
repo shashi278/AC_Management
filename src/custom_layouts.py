@@ -150,6 +150,9 @@ class RowNotification(BoxLayout):
                "catagory":fields[4]}
         app.root.ids.notificationScreen.delete_data(data,app)
 
+class RowUsersLogs(BoxLayout):
+    pass
+
 
 class MessageLayout(BoxLayout):
     pass
