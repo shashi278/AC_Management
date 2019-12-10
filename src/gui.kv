@@ -447,6 +447,34 @@
 				#opposite_colors: True
 				on_release:
 					root.delete(app, root,root.ids.btn1.icon)
+<RowUsersLogs>:
+	canvas.before:
+		Color:
+			rgba: [1,1,1,1] if app.theme_cls.theme_style=="Dark" else (0,0,0,1) 
+		Rectangle:
+			pos: self.pos
+			size: self.size		
+	spacing: "10dp"
+	
+	name:''
+	date: ''
+	logintime: ''
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.name
+
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.date
+			
+	ListItemLayoutProfile:
+		size_hint:(.18,1)
+		LabelForList:
+			text:root.logintime
+
 
 ###For Notification Panel
 <RowNotification>:
@@ -498,11 +526,10 @@
 			on_release:
 				root.delete(root,app)
 
-<NotificationRecycleView>:
+<CustomRecycleView>:
 	scroll_type: ['bars', 'content']
 	scroll_wheel_distance: dp(80)
 	bar_width: dp(7)
-	viewclass: 'RowNotification'
 	RecycleBoxLayout:
 		default_size: None, dp(35)
 		default_size_hint: 1, None
@@ -511,7 +538,7 @@
 		orientation: "vertical"
 		spacing: dp(1)
 
-<MessageLayout>:
+<SoftwareModeLayout>:
 	spacing:dp(20)
 	padding:20,0,0,0
 	MDTextField:
@@ -522,16 +549,16 @@
 		write_tab:False
 		input_filter:"int"
 		multiline:False
-	MDTextField:
+	MDLabel:
 		id:dueDate
 		size_hint_x:None
-		width:dp(150)
-		hint_text:"Due Date(dd/mm/yyyy)"
-		write_tab:False
-		multiline:False
-		on_text:
-			self.text =self.text[:10] if len(self.text)>10 else self.text
-			app.root.ids.notificationScreen.load_message(root.ids.lateFine.text,self.text) if len(self.text)==10 else None
+		width:dp(120)
+		text:"Select Due Date"
+		color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+	MDIconButton:
+		icon:"calendar-range"
+		on_release:
+			root.open_date_picker(app)
 
 #-------------------------Add Data Layout------------------------------------#
 
@@ -1659,6 +1686,8 @@ ScreenManager:
 <AdminScreen>:
 	name:"adminScreen"
 	id:adminScreen
+	on_enter:
+		root.populate_userslog()
 	BoxLayout:
 		orientation: 'vertical'
 		canvas:
@@ -1713,6 +1742,11 @@ ScreenManager:
 
 						HoverOneLineListItem:
 							text:"Admin Setting"
+							on_release:
+								root.change_screen(self)
+							
+						HoverOneLineListItem:
+							text:"Users Logs"
 							on_release:
 								root.change_screen(self)
 
@@ -2231,7 +2265,59 @@ ScreenManager:
 												text:"**Notification Email is for sending fee notification mail to students"
 												font_size:dp(13)
 												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
-										
+					Screen:
+						name:"usersLogs"
+						
+
+						BoxLayout:
+							orientation:"vertical"
+							BoxLayout:
+								orientation:"vertical"
+								size_hint_y:None
+								height:50
+								padding:20,10,0,4
+								MDLabel:
+									text:"Logs"
+									font_size:dp(25)
+									color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
+							BoxLayout:
+								size_hint_y:None
+								height:dp(1.5)
+								canvas:
+									Color:
+										rgba:app.theme_cls.primary_color
+									SmoothLine:
+										points:[self.x, self.y+self.height/2,self.x+self.width, self.y+self.height/2]
+										width:dp(1.5)
+							Widget:
+								size_hint_y:None
+								height:dp(5)
+							BoxLayout:
+								size_hint_y:None
+								height:dp(35)
+								canvas:
+									Color:
+										rgba:(0,0,0,1) if app.theme_cls.theme_style=='Light' else (.8,.8,.8,1)
+									Rectangle:
+										pos:self.pos
+										size:self.size
+
+								LabelForList:
+									text:"User Name"
+								LabelForList:
+									text:"Date"
+								LabelForList:
+									text:"Login Time"
+							Widget:
+								size_hint_y:None
+								height:dp(2)
+
+							BoxLayout:
+								id:logList
+								Image:
+									source:"media/images/no_data.png"
+
+
 
 
 #-----------------------Notification Screen Starts----------------##
@@ -2475,12 +2561,13 @@ ScreenManager:
 													text:"Self Generated"
 													color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 												MDCheckbox:
-													group:"m"
+													id:checkbox1
 													size_hint: None, None
 													size: dp(48), dp(48)
 													active:True
 													on_state:
-														root.mode_selection(0) if self.state=="down" else False
+														root.mode_selection(0) if self.state=="down" else None
+														root.ids.checkbox2.active=True if self.state=="normal" else False
 												Widget:
 													size_hint_x:None
 													width:dp(150)
@@ -2488,11 +2575,13 @@ ScreenManager:
 													text:"Software Generated"
 													color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 												MDCheckbox:
-													group:"m"
+													id:checkbox2
 													size_hint: None, None
 													size: dp(48), dp(48)
 													on_state:
-														root.mode_selection(1) if self.state=="down" else False
+														root.mode_selection(1) if self.state=="down" else None
+														root.ids.checkbox1.active=True if self.state=="normal" else False
+
 						
 											
 										#This Field Depends on which Message Mode Selected

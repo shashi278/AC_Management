@@ -150,6 +150,36 @@ class RowNotification(BoxLayout):
                "category":fields[4]}
         app.root.ids.notificationScreen.delete_data(data,app)
 
-
-class MessageLayout(BoxLayout):
+class RowUsersLogs(BoxLayout):
     pass
+
+
+class SoftwareModeLayout(BoxLayout):
+    
+    previous_date=None
+    def open_date_picker(self,app):
+        self.app=app
+        if self.ids.lateFine.text!="":
+            from kivymd.uix.picker import MDDatePicker
+
+            if self.previous_date is not None:
+                pd = self.previous_date
+                try:
+                    MDDatePicker(self.set_previous_date, pd.year, pd.month, pd.day).open()
+                except AttributeError:
+                    MDDatePicker(self.set_previous_date).open()
+            else:
+                MDDatePicker(self.set_previous_date).open()
+        else:
+            Snackbar(
+                    text="Please Fill Late Fine.",
+                    duration=2.5,
+                ).show()
+
+    def set_previous_date(self, date_obj):
+
+        self.previous_date = date_obj
+        self.ids.dueDate.text = "/".join(str(date_obj).split("-")[::-1])
+        self.app.root.ids.notificationScreen.load_message(self.ids.lateFine.text,self.ids.dueDate.text)
+    
+        

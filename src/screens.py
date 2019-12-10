@@ -479,6 +479,13 @@ class AdminScreen(Screen, Database):
             self.ids.top_bar.text = "Admin: " + instance.text
             self.ids.scrManager.current = "adminSetting"
 
+        elif instance.text == "Users Logs" and self.check_edits_users()\
+                                and self.check_edits_admin():
+            self.ids.top_bar.text = "Admin: " + instance.text
+            self.ids.scrManager.current = "usersLogs"
+
+
+
     def check_edits_admin(self):
         if (
             self.ids.adminInfoEditBtn.icon == "check"
@@ -993,6 +1000,26 @@ class AdminScreen(Screen, Database):
             else:
                 mail_pass_label.text = "*********"
 
+    def populate_userslog(self):
+        """
+        ### Temporary Instructuction ### delete this after work will be done
+        1.Create databse for UserLog
+        2.push into database
+            go to popup.py-> search for "#userlog" and necessary instruction provided there
+        3.extact logs from database into "extracred_from_databse" list
+        """
+        extracted_from_database=[]#[{"name":"Anand Kumar","date":"12/10/2019","logintime":"10:23:23"},{"name":"Shashi Ranjan","date":"22/11/2019","logintime":"12:29:18"}]
+        if len(extracted_from_database)==0:
+            pass
+        else:
+            self.ids.logList.clear_widgets()
+            from custom_widgets import CustomRecycleView
+            crv = CustomRecycleView()
+            crv.viewclass = 'RowUsersLogs'
+            self.ids.logList.add_widget(crv)
+            crv.data=extracted_from_database.copy()
+
+
 
 class ForgotPasswordScreen(Screen, Database):
 
@@ -1350,12 +1377,14 @@ class NotificationScreen(Screen, Database):
 
         if key==0:
             self.ids.messageMode.clear_widgets()
+            self.ids.messageBox.text=""
             self.ids.height=0
 
         elif key==1:
             self.ids.messageMode.clear_widgets()
-            from custom_layouts import MessageLayout
-            w=MessageLayout()
+            self.ids.messageBox.text=""
+            from custom_layouts import SoftwareModeLayout
+            w=SoftwareModeLayout()
             self.ids.messageMode.add_widget(w)
 
     def delete_data(self,data,app):
@@ -1375,8 +1404,10 @@ class NotificationScreen(Screen, Database):
             self.ids.listLabel.opacity=1
             self.ids.batchList.height=len(self.mail_sending_batch)*36+40
             self.ids.notificationContainer.height=880+len(self.mail_sending_batch)*36
-            from custom_widgets import NotificationRecycleView
-            w=NotificationRecycleView()
+            from custom_widgets import CustomRecycleView
+            from custom_layouts import RowNotification
+            w=CustomRecycleView()
+            w.viewclass= 'RowNotification'
             self.ids.batchList.add_widget(w)
             w.data=self.mail_sending_batch.copy()
     
