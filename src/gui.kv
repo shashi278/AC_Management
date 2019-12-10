@@ -554,6 +554,7 @@
 		size_hint_x:None
 		width:dp(120)
 		text:"Select Due Date"
+		color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 	MDIconButton:
 		icon:"calendar-range"
 		on_release:
