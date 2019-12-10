@@ -55,7 +55,7 @@ from custom_widgets import AdminInfoLabel, AdminInfoEditField
 from custom_buttons import DropBtn
 from dropdowns import *
 from generate_fee_receipt import generate_pdf, generate_batch_fee_pdf
-from custom_widgets import NotificationRecycleView
+from custom_widgets import CustomRecycleView
 
 # left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
@@ -1346,7 +1346,7 @@ class NotificationScreen(Screen, Database):
                 })
                 #print(self.mail_sending_batch )
             else:
-                Snackbar(text="Something not filled or selected !", duration=0.8).show()
+                Snackbar(text="Something not filled or selected!", duration=0.8).show()
 
         self.populate_not_data(app)
 
@@ -1413,7 +1413,7 @@ class NotificationScreen(Screen, Database):
     
     def send_notification(self):
         x= self.ids.batchList.children[0]
-        if isinstance(x, NotificationRecycleView):
+        if isinstance(x, CustomRecycleView):
             conn = self.connect_database("student_main.db")
             conn_fee= self.connect_database("fee_main.db")
             mailing_list=[]
