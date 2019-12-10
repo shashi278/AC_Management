@@ -463,7 +463,7 @@
 	fromyear: ''
 	course: ''
 	stream: ''
-	catagory:''
+	category:''
 
 	ListItemLayoutProfile:
 		size_hint:(.18,1)
@@ -488,7 +488,7 @@
 	ListItemLayoutProfile:
 		size_hint:(.18,1)
 		LabelForList:
-			text: root.catagory
+			text: root.category
 	
 	ListItemLayoutProfile:
 		size_hint:(.1,1)
@@ -667,12 +667,14 @@
 <UpdateStudentLayout>:
 	id: updateInfoLayout
 	name: ''
+	email: ''
 	batch: ''
 	course: ''
 	stream: ''
 
 	orientation: 'vertical'
 	BoxLayout:
+		orientation: 'vertical'
 		spacing: 10
 		#name
 		BoxLayout:
@@ -683,6 +685,16 @@
 					hint_text: "Name"
 					text: root.name
 					on_text: root.name= self.text
+		
+		#email
+		BoxLayout:
+			padding: 10,0
+			AnchorLayout:
+				MDTextField:
+					write_tab: False
+					hint_text: "Email"
+					text: root.email
+					on_text: root.email= self.text
 
 
 		#batch
@@ -837,6 +849,10 @@ ScreenManager:
 					bold: True
 				LabelAccountPage:
 					id: roll
+					halign: 'center'
+					font_size: '18sp'
+				LabelAccountPage:
+					id: email
 					halign: 'center'
 					font_size: '18sp'
 					
@@ -2421,7 +2437,7 @@ ScreenManager:
 												bold:True
 											LabelForList:
 												size_hint_x:.18
-												text:"Catagory"
+												text:"Category"
 												color:(1,1,1,1)
 												bold:True
 											Widget:
@@ -2501,10 +2517,11 @@ ScreenManager:
 											padding:0,0,30,0
 											size_hint_y:None
 											height:dp(100)
-											id:sendBtn
 											anchor_x:"right"
 											MDRaisedButton:
+												id:sendBtn
 												text:"Send Notification"
+												on_release: root.send_notification()
 								
 
 					#---Pdf Generator Screen----

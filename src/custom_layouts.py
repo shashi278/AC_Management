@@ -147,7 +147,7 @@ class RowNotification(BoxLayout):
                "toyear":a[1],
                "course":fields[2],
                "stream":fields[3],
-               "catagory":fields[4]}
+               "category":fields[4]}
         app.root.ids.notificationScreen.delete_data(data,app)
 
 
