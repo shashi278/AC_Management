@@ -54,7 +54,7 @@ class Database:
                     field_vals = list([field_vals])
 
                 for field, field_val in zip(fields, field_vals):
-
+                    #print(field,field_val)
                     cur.execute(
                         """
 							UPDATE {}
@@ -194,6 +194,7 @@ class Database:
                         kwargs["stream"],
                         kwargs["fromYear"] + "-" + kwargs["toYear"],
                         kwargs["fee"],
+                        sheet.cell_value(i, 3)
                     )
 
                     self.insert_into_database(tableName, conn, data)

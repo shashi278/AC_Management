@@ -55,6 +55,7 @@ from custom_widgets import AdminInfoLabel, AdminInfoEditField
 from custom_buttons import DropBtn
 from dropdowns import *
 from generate_fee_receipt import generate_pdf, generate_batch_fee_pdf
+from custom_widgets import CustomRecycleView
 
 # left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
@@ -198,6 +199,7 @@ class ProfilePage(Screen, Database):
         Clock.schedule_interval(self.set_button_width, 0)
         Clock.schedule_interval(self.set_name_info, 0)
         Clock.schedule_interval(self.set_roll_info, 0)
+        Clock.schedule_interval(self.set_email_info, 0)
         Clock.schedule_once(self.schedule, 0.5)
 
         Animation(opacity=1, d=0.5).start(self.ids.box)
@@ -211,6 +213,7 @@ class ProfilePage(Screen, Database):
     def on_leave(self, *args):
         self.ids.name.text = ""
         self.ids.roll.text = ""
+        self.ids.email.text= ""
         self.ids.course.info_name = ""
         self.ids.stream.info_name = ""
         self.ids.batch.info_name = ""
@@ -228,6 +231,12 @@ class ProfilePage(Screen, Database):
             self.ids.roll.text += next(self.r)
         except StopIteration:
             Clock.unschedule(self.set_roll_info)
+    
+    def set_email_info(self, interval):
+        try:
+            self.ids.email.text += next(self.e)
+        except StopIteration:
+            Clock.unschedule(self.set_email_info)
 
     def set_course_info(self, interval):
         try:
@@ -265,6 +274,7 @@ class ProfilePage(Screen, Database):
             )[0]
             self.r = iter(list("Registration Number: {}".format(self.data_tuple[0])))
             self.n = iter(list(self.data_tuple[1]))
+            self.e = iter(list("Email ID: {}".format(self.data_tuple[6])))
             self.b = iter(list(self.data_tuple[4]))
             self.c = iter(list(self.data_tuple[2]))
             self.s = iter(list(self.data_tuple[3]))
@@ -683,9 +693,8 @@ class AdminScreen(Screen, Database):
                     toYear=self.fields["toYear"],
                     course=self.fields["course"],
                     stream=self.fields["stream"],
-                    fee=self.fields["fee"],
-                    fpopup=fpopup,
-                ):
+                    fee=self.fields["fee"]
+                    ):
                     Snackbar(text="File uploaded successfully!", duration=2).show()
                 else:
                     Snackbar(text="Error uploading file.", duration=2).show()
@@ -741,6 +750,7 @@ class AdminScreen(Screen, Database):
                     update_layout.course = data_tuple[2]
                     update_layout.stream = data_tuple[3]
                     update_layout.batch = data_tuple[4]
+                    update_layout.email= data_tuple[6]
 
                     parent.add_widget(update_layout)
 
@@ -756,13 +766,15 @@ class AdminScreen(Screen, Database):
     def updateStudentInfo(self, reg_no, parent):
         if len(reg_no) == 3:
             widget = parent.children[0]
-            fields = ("name", "course", "stream", "batch")
+            fields = ("name", "course", "stream", "batch", "email")
             new_data = (
                 widget.name,
                 widget.ids.courseBtn.text,
                 widget.ids.streamBtn.text,
                 widget.batch,
+                widget.email
             )
+
             try:
                 conn = self.connect_database("student_main.db")
                 self.update_database(
@@ -1021,7 +1033,7 @@ class ForgotPasswordScreen(Screen, Database):
         textfld.theme_text_color = "Custom"
         textfld.foreground_color = [1, 1, 1, 1]
         t1 = threading.Thread(
-            target=self.get_email_status, args=(self.ids.codeSubmitBox, textfld)
+            target=self.send_reset_mail, args=(self.ids.codeSubmitBox, textfld)
         )
         t1.start()
 
@@ -1101,7 +1113,7 @@ class ForgotPasswordScreen(Screen, Database):
         self.parent.parent.opacity = 0.6
         self.parent.current = "login"
 
-    def get_email_status(self, Container, textfld, *args):
+    def send_reset_mail(self, Container, textfld, *args):
         """
             Code for send email 
             if email sent return True 
@@ -1117,9 +1129,7 @@ class ForgotPasswordScreen(Screen, Database):
         not_pass = ""
         if self.login(not_mail, not_pass):
             # extract admin email
-            admin_email = self.extractAllData("user_main.db", "admin", order_by="id")[
-                0
-            ][2]
+            admin_email = self.extractAllData("user_main.db", "admin", order_by="id")[0][2]
             self.otp_recieved = self.send_otp(not_mail,admin_email)
             #print("OTP: ", self.otp_recieved)
             self.ids.statusLabel.color = (1, 1, 1, 1)
@@ -1177,6 +1187,8 @@ class ForgotPasswordUser(Screen):
 
 
 class NotificationScreen(Screen, Database):
+    mail_sending_batch=[]
+    
     def openCourseList(self, instance):
         dropdown = CourseDropFee()
         dropdown.open(instance)
@@ -1296,7 +1308,7 @@ class NotificationScreen(Screen, Database):
                         pass
             else:
                 self.ids.rv.data = []
-        except IndexError:
+        except (IndexError, TypeError):
             pass
 
     def openCourseListNotification(self, instance):
@@ -1314,11 +1326,10 @@ class NotificationScreen(Screen, Database):
         dropdown.open(instance)
         dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
 
-    mail_sending_batch=[]
     def get_data(self,app):
         """
-        Method to get batches details of which student will be notified
-        in a list of dictionary.  
+        Method to get batch details of which student will be notified
+        in a list of dictionary.
         """
         if self.check_data():
             if self.ids.notSemester.text is not ""\
@@ -1331,11 +1342,11 @@ class NotificationScreen(Screen, Database):
                                                 "toyear":self.ids.notToyear.text,
                                                 "course":self.ids.notCourse.text,
                                                 "stream":self.ids.notStream.text,
-                                                "catagory":self.ids.notCatagory.text
+                                                "category":self.ids.notCatagory.text
                 })
                 #print(self.mail_sending_batch )
             else:
-                Snackbar(text="Something not filled or selected !", duration=0.8).show()
+                Snackbar(text="Something not filled or selected!", duration=0.8).show()
 
         self.populate_not_data(app)
 
@@ -1351,12 +1362,13 @@ class NotificationScreen(Screen, Database):
                 each["fromyear"]==self.ids.notFromyear.text and\
                 each["toyear"]==self.ids.notToyear.text and\
                 each["course"]==self.ids.notCourse.text and\
+                each["category"]==self.ids.notCatagory.text and\
                 each["stream"]==self.ids.notStream.text:
 
                 count=count+1
 
         if count>0:
-            Snackbar(text="Same Data Already Added !", duration=0.8).show()
+            Snackbar(text="Duplicate data!", duration=0.8).show()
             return False
         else:
             return True
@@ -1398,6 +1410,83 @@ class NotificationScreen(Screen, Database):
             w.viewclass= 'RowNotification'
             self.ids.batchList.add_widget(w)
             w.data=self.mail_sending_batch.copy()
+    
+    def send_notification(self):
+        x= self.ids.batchList.children[0]
+        if isinstance(x, CustomRecycleView):
+            conn = self.connect_database("student_main.db")
+            conn_fee= self.connect_database("fee_main.db")
+            mailing_list=[]
+            
+            for each in x.data:
+                cond= ("batch ='"+each["fromyear"]+"-"+each["toyear"]+
+                        "' AND course='"+each["course"]+"' AND stream='"+each["stream"]+"'")
+
+                filter1= self.search_from_database_many("General_record", conn, cond)
+
+                for each_data in filter1:
+                    reg= each_data[0]
+                    if each["category"]=="All":
+                        cond= "sem= '"+each["sem"]+"'"
+                    else:
+                        cond= "sem= '"+each["sem"]+"' AND due > 0"
+                    
+                    if self.search_from_database_many("_"+str(reg), conn_fee, cond):
+                        mailing_list.append(each_data[6])
+            
+            mail_text= self.ids.messageBox.text
+            if not mail_text:
+                Snackbar(text="Empty message!", duration=.8).show()
+                return
+            
+            mailing_list= list(set(mailing_list))
+            if not mailing_list:
+                Snackbar(text="Mailing list empty!", duration=.8).show()
+                return
+            
+            t1 = threading.Thread(
+            target=self.send_notif_mail, args=(mail_text, mailing_list)
+            )
+            t1.start()
+
+        else:
+            Snackbar(text="Mailing list empty!", duration=.8).show()
+    
+    def login(self,email,password):
+        try:
+            self.s = smtplib.SMTP("smtp.gmail.com", 587)
+            self.s.starttls()
+            self.s.login(email, password)
+            return True
+        except:
+            return False
+    
+    def send_notif_mail(self, e_msg, receipients):
+        self.ids.sendBtn.text = "Sending..."
+        self.ids.sendBtn.disabled = True
+        # extract notification mail from database
+        not_mail = ""
+        not_pass = ""
+        if self.login(not_mail, not_pass):
+            msg = EmailMessage()
+            msg["Subject"]= "Fee Payment Remainder: IIIT Kalyani"
+            msg["From"]= not_mail
+            msg["To"]= ",".join(receipents)
+            try:
+                self.s.send_message(e_msg)
+                Snackbar(text="Notification Sent.", duration=1.5).show()
+            except Exception as e:
+                Snackbar(
+                text="Error sending notification mail", duration=1.5
+                ).show()
+
+        else:
+            Snackbar(
+                text="Could not sent mail. Check your connection or credentials.", duration=1.5
+            ).show()
+
+        self.ids.sendBtn.text= "Send Notification"
+        self.ids.sendBtn.disabled= False
 
     def load_message(self,latefine,duedate):
         msg="""Dear Student,
@@ -1410,6 +1499,4 @@ class NotificationScreen(Screen, Database):
                                                     Thanks
                                             """
         self.ids.messageBox.text=msg.format(duedate,latefine)
-
-
-            
+        
