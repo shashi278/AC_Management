@@ -1707,7 +1707,7 @@ ScreenManager:
 					size: self.size
 			Label:
 				id: top_bar
-				text:"Admin:Manage User"
+				text:"Admin: Manage User"
 				font_size:26
 		#------------Main Layout ---------#
 		BoxLayout:
@@ -1749,8 +1749,6 @@ ScreenManager:
 							text:"Users Logs"
 							on_release:
 								root.change_screen(self)
-
-					
 
 				AnchorLayout:
 					size_hint: (1,0.1)
@@ -2188,7 +2186,7 @@ ScreenManager:
 												BoxLayout:
 													id:adminUsernameLayout
 													AdminInfoLabel:
-														title:"UserName"
+														title:"Username"
 														text:''
 												MDIconButton:
 													id:adminUsernameEditBtn
@@ -2265,10 +2263,11 @@ ScreenManager:
 												text:"**Notification Email is for sending fee notification mail to students"
 												font_size:dp(13)
 												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
+					
+					#----------------Userslog--------------#
 					Screen:
 						name:"usersLogs"
 						
-
 						BoxLayout:
 							orientation:"vertical"
 							BoxLayout:
@@ -2303,11 +2302,13 @@ ScreenManager:
 										size:self.size
 
 								LabelForList:
-									text:"User Name"
+									size_hint_x:1/4
+									text:"Date & Time"
 								LabelForList:
-									text:"Date"
+									size_hint_x:1/4
+									text:"Username"
 								LabelForList:
-									text:"Login Time"
+									text:"Activity"
 							Widget:
 								size_hint_y:None
 								height:dp(2)
@@ -2460,10 +2461,10 @@ ScreenManager:
 													root.openStreamListNotification(self)
 
 											MDRaisedButton:
-												id:notCatagory
+												id:notCategory
 												text:"Due"
 												on_release:
-													root.openCatagoryListNotification(self)
+													root.openCategoryListNotification(self)
 
 											MDIconButton:
 												icon:"plus"
@@ -2745,7 +2746,7 @@ ScreenManager:
 										width:dp(200)
 										height:dp(40)
 										on_release:
-											root.openCatagoryList(self)
+											root.openCategoryList(self)
 											data={\
 											"sem":root.ids.sem.text,\
 											"from_year":root.ids.fromyear.text,\
@@ -3038,7 +3039,7 @@ ScreenManager:
 		text:"ECE"
 		on_release: root.select(self)
 
-<CatagoryDrop>:
+<CategoryDrop>:
 	nfs:app.root.ids.notificationScreen
 	on_select:
 		data={\
