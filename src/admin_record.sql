@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS admin (
 	email VARCHAR NOT NULL,
 	username VARCHAR UNIQUE NOT NULL,
 	pass PASSWORD NOT NULL,
-    phone INTEGER,
+    	phone INTEGER,
 	not_mail VARCHAR,
 	not_pass PASSWORD
 )
