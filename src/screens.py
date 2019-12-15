@@ -47,6 +47,7 @@ import random
 import smtplib
 from email.message import EmailMessage
 import socket
+from time import strftime
 
 # local imports
 from database import Database
@@ -57,6 +58,7 @@ from custom_buttons import DropBtn
 from dropdowns import *
 from generate_fee_receipt import generate_pdf, generate_batch_fee_pdf
 from custom_widgets import CustomRecycleView
+from create_logs import activities, create_log, extract_log
 
 # left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
@@ -282,6 +284,8 @@ class ProfilePage(Screen, Database):
             self.f = iter(list(str(self.data_tuple[5])))
             self.total_fee = self.data_tuple[5]
             self.ids.rb.total_fee = self.total_fee
+            self.ids.rb.name= self.data_tuple[1]
+            self.ids.rb.uname= self.parent.ids.userScreen.user_name
 
         except Exception as e:
             Snackbar(text="Error retrieving data: {}".format(e), duration=2).show()
@@ -320,6 +324,12 @@ class ProfilePage(Screen, Database):
         if self.insert_into_database(table_name, conn, data) is not None:
             self.populate_screen()
             ins.dismiss()
+            ##userlog
+            dnt= strftime("%d-%m-%Y %H:%M:%S")
+            uname= self.parent.ids.userScreen.user_name
+            activity= activities["add_fee"].format(self.data_tuple[1],sem)
+            create_log(dnt,uname,activity)
+
         else:
             Snackbar(
                 text="Data for semester {} already exists.".format(sem), duration=1
@@ -350,6 +360,11 @@ class ProfilePage(Screen, Database):
         self.update_database(table_name, conn, fields_names, data, "sem", sem)
         self.populate_screen()
         ins.dismiss()
+        ##userlog
+        dnt= strftime("%d-%m-%Y %H:%M:%S")
+        uname= self.parent.ids.userScreen.user_name
+        activity= activities["edit_fee"].format(self.data_tuple[1],sem)
+        create_log(dnt,uname,activity)
 
     def populate_screen(self):
         self.ids.rv.data = []
@@ -433,6 +448,11 @@ class ProfilePage(Screen, Database):
                 Snackbar(
                     text="PDF generated for reg. no. {}".format(self.reg_no), duration=2
                 ).show()
+                #userlog
+                dnt= strftime("%d-%m-%Y %H:%M:%S")
+                uname= self.parent.ids.userScreen.user_name
+                activity= activities["print_fee"].format(self.reg_no)
+                create_log(dnt,uname,activity)
             else:
                 Snackbar(
                     text="No fee data found for reg. no. {}".format(self.reg_no),
@@ -459,6 +479,7 @@ class AdminScreen(Screen, Database):
         self.ids.logoutbtn.ids.lbl_txt.text_size = (sp(80), sp(80))
         self.ids.logoutbtn.ids.lbl_txt.font_size = sp(40)
         self.populate_user_data()
+        self.populate_userslog()
         # --------------------------------------------#
 
     def change_screen(self, instance):
@@ -481,6 +502,7 @@ class AdminScreen(Screen, Database):
         elif instance.text == "Users Logs" and self.check_edits_users()\
                                 and self.check_edits_admin():
             self.ids.top_bar.text = "Admin: " + instance.text
+            self.populate_userslog()
             self.ids.scrManager.current = "usersLogs"
 
     def check_edits_admin(self):
@@ -1036,23 +1058,22 @@ class AdminScreen(Screen, Database):
                 self.mail_pass_label.text = "*********"
 
     def populate_userslog(self):
-        """
-        ### Temporary Instructuction ### delete this after work will be done
-        1.Create databse for UserLog
-        2.push into database
-            go to popup.py-> search for "#userlog" and necessary instruction provided there
-        3.extact logs from database into "extracred_from_databse" list
-        """
-        extracted_from_database=[]#[{"name":"Anand Kumar","date":"12/10/2019","logintime":"10:23:23"},{"name":"Shashi Ranjan","date":"22/11/2019","logintime":"12:29:18"}]
-        if len(extracted_from_database)==0:
-            pass
-        else:
+        extracted_logs= extract_log()
+        if extracted_logs is not None:
+            tmp_data=[]
+            for each in extracted_logs:
+                _tmp= {
+                    "dnt": each[1],
+                    "uname": each[2],
+                    "activity": each[3]
+                }
+                tmp_data.append(_tmp)
             self.ids.logList.clear_widgets()
             from custom_widgets import CustomRecycleView
             crv = CustomRecycleView()
             crv.viewclass = 'RowUsersLogs'
             self.ids.logList.add_widget(crv)
-            crv.data=extracted_from_database.copy()
+            crv.data= tmp_data
 
 
 
@@ -1197,15 +1218,17 @@ class ForgotPasswordScreen(Screen, Database):
             Snackbar(
                 text="Authentication Error: Check notification credentials or turn on less secure app access", duration=3
             ).show()
+            return False
         except socket.gaierror:
             Snackbar(
                 text="Connection Error: Could not sent mail. Kindly check your connection.", duration=2
             ).show()
+            return False
         except Exception:
             Snackbar(
                 text="Error sending mail. Check credentials or coonection.", duration=2
             ).show()
-        return False
+            return False
     
     def send_otp(self, from_, to, *args):
         otp = random.randint(000000, 999999)
@@ -1271,6 +1294,11 @@ class NotificationScreen(Screen, Database):
         if self.ids.rv.data:
             generate_batch_fee_pdf(basic_details, self.ids.rv.data, None)
             Snackbar(text="PDF generated", duration=1.5).show()
+            #userlog
+            dnt= strftime("%d-%m-%Y %H:%M:%S")
+            uname= self.parent.ids.userScreen.user_name
+            activity= activities["print_batch_fee"]
+            create_log(dnt,uname,activity)
         else:
             Snackbar(text="Empty data!", duration=1.5).show()
 
@@ -1392,7 +1420,7 @@ class NotificationScreen(Screen, Database):
                                                 "stream":self.ids.notStream.text,
                                                 "category":self.ids.notCategory.text
                 })
-                #print(self.mail_sending_batch )
+                
             else:
                 Snackbar(text="Something not filled or selected!", duration=0.8).show()
 
@@ -1507,15 +1535,17 @@ class NotificationScreen(Screen, Database):
             Snackbar(
                 text="Authentication Error: Check notification credentials or turn on less secure app access", duration=3
             ).show()
+            return False
         except socket.gaierror:
             Snackbar(
                 text="Connection Error: Could not sent mail. Kindly check your connection.", duration=2
             ).show()
+            return False
         except Exception:
             Snackbar(
                 text="Error sending mail. Check credentials or coonection.", duration=2
             ).show()
-        return False
+            return False
     
     def send_notif_mail(self, e_msg, receipients):
         self.ids.sendBtn.text = "Sending..."
@@ -1532,18 +1562,20 @@ class NotificationScreen(Screen, Database):
             msg["Subject"]= "Fee Payment Remainder: IIIT Kalyani"
             msg["From"]= not_mail
             msg["To"]= ",".join(receipients)
+            msg.set_content(e_msg)
             try:
-                self.s.send_message(e_msg)
+                self.s.send_message(msg)
                 Snackbar(text="Notification Sent.", duration=1.5).show()
+                #userlog
+                dnt= strftime("%d-%m-%Y %H:%M:%S")
+                uname= self.parent.ids.userScreen.user_name
+                activity= activities["send_notification"].format()
+                create_log(dnt,uname,activity)
             except Exception as e:
+                print(e)
                 Snackbar(
                 text="Error sending notification mail", duration=1.5
                 ).show()
-
-        else:
-            Snackbar(
-                text="Could not sent mail. Check your connection or credentials.", duration=1.5
-            ).show()
 
         self.ids.sendBtn.text= "Send Notification"
         self.ids.sendBtn.disabled= False
@@ -1559,4 +1591,4 @@ class NotificationScreen(Screen, Database):
                                                     Thanks
                                             """
         self.ids.messageBox.text=msg.format(duedate,latefine)
-        
+
