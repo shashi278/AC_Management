@@ -82,14 +82,12 @@ class Rowinfo(BoxLayout, Database):
     def edit(self, root, icon, app):
         fields = [child.children[0].text for child in root.children[1:]][-2::-1]
         sem = root.children[-1].children[0].text
-        # print("\n\n\nsem: {}\n\n\n".format(sem))
 
         tableName = "_" + str(self.parent.reg_no)
         conn = self.connect_database("fee_main.db")
 
         data = self.search_from_database(tableName, conn, "sem", sem, order_by="sem")[0]
-        # print(data)
-
+        
         adl = AddDataLayout()
         adl.from_update = True
         adl.ids.sem.text = str(data[0])
@@ -109,7 +107,12 @@ class Rowinfo(BoxLayout, Database):
             ).show()
         else:
             fields = [child.children[0].text for child in root.children[1:]][-1::-1]
-            data = {"sem": fields[0], "tid": fields[5], "reg": self.parent.reg_no}
+            data = {"sem": fields[0],
+                    "tid": fields[5],
+                    "reg": self.parent.reg_no,
+                    "name":self.parent.name,
+                    "uname":self.parent.uname
+                    }
             tableName = "_" + str(self.parent.reg_no)
             DeleteWarning(
                 "fee",
