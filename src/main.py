@@ -78,7 +78,6 @@ class AccountManagementSystem(App, Database):
             jf.seek(0)        
             json.dump(setting, jf,indent=4)
             jf.truncate()
-        #print("Window Closed")
 
 
 if __name__ == "__main__":
