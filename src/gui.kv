@@ -7,6 +7,9 @@
 #:import SwapTransition kivy.uix.screenmanager.SwapTransition 
 #:import WipeTransition kivy.uix.screenmanager.WipeTransition
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import create_log create_logs.create_log
+#:import activities create_logs.activities
+#:import strftime time.strftime
 
 ##:import NoTransition kivy.uix.screenmanager.
 
@@ -456,24 +459,23 @@
 			size: self.size		
 	spacing: "10dp"
 	
-	name:''
-	date: ''
-	logintime: ''
+	dnt:''
+	uname: ''
+	activity: ''
 
 	ListItemLayoutProfile:
-		size_hint:(.18,1)
+		size_hint_x:1/4
 		LabelForList:
-			text:root.name
+			text:root.dnt
 
 	ListItemLayoutProfile:
-		size_hint:(.18,1)
+		size_hint_x:1/4
 		LabelForList:
-			text:root.date
+			text:root.uname
 			
 	ListItemLayoutProfile:
-		size_hint:(.18,1)
 		LabelForList:
-			text:root.logintime
+			text:root.activity
 
 
 ###For Notification Panel
@@ -1686,8 +1688,6 @@ ScreenManager:
 <AdminScreen>:
 	name:"adminScreen"
 	id:adminScreen
-	on_enter:
-		root.populate_userslog()
 	BoxLayout:
 		orientation: 'vertical'
 		canvas:
@@ -2350,6 +2350,7 @@ ScreenManager:
 				MDIconButton:
 					icon:"arrow-left"
 					on_release:
+						app.root.transition= SlideTransition(direction="right")
 						app.root.current="userScreen"
 			Label:
 				text:"Utilities"
@@ -2874,6 +2875,11 @@ ScreenManager:
 								app.root.transition= SlideTransition(direction="left")
 								app.root.current='homeScreen'
 								root.dismiss()
+								#userlog
+								dnt= strftime("%d-%m-%Y %H:%M:%S")
+								uname= root.ids.user_name.text
+								activity= activities["logout"]
+								create_log(dnt,uname,activity)
 
 					MDSeparator:
 
@@ -2889,6 +2895,7 @@ ScreenManager:
 					OneLineIconListItem:
 						text:"Utilities"
 						on_release:
+							app.root.transition= SlideTransition(direction="left")
 							app.root.current="notificationScreen"
 							root.dismiss()
 						IconLeftWidget:
