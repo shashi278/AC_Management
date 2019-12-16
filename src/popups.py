@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.picker import MDThemePicker
+from kivymd.uix.snackbar import Snackbar
 
 from sqlite3 import Error
 from time import strftime
@@ -26,24 +27,30 @@ class SideNav(ModalView, Database):
 
 # being used to add fee data
 class AddDataLayout(ModalView, Database):
-    previous_date = None
+    
+    def add_more_data_layout(self):
+        from custom_layouts import MultipleDataLayout
+        w=MultipleDataLayout()
+        self.height=60*(len(self.ids.multipleDataContainer.children)+1)+230
+        self.ids.multipleDataContainer.height=60*(len(self.ids.multipleDataContainer.children)+1)
+        self.ids.multipleDataContainer.add_widget(w)
 
-    def open_date_picker(self):
-        from kivymd.uix.picker import MDDatePicker
-
-        if self.previous_date is not None:
-            pd = self.previous_date
-            try:
-                MDDatePicker(self.set_previous_date, pd.year, pd.month, pd.day).open()
-            except AttributeError:
-                MDDatePicker(self.set_previous_date).open()
+    def check_all_fields(self):
+        count=0
+        for each in self.ids.multipleDataContainer.children:
+            if each.ids.paid.text==""\
+             or each.ids.date.text=="Select Date"\
+             or each.ids.tid.text=="":
+                count=count+1
+                
+        if count==0 and self.ids.sem.text!="":
+            return True
         else:
-            MDDatePicker(self.set_previous_date).open()
-
-    def set_previous_date(self, date_obj):
-
-        self.previous_date = date_obj
-        self.ids.date.text = "-".join(str(date_obj).split("-")[::-1])
+            Snackbar(
+                    text="Something not filled or selected",
+                    duration=2.0,
+                ).show()
+            return False
 
 
 # popups class
