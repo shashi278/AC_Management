@@ -9,9 +9,11 @@ from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.picker import MDThemePicker
 
 from sqlite3 import Error
+from time import strftime
 
 from database import Database
 from animator.attention import ShakeAnimator
+from create_logs import activities, create_log
 
 usernameHash = ""
 passwordHash = ""
@@ -80,17 +82,15 @@ class LoginPopup(ModalView, Database):
             self.ids.warningInfo.text = ""
             self.dismiss()
             root.ids.userScreen.user_name = valid_user[1]
-            """
+
             #userlog
-            #push the log data into database
-            
-            from datetime import datetime,date 
-            log_data={"name":valid_user[1],
-                  "date":date.today().strftime("%B %d, %Y"),
-                  "logintime":datetime.now().strftime("%H:%M:%S")  
-                  }
-            print(log_data)    
-            """
+            if table_name=="users":
+                dnt= strftime("%d-%m-%Y %H:%M:%S")
+                uname= valid_user[1]
+                activity= activities["login"]
+                create_log(dnt,uname,activity)
+
+
             return True
         else:
             self.ids.warningInfo.text = "Wrong username or password"
@@ -201,6 +201,12 @@ class DeleteWarning(ModalView, Database):
         if res:
             self.success = True
             res_text = "Successfully deleted!"
+            ##userlog
+            if self.id_ == "fee":
+                dnt= strftime("%d-%m-%Y %H:%M:%S")
+                uname= self.data["uname"]
+                activity= activities["delete_fee"].format(self.data["name"],self.data["sem"])
+                create_log(dnt,uname,activity)
             if self.callback is not None:
                 self.callback()
         else:

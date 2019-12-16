@@ -63,7 +63,7 @@ class AccountManagementSystem(App, Database):
             with open("admin_record.sql") as table:
                 self.create_table(table.read(), conn)
                 self.insert_into_database(
-                    "admin", conn, ("", "admin@example.com", "admin", "admin", "")
+                    "admin", conn, ("", "admin@example.com", "admin", "admin", "","","")
                 )
 
     def build(self):
@@ -78,7 +78,6 @@ class AccountManagementSystem(App, Database):
             jf.seek(0)        
             json.dump(setting, jf,indent=4)
             jf.truncate()
-        #print("Window Closed")
 
 
 if __name__ == "__main__":

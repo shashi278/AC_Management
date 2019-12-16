@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS user_logs (
+	id INTEGER PRIMARY KEY,
+	dnt VARCHAR NOT NULL,
+    username VARCHAR NOT NULL,
+    activity VARCHAR NOT NULL
+)

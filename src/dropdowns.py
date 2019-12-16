@@ -7,7 +7,7 @@ Availabe classes:
     - StreamDrop
     - CourseDropFee
     - StreamDropFee
-    - CatagoryDrop
+    - CategoryDrop
 
 """
 
@@ -16,7 +16,7 @@ from kivy.uix.dropdown import DropDown
 __all__ = (
     "CourseDrop",
     "StreamDrop",
-    "CatagoryDrop",
+    "CategoryDrop",
     "CourseDropFee",
     "StreamDropFee",
 )
@@ -53,7 +53,7 @@ class StreamDropFee(DropDown):
     pass
 
 
-class CatagoryDrop(DropDown):
+class CategoryDrop(DropDown):
     """
     `DropDown` to select a category in the `generate_receipt` screen
     Currently categories available are `All` and `Due`

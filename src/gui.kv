@@ -7,6 +7,9 @@
 #:import SwapTransition kivy.uix.screenmanager.SwapTransition 
 #:import WipeTransition kivy.uix.screenmanager.WipeTransition
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import create_log create_logs.create_log
+#:import activities create_logs.activities
+#:import strftime time.strftime
 
 ##:import NoTransition kivy.uix.screenmanager.
 
@@ -456,24 +459,23 @@
 			size: self.size		
 	spacing: "10dp"
 	
-	name:''
-	date: ''
-	logintime: ''
+	dnt:''
+	uname: ''
+	activity: ''
 
 	ListItemLayoutProfile:
-		size_hint:(.18,1)
+		size_hint_x:1/4
 		LabelForList:
-			text:root.name
+			text:root.dnt
 
 	ListItemLayoutProfile:
-		size_hint:(.18,1)
+		size_hint_x:1/4
 		LabelForList:
-			text:root.date
+			text:root.uname
 			
 	ListItemLayoutProfile:
-		size_hint:(.18,1)
 		LabelForList:
-			text:root.logintime
+			text:root.activity
 
 
 ###For Notification Panel
@@ -1686,8 +1688,6 @@ ScreenManager:
 <AdminScreen>:
 	name:"adminScreen"
 	id:adminScreen
-	on_enter:
-		root.populate_userslog()
 	BoxLayout:
 		orientation: 'vertical'
 		canvas:
@@ -1707,7 +1707,7 @@ ScreenManager:
 					size: self.size
 			Label:
 				id: top_bar
-				text:"Admin:Manage User"
+				text:"Admin: Manage User"
 				font_size:26
 		#------------Main Layout ---------#
 		BoxLayout:
@@ -1749,8 +1749,6 @@ ScreenManager:
 							text:"Users Logs"
 							on_release:
 								root.change_screen(self)
-
-					
 
 				AnchorLayout:
 					size_hint: (1,0.1)
@@ -2188,7 +2186,7 @@ ScreenManager:
 												BoxLayout:
 													id:adminUsernameLayout
 													AdminInfoLabel:
-														title:"UserName"
+														title:"Username"
 														text:''
 												MDIconButton:
 													id:adminUsernameEditBtn
@@ -2265,10 +2263,11 @@ ScreenManager:
 												text:"**Notification Email is for sending fee notification mail to students"
 												font_size:dp(13)
 												color: (0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
+					
+					#----------------Userslog--------------#
 					Screen:
 						name:"usersLogs"
 						
-
 						BoxLayout:
 							orientation:"vertical"
 							BoxLayout:
@@ -2303,11 +2302,13 @@ ScreenManager:
 										size:self.size
 
 								LabelForList:
-									text:"User Name"
+									size_hint_x:1/4
+									text:"Date & Time"
 								LabelForList:
-									text:"Date"
+									size_hint_x:1/4
+									text:"Username"
 								LabelForList:
-									text:"Login Time"
+									text:"Activity"
 							Widget:
 								size_hint_y:None
 								height:dp(2)
@@ -2349,6 +2350,7 @@ ScreenManager:
 				MDIconButton:
 					icon:"arrow-left"
 					on_release:
+						app.root.transition= SlideTransition(direction="right")
 						app.root.current="userScreen"
 			Label:
 				text:"Utilities"
@@ -2460,10 +2462,10 @@ ScreenManager:
 													root.openStreamListNotification(self)
 
 											MDRaisedButton:
-												id:notCatagory
+												id:notCategory
 												text:"Due"
 												on_release:
-													root.openCatagoryListNotification(self)
+													root.openCategoryListNotification(self)
 
 											MDIconButton:
 												icon:"plus"
@@ -2745,7 +2747,7 @@ ScreenManager:
 										width:dp(200)
 										height:dp(40)
 										on_release:
-											root.openCatagoryList(self)
+											root.openCategoryList(self)
 											data={\
 											"sem":root.ids.sem.text,\
 											"from_year":root.ids.fromyear.text,\
@@ -2873,6 +2875,11 @@ ScreenManager:
 								app.root.transition= SlideTransition(direction="left")
 								app.root.current='homeScreen'
 								root.dismiss()
+								#userlog
+								dnt= strftime("%d-%m-%Y %H:%M:%S")
+								uname= root.ids.user_name.text
+								activity= activities["logout"]
+								create_log(dnt,uname,activity)
 
 					MDSeparator:
 
@@ -2888,6 +2895,7 @@ ScreenManager:
 					OneLineIconListItem:
 						text:"Utilities"
 						on_release:
+							app.root.transition= SlideTransition(direction="left")
 							app.root.current="notificationScreen"
 							root.dismiss()
 						IconLeftWidget:
@@ -3038,7 +3046,7 @@ ScreenManager:
 		text:"ECE"
 		on_release: root.select(self)
 
-<CatagoryDrop>:
+<CategoryDrop>:
 	nfs:app.root.ids.notificationScreen
 	on_select:
 		data={\
