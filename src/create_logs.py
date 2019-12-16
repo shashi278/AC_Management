@@ -1,4 +1,5 @@
 from database import Database
+from sqlite3 import Error
 
 activities={
     "login": "Logged In",
@@ -26,6 +27,6 @@ def extract_log():
     try:
         data= db.extractAllData("user_log.db","user_logs",order_by="id")[::-1]
         return data
-    except TypeError:
+    except (TypeError,Error):
         return None
 
