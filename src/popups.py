@@ -23,7 +23,6 @@ class SideNav(ModalView, Database):
     def open_personalisation(self):
         Personalisation().open()
 
-
 # being used to add fee data
 class AddDataLayout(ModalView, Database):
     previous_date = None
@@ -44,7 +43,6 @@ class AddDataLayout(ModalView, Database):
 
         self.previous_date = date_obj
         self.ids.date.text = "-".join(str(date_obj).split("-")[::-1])
-
 
 # popups class
 class LoginPopup(ModalView, Database):
