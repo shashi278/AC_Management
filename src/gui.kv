@@ -631,12 +631,6 @@
 			BoxLayout:
 				size_hint: None,1
 				width: root.width/6 if len(root.ids.docName.text)>20 else dp(100)
-				canvas:
-					Color:
-						#rgba:1,0,1,1
-					Rectangle:
-						pos:self.pos
-						size:self.size
 				MDLabel:
 					id:docName
 					text:"Upload File"
@@ -646,13 +640,6 @@
 			BoxLayout:
 				size_hint_x:None
 				width:dp(130)
-				canvas:
-					Color:
-						#rgba:0,0,1,1
-					Rectangle:
-						pos:self.pos
-						size:self.size
-						
 				MDIconButton:
 					id:viewBtn
 					icon:"eye"
@@ -668,7 +655,7 @@
 					id:uploadBtn
 					icon:"upload"
 					on_release:
-						root.open_FileSelector(root) if self.icon=="upload" else root.show_doc()
+						root.open_FileSelector(root)
 						
 				MDIconButton:
 					icon:"delete"
