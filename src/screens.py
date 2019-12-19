@@ -660,7 +660,7 @@ class AdminScreen(Screen, Database):
         self.ids.logoutbtn.ids.lbl_txt.text_size = (sp(80), sp(80))
         self.ids.logoutbtn.ids.lbl_txt.font_size = sp(40)
         self.populate_user_data()
-        self.populate_userslog()
+        #self.populate_userslog()
         # --------------------------------------------#
 
     def change_screen(self, instance):

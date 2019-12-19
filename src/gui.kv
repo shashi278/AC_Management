@@ -572,10 +572,10 @@
 		BoxLayout:
 			size_hint: (1, .6)
 			spacing: 20
-			padding:0,0,150,0
+			padding:0,0,120,0
 			AnchorLayout:
 				size_hint_x:None
-				width:dp(90)
+				width:dp(70)
 				BoxLayout:
 					size_hint:(None,None)
 					height:dp(10)
@@ -627,20 +627,43 @@
 				id:rem
 				hint_text: "Remarks"
 				multiline: True
+			
+			BoxLayout:
+				size_hint: None,1
+				width: root.width/6 if len(root.ids.docName.text)>20 else dp(100)
+				MDLabel:
+					id:docName
+					text:"Upload File"
+					halign:"center"
+					color:app.theme_cls.primary_color
 
-			MDIconButton:
-				id:uploadBtn
-				icon:"upload"
-				on_release:
-					root.open_FileSelector(root) if self.icon=="upload" else root.show_doc()
+			BoxLayout:
+				size_hint_x:None
+				width:dp(130)
+				MDIconButton:
+					id:viewBtn
+					icon:"eye"
+					disabled:True
+					opacity:0
+					on_release:
+						if root.ids.docName.text!="Upload File":\
+						root.show_doc();\
+						self.disabled=False;\
+						self.opacity=1
 
-			MDIconButton:
-				icon:"delete"
-				on_release:
-					if len(root.parent.children)>1:\
-					root.parent.height=60*(len(root.parent.children)-1);\
-					root.parent.parent.parent.height=60*(len(root.parent.children)-1)+230;\
-					root.parent.remove_widget(root)
+				MDIconButton:
+					id:uploadBtn
+					icon:"upload"
+					on_release:
+						root.open_FileSelector(root)
+						
+				MDIconButton:
+					icon:"delete"
+					on_release:
+						if len(root.parent.children)>1:\
+						root.parent.height=60*(len(root.parent.children)-1);\
+						root.parent.parent.parent.height=60*(len(root.parent.children)-1)+230;\
+						root.parent.remove_widget(root)
 					
 
 <InputFields@MDTextField>:
