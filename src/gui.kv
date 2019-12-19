@@ -632,11 +632,11 @@
 					size_hint_x: None
 					width:100
 					padding:0,10,0,0
-					MDLabel:
+					MDTextButton:
 						id:date
-						halign:"center"
 						text:"No date selected"
-						color: app.theme_cls.primary_color
+						on_release:
+							root.open_date_picker()
 
 				AnchorLayout:
 					size_hint_x: None
@@ -857,7 +857,6 @@ ScreenManager:
 					theme_text_color: "Custom"
 					text_color: [1,1,1,1]
 					on_release:
-						if root.check_edits(root.ids.rv.children[0]):\
 						app.root.transition= FallOutTransition();app.root.current= "userScreen"
 				
 
@@ -1189,7 +1188,7 @@ ScreenManager:
 				id:sendBtn
 				text:"Send Code"
 				on_release:
-					root.call_code_submit_layout()
+					root.pre_verify_code()
 
 			MDLabel:
 				id:statusLabel
