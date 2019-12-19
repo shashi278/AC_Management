@@ -1,6 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.behaviors.touchripple import TouchRippleBehavior
+from kivy.uix.popup import Popup
 from kivy.properties import ListProperty
 from kivy.uix.screenmanager import RiseInTransition
 from kivy.utils import get_color_from_hex as C
@@ -14,6 +15,10 @@ from hoverable import HoverBehavior
 from custom_widgets import LabelForList, LabelForListStudent
 from popups import DeleteWarning, AddDataLayout
 
+from kivy.utils import platform
+from os.path import sep, expanduser, isdir, dirname
+from filebrowser import FileBrowser
+from functools import partial
 
 class MyTab(BoxLayout, MDTabsBase):
     orientation = "vertical"
@@ -184,5 +189,71 @@ class SoftwareModeLayout(BoxLayout):
         self.previous_date = date_obj
         self.ids.dueDate.text = "/".join(str(date_obj).split("-")[::-1])
         self.app.root.ids.notificationScreen.load_message(self.ids.lateFine.text,self.ids.dueDate.text)
+
+class MultipleDataLayout(BoxLayout):
+    doc_path=""
+    previous_date = None
+
+    def open_date_picker(self):
+        from kivymd.uix.picker import MDDatePicker
+
+        if self.previous_date is not None:
+            pd = self.previous_date
+            try:
+                MDDatePicker(self.set_previous_date, pd.year, pd.month, pd.day).open()
+            except AttributeError:
+                MDDatePicker(self.set_previous_date).open()
+        else:
+            MDDatePicker(self.set_previous_date).open()
+
+    def set_previous_date(self, date_obj):
+
+        self.previous_date = date_obj
+        self.ids.date.text = "-".join(str(date_obj).split("-")[::-1])
+
+    def open_FileSelector(self,inst):
+
+        if platform == "win":
+            user_path = dirname(expanduser("~")) + sep + "Documents"
+        else:
+            user_path = expanduser("~") + sep + "Documents"
+        self._fbrowser = FileBrowser(
+            select_string="Select",
+            favorites=[(user_path, "Documents")],
+            filters=["*.pdf", "*.jpg","*.jpeg","*.png"],
+        )
+        self._fbrowser.bind(
+            on_success=partial(self._fbrowser_success, inst),on_canceled=self._fbrowser_canceled
+        )
+
+        self.fpopup = Popup(
+            content=self._fbrowser,
+            title_align="center",
+            title="Select File",
+            size_hint=(0.7, 0.9),
+            auto_dismiss=False,
+        )
+        self.fpopup.open()
+
+    def _fbrowser_canceled(self, instance):
+        self.fpopup.dismiss()
+
+    def _fbrowser_success(self,layoutins, instance):
+        try:
+            selected_path = instance.selection[0]
+            if(selected_path):
+                layoutins.doc_path=selected_path
+                layoutins.ids.uploadBtn.icon="eye"
+                Snackbar(text="File uploaded successfully!", duration=2).show()
+            else:
+                Snackbar(text="Error uploading file.", duration=2).show()
+            self.fpopup.dismiss()
+
+        except IndexError:
+            Snackbar(text="Please specify a valid file path", duration=2).show()
+
+    def show_doc(self):
+        import generate_fee_receipt
+        generate_fee_receipt.show_pdf(self.doc_path) 
     
         

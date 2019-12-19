@@ -48,6 +48,7 @@ import smtplib
 from email.message import EmailMessage
 import socket
 from time import strftime
+import shutil
 
 # local imports
 from database import Database
@@ -412,6 +413,22 @@ class ProfilePage(Screen, Database):
         :param ins: Object instance to extract data fields from. In this 
                     case it should be the instance of the popup
         :type ins: `popups.AddDataLayout`
+        
+        self.move_doc(ins)
+        data=[]
+        sem=ins.ids.sem.text
+        late=ins.ids.late.text
+        for each in ins.ids.multipleDataContainer.children:
+            isDoc=(each.doc_path!="")
+            data.append({
+                "paid":each.ids.paid.text,
+                "date":each.ids.date.text,
+                "tid":each.ids.tid.text,
+                "docpath":isDoc
+            })
+
+        print("data for sem-{} ==={} and late={}".format(sem,data,late))
+
         """
         table_name = "_" + str(self.reg_no)
         conn = self.connect_database("fee_main.db")
@@ -453,6 +470,20 @@ class ProfilePage(Screen, Database):
             Snackbar(
                 text="Data for semester {} already exists.".format(sem), duration=1
             ).show()
+        
+    def move_doc(self,ins):
+        """
+        This function save a copy of 
+        document in source folder 
+        """
+        if not os.path.exists("documents/"):
+            os.makedirs("documents/")
+
+        for each in ins.ids.multipleDataContainer.children:
+            if (each.doc_path!=""):
+                extension=os.path.splitext(each.doc_path)[1]
+                shutil.copy(each.doc_path , "documents/"+ each.ids.tid.text + extension)
+        
 
     def update_fee_data(self, ins):
         """

@@ -556,7 +556,7 @@
 		size_hint_x:None
 		width:dp(120)
 		text:"Select Due Date"
-		color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
+		color:app.theme_cls.primary_color
 	MDIconButton:
 		icon:"calendar-range"
 		on_release:
@@ -564,41 +564,28 @@
 
 #-------------------------Add Data Layout------------------------------------#
 
-<InputFields@MDTextField>:
-	write_tab:False
-
-<AddDataLayout>:
-	size_hint: (1, .2)
-	pos_hint: {'y': -0.3}
-	auto_dismiss:False
-	on_open: app.root.ids.profilePage.anim_out(root)
-	on_dismiss: app.root.ids.profilePage.anim_in(root)
-
-	from_update: False	#whether called for updating data
-
+<MultipleDataLayout>:
+	doc_path:""
+	size_hint_y:None
+	height:60
 	AnchorLayout:
-		canvas:
-			Color:
-				rgba: (1,1,1,1) if app.theme_cls.theme_style=="Light" else C("#17202A")
-			RoundedRectangle:
-				size:self.size
-				pos: self.pos
-				radius:[10,10,0,0]
 		BoxLayout:
 			size_hint: (1, .6)
-			padding: 10
 			spacing: 20
-			InputFields:
-				size_hint_x: .4
-				input_filter:"int"
-				id:sem
-				hint_text: "Semester"
-				on_text:
-					self.text= self.text.strip()
-				on_text_validate:
-					#if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
-					app.root.ids.profilePage.update_fee_data(root)
+			padding:0,0,150,0
+			AnchorLayout:
+				size_hint_x:None
+				width:dp(90)
+				BoxLayout:
+					size_hint:(None,None)
+					height:dp(10)
+					width:dp(10)
+					canvas:
+						Color:
+							rgba:app.theme_cls.primary_color
+						Rectangle:
+							size:self.size
+							pos: self.pos
 
 			InputFields:
 				size_hint_x: .45
@@ -607,23 +594,6 @@
 				hint_text: "Paid"
 				on_text:
 					self.text= self.text.strip()
-				on_text_validate:
-					#if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
-					app.root.ids.profilePage.update_fee_data(root)
-
-			InputFields:
-				size_hint_x: .45
-				input_filter:"int"
-				id:late
-				hint_text: "Late Fine"
-				on_text:
-					self.text= self.text.strip()
-				on_text_validate:
-					#if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
-					app.root.ids.profilePage.update_fee_data(root)
-
 			
 			BoxLayout:
 				size_hint_x: None
@@ -634,7 +604,7 @@
 					padding:0,10,0,0
 					MDTextButton:
 						id:date
-						text:"No date selected"
+						text:"Select Date"
 						on_release:
 							root.open_date_picker()
 
@@ -652,31 +622,116 @@
 				hint_text: "Transaction id"
 				on_text:
 					self.text= self.text.strip()
-				on_text_validate:
-					#if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
-					app.root.ids.profilePage.update_fee_data(root)
 
 			InputFields:
 				id:rem
 				hint_text: "Remarks"
 				multiline: True
 
-			MDFloatingActionButton:
-				icon: 'check'
-				opposite_colors: True
-				elevation_normal: 8
-				md_bg_color: app.theme_cls.primary_color
+			MDIconButton:
+				id:uploadBtn
+				icon:"upload"
 				on_release:
-					#if (root.ids.sem.text and root.ids.paid.text and root.ids.date.text and root.ids.tid.text):\
-					app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
-					app.root.ids.profilePage.update_fee_data(root)
-			MDFloatingActionButton:
-				icon: 'window-close'
-				opposite_colors: True
-				elevation_normal: 8
-				md_bg_color: app.theme_cls.primary_color
-				on_release:root.dismiss()
+					root.open_FileSelector(root) if self.icon=="upload" else root.show_doc()
+
+			MDIconButton:
+				icon:"delete"
+				on_release:
+					if len(root.parent.children)>1:\
+					root.parent.height=60*(len(root.parent.children)-1);\
+					root.parent.parent.parent.height=60*(len(root.parent.children)-1)+230;\
+					root.parent.remove_widget(root)
+					
+
+<InputFields@MDTextField>:
+	write_tab:False
+
+<AddDataLayout>:
+	size_hint_x:1
+	size_hint_y:None
+	height:295 
+	pos_hint: {'y': -0.3}
+	auto_dismiss:False
+	on_open: app.root.ids.profilePage.anim_out(root)
+	on_dismiss: app.root.ids.profilePage.anim_in(root)
+
+	from_update: False	#whether called for updating data
+
+	BoxLayout:
+		size_hint:(1,1)
+		orientation:"vertical"
+		padding:0,45,0,0
+		spacing:dp(35)
+		canvas:
+			Color:
+				rgba:(1,1,1,1) if app.theme_cls.theme_style=="Light" else C("#17202A")
+			RoundedRectangle:
+				size:self.size
+				pos: self.pos
+				radius:[10,10,0,0]
+		BoxLayout:
+			size_hint: (1, None)
+			height:dp(35)
+			padding: 10
+			spacing: 20
+			InputFields:
+				size_hint_x: None
+				width:dp(130)
+				input_filter:"int"
+				id:sem
+				hint_text: "Semester"
+				on_text:
+					self.text= self.text.strip()
+
+			InputFields:
+				size_hint_x: None
+				width:dp(130)
+				input_filter:"int"
+				id:late
+				hint_text: "Late Fine"
+				on_text:
+					self.text= self.text.strip()
+
+			AnchorLayout:
+				anchor_x:"right"
+				padding:0,0,30,0
+				MDRaisedButton:
+					text:"Add More Data"
+					on_release:
+						root.add_more_data_layout()
+		
+		BoxLayout:
+			size_hint_y:None
+			height:dp(60)
+			id:multipleDataContainer
+			orientation:"vertical"
+			MultipleDataLayout:
+
+
+		AnchorLayout:
+			size_hint_y:None
+			height:dp(70)
+			anchor_x:"right"
+			BoxLayout:
+				size_hint:(None,1)
+				padding:0,0,0,10
+				width:dp(150)
+				spacing:dp(20)
+				MDFloatingActionButton:
+					icon: 'check'
+					opposite_colors: True
+					elevation_normal: 8
+					md_bg_color: app.theme_cls.primary_color
+					on_release:
+						if(root.check_all_fields()):\
+						app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
+						app.root.ids.profilePage.update_fee_data(root)
+				MDFloatingActionButton:
+					icon: 'window-close'
+					opposite_colors: True
+					elevation_normal: 8
+					md_bg_color: app.theme_cls.primary_color
+					on_release:root.dismiss()
 
 <HoverOneLineListItem>:
 	_color:[0,0,0,0]
