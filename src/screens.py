@@ -82,23 +82,31 @@ class ListRightSwitch(IRightBodyTouch, MDSwitch):
 class ScreenManager(ScreenManager):
     pass
 
-
 # HomeScreen Class
 class HomeScreen(Screen):
 
-    # function to open login popup
     def openLoginPop(self, title):
+        """Opens up the login popup with desired title
+
+        :param title: Title for the popup (Currently can be either of Admin or User)
+        :type title: str
+        """
         lp = LoginPopup()
         lp.ids.loginTitle.text = "{} Login".format(title)
         lp.ids.username_.focus = True
         lp.open()
 
-
 # UserScreen
 class UserScreen(Screen, Database):
-    def onStartUserScr(self):
+    """
+    User Screen class
+    """
 
-        # --------------Update Student list---------------------#
+    def onStartUserScr(self):
+        """
+        Function to get called everytime user screen starts
+        """
+        #--------------Update Student list---------------------#
         self.ids.rv.data = []
         try:
             data_list = self.extractAllData("student_main.db", "General_record")
@@ -112,28 +120,52 @@ class UserScreen(Screen, Database):
                     "batch": each[4],
                 }
                 self.ids.rv.data.append(x)
+        # if no data then pass
         except:
             pass
 
     def onSelect(self, btn, mainBtn):
+        """
+
+        """
         mainBtn.text = btn.text
 
     def anim_in(self, instance):
+        """
+        Animation to open sidenav
+
+        :param instance: Object instance to be animated
+        :type instance: `popups.SideNav`
+        """
         anim = Animation(pos_hint={"x": -0.3}, t="in_cubic", d=0.3)
         anim.start(instance)
 
     def anim_out(self, instance):
+        """
+        Animation to close sidenav
+
+        :param instance: Object instance to be animated
+        :type instance: `popups.SideNav`
+        """
         anim = Animation(pos_hint={"x": 0}, t="out_cubic", d=0.3)
         anim.start(instance)
 
     def open_sideNav(self):
+        """
+        Actual function to open-up the sidenav popup
+        """
         sn = SideNav()
         sn.ids.user_name.text = self.user_name
         sn.open()
 
     def search(self, text):
         """
-		Dynamic search function
+		Dynamic search function to search database against a given text and populate
+        the view in real-time
+
+        :param text: text to be searched for
+        :type text: str
+        
 		"""
         if not text:
             self.onStartUserScr()
@@ -157,6 +189,12 @@ class UserScreen(Screen, Database):
         self.populate_on_search(sorted(list(set(filtered_list))))
 
     def populate_on_search(self, filtered_list):
+        """
+        Function to be called after dynamically searching from database to update
+        the view in real-time
+
+        :param filtered_list: A filtered list from which data to be fetched and updated in the view
+        """
         self.ids.rv.data = []
 
         for counter, each in enumerate(filtered_list, 1):
@@ -194,8 +232,14 @@ class ProfilePage(Screen, Database):
     ]
 
     def on_enter(self, *args):
-        self.populate_screen()
+        """
+        Overiding `on_enter` method from `Screen`
+        This function is called everytime profile page screen starts
+
+        Currently it updates each student's info and populated the screen with corres. fee data
+        """
         self.color = choice(self.colors)
+        self.populate_screen()
         self.extract_data("student_main.db", "General_record")
         self.ids.rb.reg_no = self.reg_no
 
@@ -208,12 +252,23 @@ class ProfilePage(Screen, Database):
         Animation(opacity=1, d=0.5).start(self.ids.box)
 
     def schedule(self, interval):
+        """
+        Animating all data at once causes latency thus this function is used to update 
+        another set of data after animating one set of data hile entering
+
+        :param interval: It is sent by `Clock.schedule_once` which has no use in here
+        """
         Clock.schedule_interval(self.set_course_info, 0.01)
         Clock.schedule_interval(self.set_stream_info, 0.01)
         Clock.schedule_interval(self.set_batch_info, 0.01)
         Clock.schedule_interval(self.set_fee_info, 0.01)
 
     def on_leave(self, *args):
+        """
+        Overriding `on_leave` from `Screen`
+
+        Currently it clears up already filled data from all the fields 
+        """
         self.ids.name.text = ""
         self.ids.roll.text = ""
         self.ids.email.text= ""
@@ -224,51 +279,102 @@ class ProfilePage(Screen, Database):
         self.ids.rv.data = []
 
     def set_name_info(self, interval):
+        """
+        Function to produce animation effect during setting name
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.name.text += next(self.n)
         except StopIteration:
             Clock.unschedule(self.set_name_info)
 
     def set_roll_info(self, interval):
+        """
+        Function to produce animation effect during setting roll or reg. no.
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.roll.text += next(self.r)
         except StopIteration:
             Clock.unschedule(self.set_roll_info)
     
     def set_email_info(self, interval):
+        """
+        Function to produce animation effect during setting email
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.email.text += next(self.e)
         except StopIteration:
             Clock.unschedule(self.set_email_info)
 
     def set_course_info(self, interval):
+        """
+        Function to produce animation effect during setting course
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.course.info_name += next(self.c)
         except StopIteration:
             Clock.unschedule(self.set_course_info)
 
     def set_stream_info(self, interval):
+        """
+        Function to produce animation effect during setting stream
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.stream.info_name += next(self.s)
         except StopIteration:
             Clock.unschedule(self.set_stream_info)
 
     def set_batch_info(self, interval):
+        """
+        Function to produce animation effect during setting batch
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.batch.info_name += next(self.b)
         except StopIteration:
             Clock.unschedule(self.set_batch_info)
 
     def set_fee_info(self, interval):
+        """
+        Function to produce animation effect during setting total fee
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         try:
             self.ids.fee.info_name += next(self.f)
         except StopIteration:
             Clock.unschedule(self.set_fee_info)
 
     def set_button_width(self, interval):
+        """
+        Function to produce animation effect during setting width of the button
+
+        :param interval: It is sent by `Clock.schedule_interval` which has no use in here
+        """
         self.ids.button.width = Window.width - (dp(50) + self.ids.button.height)
 
     def extract_data(self, db_name, table_name):
+        """
+        Function to extract all data from a given table in a database.
+        It not only extract the data but also sets them so that they
+        could be used for producing animation effect
+
+        :param db_name: Name of the .db file
+        :type db_name: str
+        :param table_name: Name of the table
+        :type table_name: str
+
+        """
         conn = self.connect_database(db_name)
 
         try:
@@ -291,9 +397,22 @@ class ProfilePage(Screen, Database):
             Snackbar(text="Error retrieving data: {}".format(e), duration=2).show()
 
     def open_add_data_layout(self):
+        """
+        Simple function just to open up the add fee data layout
+        """
         AddDataLayout().open()
 
     def add_fee_data(self, ins):
+        """
+        Add new fee data for a student.
+
+        It actually validates the fee data inserted and if
+        it seems good then inserts them to the database storing fee data.
+
+        :param ins: Object instance to extract data fields from. In this 
+                    case it should be the instance of the popup
+        :type ins: `popups.AddDataLayout`
+        """
         table_name = "_" + str(self.reg_no)
         conn = self.connect_database("fee_main.db")
 
@@ -336,6 +455,16 @@ class ProfilePage(Screen, Database):
             ).show()
 
     def update_fee_data(self, ins):
+        """
+        Update an existing fee data for a student.
+
+        It actually validates the fee data inserted and if
+        it seems good then updates them in the database storing the fee data.
+
+        :param ins: Object instance to extract data fields from. In this 
+                    case it should be the instance of the popup
+        :type ins: `popups.AddDataLayout`
+        """
         table_name = "_" + str(self.reg_no)
         conn = self.connect_database("fee_main.db")
         c = conn.execute("select * from {}".format(table_name))
@@ -367,6 +496,11 @@ class ProfilePage(Screen, Database):
         create_log(dnt,uname,activity)
 
     def populate_screen(self):
+        """
+        Visual presentation of the modified fee data list
+
+        Extracts the required fee data from the database and updates the view
+        """
         self.ids.rv.data = []
         # try to populate the screen with data already available in the corresponding
         # reg. no. table
@@ -393,25 +527,32 @@ class ProfilePage(Screen, Database):
                     self.create_table(table.read().format("_" + str(self.reg_no)), conn)
 
     def anim_in(self, instance):
+        """
+        Animation to open AddDataLayout
 
+        :param instance: Object instance to be animated
+        :type instance: `popups.AddDataLayout`
+        """
         anim = Animation(pos_hint={"y": -0.3}, t="in_cubic", d=0.3)
         anim.start(instance)
 
     def anim_out(self, instance):
+        """
+        Animation to close AddDataLayout
+
+        :param instance: Object instance to be animated
+        :type instance: `popups.AddDataLayout`
+        """
         anim = Animation(pos_hint={"y": 0}, t="out_cubic", d=0.3)
         anim.start(instance)
 
-    def check_edits(self, rowinfo_root):
-        _temp = [1 for child in rowinfo_root.children if child.ids.btn1.icon == "check"]
-        if len(_temp):
-            Snackbar(
-                text="Cannot go back while editing. Save ongoing edits.", duration=2,
-            ).show()
-            return False
-        return True
-
     def print_pdf(self):
+        """
+        Generate pdf of the current view(Fee data)
 
+        Extract all related data for the current student and use 
+        `generate_pdf` to generate pdf with the current details
+        """
         student_info = {
             "name": self.data_tuple[1],
             "reg": str(self.data_tuple[0]),
@@ -462,6 +603,9 @@ class ProfilePage(Screen, Database):
 
 # AdminScreen
 class AdminScreen(Screen, Database):
+    """
+    Admin screen class
+    """
     pc_username = os.getlogin()
 
     admin_password = ""
@@ -469,6 +613,12 @@ class AdminScreen(Screen, Database):
     not_mail_password = ""
 
     def onStartAdminScr(self):
+        """
+        Function to get call everytime admin screen starts
+
+        It populates all admin related stuffs and performs
+        some other tasks upon opening admin screen
+        """
 
         Clock.schedule_once(self.populate_admin_info, 0)
         Clock.schedule_once(self.populate_admin_username, 0)
@@ -483,6 +633,13 @@ class AdminScreen(Screen, Database):
         # --------------------------------------------#
 
     def change_screen(self, instance):
+        """
+        Checks each screen if none is busy then changes the screen
+        otherwise shows a message showing cannot go back while editing
+        or something similar
+
+        :param instance: Instance of the screen to change from
+        """
         if instance.text == "Manage User" and self.check_edits_admin():
             self.ids.top_bar.text = "Admin: " + instance.text
             self.ids.scrManager.current = "manageUser"
@@ -506,6 +663,12 @@ class AdminScreen(Screen, Database):
             self.ids.scrManager.current = "usersLogs"
 
     def check_edits_admin(self):
+        """
+        Check if nothing is in edit mode in the admin info screen
+
+        :returns: True: if nothing is in edit mode and its good to change the screen
+        :returns False: Otherwise
+        """
         if (
             self.ids.adminInfoEditBtn.icon == "check"
             or self.ids.adminPasswordEditBtn.icon == "check"
@@ -520,7 +683,10 @@ class AdminScreen(Screen, Database):
 
     def check_edits_users(self):
         """
-            Code Requires here
+        Check if nothing is in edit mode in the manage user screen
+
+        :returns: True: if nothing is in edit mode and its good to change the screen
+        :returns False: Otherwise
         """
         if not self.ids.plus.icon == "plus":
             Snackbar(text="Kindly save ongoing edits.", duration=2,).show()
@@ -528,7 +694,16 @@ class AdminScreen(Screen, Database):
         return True
 
     def add_user_layout(self, layout, btn):
+        """
+        Adds layout to add/modify users
 
+        It really does some hacky stuffs to ensure smooth working of layout
+        either for adding a new user or modifying an existing one.
+
+        :param layout: FloatLayout instance which is the actual layout where data is inserted
+        :param btn: Button to close/open the layout
+
+        """
         if btn.icon == "plus":
             # clear any previous data it might have
             layout.children[3].text = ""
@@ -540,7 +715,6 @@ class AdminScreen(Screen, Database):
             btn.icon = "window-close"
 
         elif btn.icon == "check":
-
             # extract data
             name = layout.children[3].text.strip()
             email = layout.children[2].text.strip()
@@ -601,7 +775,6 @@ class AdminScreen(Screen, Database):
         """
         anim = Animation(d=0.4, y=0)
         anim.start(widget)
-        # pass
 
     def _user_layout_anim_in(self, widget):
         """
@@ -609,13 +782,14 @@ class AdminScreen(Screen, Database):
         """
         anim = Animation(d=0.4, y=-widget.height)
         anim.start(widget)
-        pass
 
     def populate_user_data(self):
+        """
+        Function to populate/refresh the user list in the manage user section
+        """
         # --------------Update User info Data List ---------------------#
         self.ids.rv.data = []
 
-        # print(self.ids.rv.data)
         try:
             # data may not be present
             data_list_users = self.extractAllData(
@@ -634,6 +808,13 @@ class AdminScreen(Screen, Database):
             pass
 
     def update_user_info(self, layout, btn, inst):
+        """
+        Function to update user info
+
+        :param layout: The layout containing the actual data
+        :param btn: The button to open/close the layout
+        :param inst: Object instance to extract user information from
+        """
         texts = [child.children[0].text for child in inst.children[-2:0:-1]]
         username = texts[2]
 
@@ -652,6 +833,15 @@ class AdminScreen(Screen, Database):
         btn.icon = "check"
 
     def connectFileSelector(self, fromYear, toYear, course, stream, fee):
+        """
+        Function to validate input data before opening the actual file stream for selection a file
+
+        :param fromYear: from-year
+        :param toYear: to-year
+        :param course: course
+        :param stream: stream
+        :param fee: fee
+        """
         if fromYear == "" or toYear == "" or fee == "":
             Snackbar(text="Please fill in all required fields.", duration=2).show()
 
@@ -672,6 +862,9 @@ class AdminScreen(Screen, Database):
             self.open_FileSelector()
 
     def open_FileSelector(self):
+        """
+        open filebrowser popup
+        """
 
         if platform == "win":
             user_path = dirname(expanduser("~")) + sep + "Documents"
@@ -696,9 +889,18 @@ class AdminScreen(Screen, Database):
         self.fpopup.open()
 
     def _fbrowser_canceled(self, instance):
+        """
+        Called when cancel button is pressed on the popup
+        """
         self.fpopup.dismiss()
 
     def _fbrowser_success(self, instance):
+        """
+        Called when select button is pressed on the popup
+
+        It uploads the provided .xlsx file to the database
+        and shows success or error message accordingly
+        """
         try:
             selected_path = instance.selection[0]
 
@@ -724,19 +926,40 @@ class AdminScreen(Screen, Database):
 
     # -----------------------select Course and Stream---------------------------------------------#
     def openCourseList(self, instance):
+        """
+        Function to open course dropdown
+        """
         dropdown = CourseDrop()
         dropdown.open(instance)
         dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
 
     def openStreamList(self, instance):
+        """
+        Function to open stream dropdown
+        """
         dropdown = StreamDrop()
         dropdown.open(instance)
         dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
 
     def onSelect(self, btn, mainBtn):
+        """
+        This function is called whenever a button is selected from the dropdown
+
+        :param btn: instance of selected dropdown button
+        :param mainBtn: instance of main button of the dropdown
+        """
         mainBtn.text = btn.text
 
     def deleteBatch(self, fromYear, toYear, course, stream):
+        """
+        Delets a selected batch from database
+
+        :param fromYear: from-year of the batch
+        :param toYear: to-year of the batch
+        :param course: course
+        :param stream: stream
+        """
+
         if fromYear == "" or toYear == "":
             Snackbar(text="Please fill in all required fields.", duration=2).show()
 
@@ -747,7 +970,6 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Please select a stream.", duration=2).show()
 
         else:
-            # print(fromYear, toYear, course, stream)
             data = {
                 "fromYear": fromYear,
                 "toYear": toYear,
@@ -757,6 +979,12 @@ class AdminScreen(Screen, Database):
             DeleteWarning("batch", data, "student_main.db", "General_record").open()
 
     def checkBeforeUpdate(self, reg_no, parent):
+        """
+        Validates the provided registration number before updating a student info
+
+        :param reg_no: registration number to be updated
+        :param parent: Layout in which fetched details will be added
+        """
         if len(reg_no) == 3 and len(parent.children) == 0:
             try:
                 conn = self.connect_database("student_main.db")
@@ -783,6 +1011,14 @@ class AdminScreen(Screen, Database):
             parent.clear_widgets()
 
     def updateStudentInfo(self, reg_no, parent):
+        """
+        Gets called when update button is pressed.
+
+        Updates and individual student's data in the database
+
+        :param reg_no: registration number to be updated
+        :param parent: Layout from which data to be fetched
+        """
         if len(reg_no) == 3:
             widget = parent.children[0]
             fields = ("name", "course", "stream", "batch", "email")
@@ -810,6 +1046,9 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Invalid registration number", duration=2).show()
 
     def populate_admin_info(self, *args):
+        """
+        Function to populate personal details of admin
+        """
 
         try:
             data_list_admin = self.extractAllData(
@@ -832,6 +1071,9 @@ class AdminScreen(Screen, Database):
             pass
 
     def populate_admin_username(self, *args):
+        """
+        Function to populate username of admin
+        """
         try:
             data_list_admin = self.extractAllData(
                 "user_main.db", "admin", order_by="id"
@@ -845,6 +1087,9 @@ class AdminScreen(Screen, Database):
             pass
 
     def populate_admin_password(self, *args):
+        """
+        Function to populate password of admin
+        """
         try:
             data_list_admin = self.extractAllData(
                 "user_main.db", "admin", order_by="id"
@@ -854,6 +1099,9 @@ class AdminScreen(Screen, Database):
             pass
     
     def populate_not_mail(self, *args):
+        """
+        Function to populate notification email
+        """
         try:
             data_not_mail = self.extractAllData(
                 "user_main.db", "admin", order_by="id"
@@ -867,6 +1115,9 @@ class AdminScreen(Screen, Database):
             pass
     
     def populate_not_mail_password(self, *args):
+        """
+        Function to populate notification email password
+        """
         try:
             data_not_mail = self.extractAllData(
                 "user_main.db", "admin", order_by="id"
@@ -876,6 +1127,9 @@ class AdminScreen(Screen, Database):
             pass
 
     def edit_admin_info(self):
+        """
+        Adds editable fields to edit personal details of admin
+        """
         self.ids.adminInfoEditBtn.icon = "check"
         texts = []
         admin = self.ids.adminInfoLayout
@@ -893,6 +1147,9 @@ class AdminScreen(Screen, Database):
             admin.add_widget(_tmp)
 
     def show_admin_info(self):
+        """
+        Adds non-editable fields to show details after editing
+        """
         self.ids.adminInfoEditBtn.icon = "pencil"
         texts = []
         admin = self.ids.adminInfoLayout
@@ -920,6 +1177,9 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Updated admin details", duration=2,).show()
 
     def edit_admin_username(self):
+        """
+        Adds editable fields to edit username of admin
+        """
         self.ids.adminUsernameEditBtn.icon = "check"
 
         username_field = AdminInfoEditField()
@@ -930,6 +1190,9 @@ class AdminScreen(Screen, Database):
         self.ids.adminUsernameLayout.add_widget(username_field)
 
     def show_admin_username(self):
+        """
+        Adds non-editable fields to show details after editing
+        """
         self.ids.adminUsernameEditBtn.icon = "pencil"
         self.admin_username = self.ids.adminUsernameLayout.children[0].children[0].text
 
@@ -948,9 +1211,12 @@ class AdminScreen(Screen, Database):
         except Error:
             Snackbar(text="Error updating admin username", duration=2).show()
         else:
-            Snackbar(text="Admin username updated", duration=2,).show()
+            Snackbar(text="Admin username updated", duration=2).show()
 
     def edit_admin_password(self):
+        """
+        Adds editable fields to edit password of admin
+        """
         self.ids.adminPasswordEditBtn.icon = "check"
         self.ids.eyeBtn.disabled = True
         self.ids.adminPasswordLayout.clear_widgets()
@@ -963,6 +1229,9 @@ class AdminScreen(Screen, Database):
     flag = 0
 
     def show_admin_password(self):
+        """
+        Adds non-editable fields to show details after editing
+        """
         self.flag = 1
         self.ids.adminPasswordEditBtn.icon = "pencil"
         self.ids.eyeBtn.disabled = False
@@ -985,6 +1254,9 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Admin password updated", duration=2,).show()
 
     def edit_not_mail(self):
+        """
+        Adds editable fields to edit notification email
+        """
         self.ids.notMailEditBtn.icon = "check"
         not_mail_field = AdminInfoEditField()
         not_mail_field.hint_text = "Notification Email"
@@ -993,6 +1265,9 @@ class AdminScreen(Screen, Database):
         self.ids.notMailLayout.add_widget(not_mail_field)
 
     def show_not_mail(self):
+        """
+        Adds non-editable fields to show details after editing
+        """
         self.ids.notMailEditBtn.icon = "pencil"
         self.not_mail = self.ids.notMailLayout.children[0].children[0].text
 
@@ -1012,6 +1287,9 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Notification email updated", duration=2,).show()
 
     def edit_not_mail_password(self):
+        """
+        Adds editable fields to edit notification email password
+        """
         self.ids.notMailPassEditBtn.icon = "check"
         self.ids.eyeBtn1.disabled = True
         self.ids.notMailPassLayout.clear_widgets()
@@ -1024,6 +1302,9 @@ class AdminScreen(Screen, Database):
     flag1 = 0
 
     def show_not_mail_password(self):
+        """
+        Adds non-editable fields to show details after editing
+        """
         self.flag1 = 1
         self.ids.notMailPassEditBtn.icon = "pencil"
         self.ids.eyeBtn1.disabled = False
@@ -1046,6 +1327,9 @@ class AdminScreen(Screen, Database):
             Snackbar(text="Notification email password updated", duration=2,).show()
 
     def on_eye_btn_pressed(self, inst, key):
+        """
+        Action to take when eye button is pressed to see passwords
+        """
         if key == 1:
             if inst.state == "down":
                 self.admin_pass_label.text = self.admin_password
@@ -1058,6 +1342,9 @@ class AdminScreen(Screen, Database):
                 self.mail_pass_label.text = "*********"
 
     def populate_userslog(self):
+        """
+        Populates user log screen according user activity
+        """
         extracted_logs= extract_log()
         if extracted_logs is not None:
             tmp_data=[]
@@ -1078,10 +1365,16 @@ class AdminScreen(Screen, Database):
 
 
 class ForgotPasswordScreen(Screen, Database):
+    """
+    Forgot password screen for resetting password for admin
+    """
 
     otp_recieved = "OTP"
 
-    def call_code_submit_layout(self):
+    def pre_verify_code(self):
+        """
+        
+        """
         self.ids.codeSubmitBox.clear_widgets()
         self.ids.resetPasswordBox.clear_widgets()
         textfld = MDTextField()
