@@ -15,6 +15,7 @@ from hoverable import HoverBehavior
 from custom_widgets import LabelForList, LabelForListStudent
 from popups import DeleteWarning, AddDataLayout
 
+import os
 from kivy.utils import platform
 from os.path import sep, expanduser, isdir, dirname
 from filebrowser import FileBrowser
@@ -243,7 +244,9 @@ class MultipleDataLayout(BoxLayout):
             selected_path = instance.selection[0]
             if(selected_path):
                 layoutins.doc_path=selected_path
-                layoutins.ids.uploadBtn.icon="eye"
+                layoutins.ids.docName.text=os.path.basename(selected_path)
+                layoutins.ids.viewBtn.opacity=1
+                layoutins.ids.viewBtn.disabled=False
                 Snackbar(text="File uploaded successfully!", duration=2).show()
             else:
                 Snackbar(text="Error uploading file.", duration=2).show()
