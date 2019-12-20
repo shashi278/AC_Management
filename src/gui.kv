@@ -631,11 +631,11 @@
 			BoxLayout:
 				size_hint: None,1
 				width: root.width/6 if len(root.ids.docName.text)>20 else dp(100)
-				MDLabel:
+				MDTextButton:
 					id:docName
 					text:"Upload File"
-					halign:"center"
-					color:app.theme_cls.primary_color
+					on_release:
+						root.open_FileSelector(root)
 
 			BoxLayout:
 				size_hint_x:None
