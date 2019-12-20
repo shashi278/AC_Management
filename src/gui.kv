@@ -721,7 +721,7 @@
 				MDRaisedButton:
 					text:"Add More Data"
 					on_release:
-						root.add_more_data_layout()
+						root.add_more_data_layout() if len(root.ids.multipleDataContainer.children)<6 else None
 		
 		BoxLayout:
 			size_hint_y:None
