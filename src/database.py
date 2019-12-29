@@ -41,7 +41,6 @@ class Database:
                 return True
             except Error as e:
                 pass
-                # print("Error in data insertion: {}".format(e))
         return None
 
     # Update Database
@@ -64,7 +63,7 @@ class Database:
                         ),
                         (field_val, index),
                     )
-                    conn.commit()
+                conn.commit()
                 return True
             except Exception as e:
                 pass
@@ -159,11 +158,24 @@ class Database:
             try:
                 cur = conn.cursor()
                 cur.execute(table)
-                conn.commit()
-
             except Error as e:
                 pass
                 # print("Error in creating table: {}".format(e))
+            conn.commit()
+            conn.close()
+    
+    def delete_table(self, db_file, table_name):
+        conn = self.connect_database(db_file)
+        if conn is not None:
+            cur= conn.cursor()
+            try:
+                cur.execute("DROP TABLE {}".format(table_name))
+                conn.commit()
+                conn.close()
+                return True
+            except:
+                return False
+
 
     def findTables(self, db_file):
         conn = self.connect_database(db_file)
@@ -198,6 +210,7 @@ class Database:
                     )
 
                     self.insert_into_database(tableName, conn, data)
+                conn.close()
                 return True
 
             return False
@@ -211,7 +224,9 @@ class Database:
 
         if conn is not None:
             self.create_table(table, conn)
-            return self.insert_into_database(tableName, conn, data)
+            tmp= self.insert_into_database(tableName, conn, data)
+            conn.close()
+            return tmp
         return None
 
     def extractAllData(self, db_file, tableName, order_by="reg"):
@@ -221,14 +236,28 @@ class Database:
             cur = conn.execute(
                 "SELECT * FROM {} ORDER BY {}".format(tableName, order_by)
             )
-            return cur.fetchall()
+            data= cur.fetchall()
+            conn.close()
+            return data
         return None
+    
+    def delete_all_data(self, db_file, tableName):
+        conn = self.connect_database(db_file)
+
+        if conn is not None:
+            #conn.commit()
+            cur= conn.cursor()
+            cur.execute(
+                """
+                DELETE FROM {};
+                """.format(tableName)
+            )
+            conn.commit()
+            conn.close()
+            
+    
+    
 
 
 if __name__ == "__main__":
-
-    db = Database()
-    # db.readFile("C:\\Users\\Anand Kumar\\Desktop\\project\\student.xlsx", "year_2017_2021")
-    conn = db.connect_database()
-    # db.delete_from_database("2017_2021",conn, 24)
-    print(db.search_from_database("year_2022_2019", conn, "name", "ajit"))
+    pass

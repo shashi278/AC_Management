@@ -413,22 +413,6 @@ class ProfilePage(Screen, Database):
         :param ins: Object instance to extract data fields from. In this 
                     case it should be the instance of the popup
         :type ins: `popups.AddDataLayout`
-        
-        self.move_doc(ins)
-        data=[]
-        sem=ins.ids.sem.text
-        late=ins.ids.late.text
-        for each in ins.ids.multipleDataContainer.children:
-            isDoc=(each.doc_path!="")
-            data.append({
-                "paid":each.ids.paid.text,
-                "date":each.ids.date.text,
-                "tid":each.ids.tid.text,
-                "docpath":isDoc
-            })
-
-        print("data for sem-{} ==={} and late={}".format(sem,data,late))
-
         """
         table_name = "_" + str(self.reg_no)
         conn = self.connect_database("fee_main.db")
@@ -438,43 +422,74 @@ class ProfilePage(Screen, Database):
             if not ins.ids.sem.text or int(ins.ids.sem.text) == 0
             else ins.ids.sem.text
         )
-        paid = 0 if not ins.ids.paid.text else ins.ids.paid.text
         late = 0 if not ins.ids.late.text else ins.ids.late.text
-        date = None if "date" in ins.ids.date.text.lower() else ins.ids.date.text
-        tid = None if not ins.ids.tid.text.strip() else ins.ids.tid.text.strip()
-        rem = "NA" if not ins.ids.rem.text else ins.ids.rem.text.strip()
 
         if not sem:
             Snackbar(text="Semester is either empty or 0", duration=0.8).show()
             return
-        if not date:
-            Snackbar(text="No date selected", duration=0.8).show()
-            return
-        if not tid:
-            Snackbar(text="Transaction id cannot be empty", duration=0.8).show()
-            return
+        
+        if ins.check_all_fields():
+            conn = self.connect_database("fee_main.db")
+            table_name= "_" + str(self.reg_no)+"_"+str(sem)
 
-        due = self.total_fee - int(paid)
-        data = (sem, paid, due, late, date, tid, rem)
+            #create table
+            if conn is not None:
+                with open("sem_record.sql") as table:
+                    self.create_table(table.read().format(table_name), conn)
 
-        if self.insert_into_database(table_name, conn, data) is not None:
-            self.populate_screen()
-            ins.dismiss()
-            ##userlog
-            dnt= strftime("%d-%m-%Y %H:%M:%S")
-            uname= self.parent.ids.userScreen.user_name
-            activity= activities["add_fee"].format(self.data_tuple[1],sem)
-            create_log(dnt,uname,activity)
+            data_list= ins.ids.multipleDataContainer.children[::-1]
 
+            tot_paid= 0
+            
+            dataset=[]
+            for cont in data_list:
+                paid= cont.ids.paid.text
+                tot_paid+= int(paid)
+
+                date= cont.ids.date.text
+                tid= cont.ids.tid.text
+                rem= cont.ids.rem.text
+                doc_file= '' if cont.ids.docName.text=="Upload File" else cont.ids.docName.text
+                
+                data= (paid, date, tid, doc_file, rem)
+                dataset.append(data)
+
+            due= self.total_fee- tot_paid
+            last_date= data_list[-1].ids.date.text
+            last_tid= data_list[-1].ids.tid.text
+            last_rem= data_list[-1].ids.rem.text
+            last_doc_file= '' if data_list[-1].ids.docName.text=="Upload File" else data_list[-1].ids.docName.text
+
+            data= (sem, tot_paid, due, late, last_date, last_tid, last_rem)
+
+            table_name= "_" + str(self.reg_no)
+            conn = self.connect_database("fee_main.db")
+            if self.insert_into_database(table_name, conn, data) is not None:
+                self.populate_screen()
+                ins.dismiss()
+
+                table_name= "_" + str(self.reg_no)+"_"+str(sem)
+                for each in dataset:
+                    self.insert_into_database(table_name, conn, each)
+                conn.close()
+                self.move_doc(ins)
+                ##userlog
+                dnt= strftime("%d-%m-%Y %H:%M:%S")
+                uname= self.parent.ids.userScreen.user_name
+                activity= activities["add_fee"].format(self.data_tuple[1],sem)
+                create_log(dnt,uname,activity)
+            else:
+                Snackbar(
+                    text="Data for semester {} already exists.".format(sem), duration=1
+                ).show()
+            
         else:
-            Snackbar(
-                text="Data for semester {} already exists.".format(sem), duration=1
-            ).show()
+            Snackbar(text="Please fill up all required fields").show()
         
     def move_doc(self,ins):
         """
-        This function save a copy of 
-        document in source folder 
+        This function saves a copy of
+        documents in the source folder 
         """
         if not os.path.exists("documents/"):
             os.makedirs("documents/")
@@ -484,7 +499,6 @@ class ProfilePage(Screen, Database):
                 extension=os.path.splitext(each.doc_path)[1]
                 shutil.copy(each.doc_path , "documents/"+ each.ids.tid.text + extension)
         
-
     def update_fee_data(self, ins):
         """
         Update an existing fee data for a student.
@@ -492,43 +506,93 @@ class ProfilePage(Screen, Database):
         It actually validates the fee data inserted and if
         it seems good then updates them in the database storing the fee data.
 
-        :param ins: Object instance to extract data fields from. In this 
+        :param ins: Object instance to extract data fields from. In this
                     case it should be the instance of the popup
         :type ins: `popups.AddDataLayout`
         """
-        table_name = "_" + str(self.reg_no)
-        conn = self.connect_database("fee_main.db")
-        c = conn.execute("select * from {}".format(table_name))
-        fields_names = tuple([des[0] for des in c.description][1:])
-
-        sem = ins.ids.sem.text
-        paid = 0 if not ins.ids.paid.text else ins.ids.paid.text
+        sem = (
+            None
+            if not ins.ids.sem.text or int(ins.ids.sem.text) == 0
+            else ins.ids.sem.text
+        )
         late = 0 if not ins.ids.late.text else ins.ids.late.text
-        date = None if "date" in ins.ids.date.text.lower() else ins.ids.date.text
-        tid = None if not ins.ids.tid.text.strip() else ins.ids.tid.text.strip()
-        rem = "NA" if not ins.ids.rem.text else ins.ids.rem.text.strip()
 
-        if not date:
-            Snackbar(text="No date selected", duration=0.8).show()
-            return
-        if not tid:
-            Snackbar(text="Transaction id cannot be empty", duration=0.8).show()
+        if not sem:
+            Snackbar(text="Semester is either empty or 0", duration=0.8).show()
             return
 
-        due = self.total_fee - int(paid)
-        data = (paid, due, late, date, tid, rem)
-        self.update_database(table_name, conn, fields_names, data, "sem", sem)
-        self.populate_screen()
-        ins.dismiss()
-        ##userlog
-        dnt= strftime("%d-%m-%Y %H:%M:%S")
-        uname= self.parent.ids.userScreen.user_name
-        activity= activities["edit_fee"].format(self.data_tuple[1],sem)
-        create_log(dnt,uname,activity)
+        if ins.check_all_fields():
+        
+            table_name = "_" + str(self.reg_no)+"_"+sem
+            conn = self.connect_database("fee_main.db")
+            c = conn.execute("select * from {}".format(table_name))
+            fields_names = tuple([des[0] for des in c.description][1:])
+            conn.close()
+
+            data_list= ins.ids.multipleDataContainer.children[::-1]
+
+            tot_paid= 0
+            
+            dataset=[]
+            for cont in data_list:
+                paid= cont.ids.paid.text
+                tot_paid+= int(paid)
+
+                date= cont.ids.date.text
+                tid= cont.ids.tid.text
+                rem= cont.ids.rem.text
+                doc_file= '' if cont.ids.docName.text=="Upload File" else cont.ids.docName.text
+                
+                data= (paid, date, tid, doc_file, rem)
+                dataset.append(data)
+
+            due= self.total_fee- tot_paid
+            last_date= data_list[-1].ids.date.text
+            last_tid= data_list[-1].ids.tid.text
+            last_rem= data_list[-1].ids.rem.text
+            last_doc_file= '' if data_list[-1].ids.docName.text=="Upload File" else data_list[-1].ids.docName.text
+
+            data= (sem, tot_paid, due, late, last_date, last_tid, last_rem)
+            
+            table_name= "_" + str(self.reg_no)
+            self.delete_all_data("fee_main.db",table_name)
+            conn= self.connect_database("fee_main.db")
+            if self.insert_into_database(table_name, conn, data) is not None:
+                conn.close()
+
+                table_name= "_" + str(self.reg_no)+"_"+str(sem)
+                self.delete_all_data("fee_main.db",table_name)
+                conn= self.connect_database("fee_main.db")
+                all_okay= True
+                for each in dataset:
+                    if self.insert_into_database(table_name, conn, each) is None:
+                        Snackbar(
+                            text="Duplicate transaction ID", duration=1
+                        ).show()
+                        all_okay= False
+                        break
+                
+                if all_okay:
+                    self.populate_screen()
+                    ins.dismiss()
+                    conn.close()
+                    self.move_doc(ins)
+                    ##userlog
+                    dnt= strftime("%d-%m-%Y %H:%M:%S")
+                    uname= self.parent.ids.userScreen.user_name
+                    activity= activities["edit_fee"].format(self.data_tuple[1],sem)
+                    create_log(dnt,uname,activity)
+            else:
+                Snackbar(
+                    text="Duplicate transaction ID", duration=1
+                ).show()
+        else:
+            Snackbar(text="Please fill up all required fields").show()
+
 
     def populate_screen(self):
         """
-        Visual presentation of the modified fee data list
+        Visual presentation of the modified/added fee data list
 
         Extracts the required fee data from the database and updates the view
         """
@@ -1394,7 +1458,6 @@ class AdminScreen(Screen, Database):
             crv.data= tmp_data
 
 
-
 class ForgotPasswordScreen(Screen, Database):
     """
     Forgot password screen for resetting password for admin
@@ -1579,7 +1642,6 @@ class ForgotPasswordScreen(Screen, Database):
 
 class ForgotPasswordUser(Screen):
     pass
-
 
 class NotificationScreen(Screen, Database):
     mail_sending_batch=[]

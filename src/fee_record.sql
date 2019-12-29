@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS {}(
 	late INT,
 	date_ VARCHAR NOT NULL,
 	tid VARCHAR UNIQUE NOT NULL,
-	remark VARCHAR 
+	remark VARCHAR
 )

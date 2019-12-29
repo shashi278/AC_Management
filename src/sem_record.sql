@@ -1,9 +1,8 @@
 CREATE TABLE IF NOT EXISTS {}(
     id INTEGER PRIMARY KEY,
 	paid INT NOT NULL,
-	due INT,
-	late INT,
 	date_ VARCHAR NOT NULL,
 	tid VARCHAR UNIQUE NOT NULL,
-	remark VARCHAR 
+	doc_file VARCHAR NOT NULL,
+	remark VARCHAR
 )
