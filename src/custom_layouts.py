@@ -93,40 +93,51 @@ class Rowinfo(BoxLayout, Database):
         conn = self.connect_database("fee_main.db")
 
         data = self.search_from_database(tableName, conn, "sem", sem, order_by="sem")[0]
+        conn.close()
+        
+        sem,late= data[0], data[3]
+
+        tableName = "_" + str(self.parent.reg_no)+"_"+str(sem)
+        data = self.extractAllData("fee_main.db",tableName,order_by="id")
         
         adl = AddDataLayout()
         adl.from_update = True
-        adl.ids.sem.text = str(data[0])
+        adl.ids.sem.text = str(sem)
         adl.ids.sem.disabled = True
-        adl.ids.paid.text = str(data[1])
-        adl.ids.late.text = str(data[3])
-        adl.ids.date.text = data[4]
-        adl.ids.tid.text = data[5]
-        adl.ids.rem.text = data[6]
+        adl.ids.late.text = str(late)
+
+        adl.height= 60*(len(data)-1)+230
+        adl.ids.multipleDataContainer.height=60*(len(data)-1)
+        for c, each in enumerate(data):
+            if c==0:
+                w= adl.ids.multipleDataContainer.children[0]
+            else:
+                w= MultipleDataLayout()
+            w.ids.paid.text= str(each[1])
+            w.ids.date.text= each[2]
+            w.ids.tid.text= each[3]
+            w.ids.docName.text= each[4]
+            w.ids.rem.text= each[5]
+            if c!=0:
+                adl.ids.multipleDataContainer.add_widget(w)
         adl.open()
 
     def delete(self, app, root, icon):
-        if icon != "pencil":
-            Snackbar(
-                text="Cannot delete while in edit mode. Save ongoing edit first.",
-                duration=2.5,
-            ).show()
-        else:
-            fields = [child.children[0].text for child in root.children[1:]][-1::-1]
-            data = {"sem": fields[0],
-                    "tid": fields[5],
-                    "reg": self.parent.reg_no,
-                    "name":self.parent.name,
-                    "uname":self.parent.uname
-                    }
-            tableName = "_" + str(self.parent.reg_no)
-            DeleteWarning(
-                "fee",
-                data,
-                "fee_main.db",
-                tableName,
-                callback=app.root.current_screen.populate_screen,
-            ).open()
+        fields = [child.children[0].text for child in root.children[1:]][-1::-1]
+        data = {"sem": fields[0],
+                "tid": fields[5],
+                "reg": self.parent.reg_no,
+                "name":self.parent.name,
+                "uname":self.parent.uname
+                }
+        tableName = "_" + str(self.parent.reg_no)
+        DeleteWarning(
+            "fee",
+            data,
+            "fee_main.db",
+            tableName,
+            callback=app.root.current_screen.populate_screen,
+        ).open()
 
 
 class AddUserDataLayout(FloatLayout):

@@ -19,14 +19,15 @@ def create_log(dnt, uname, activity):
         db.create_table(table.read(),conn)
     
     data= (dnt,  uname, activity)
+    conn= db.connect_database("user_log.db")
     db.insert_into_database("user_logs",conn,data)
+    conn.close()
 
 def extract_log():
     db= Database()
-    conn= db.connect_database("user_log.db")
     try:
         data= db.extractAllData("user_log.db","user_logs",order_by="id")[::-1]
         return data
     except (TypeError,Error):
         return None
-
+        
