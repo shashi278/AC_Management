@@ -21,10 +21,12 @@ __all__ = (
     "StreamDropFee",
 )
 
+
 class CourseDrop(DropDown):
     """
     `DropDown` to select a course from a list of available courses
     """
+
     pass
 
 
@@ -32,6 +34,7 @@ class StreamDrop(DropDown):
     """
     `DropDown` to select a stream from a list of available streams
     """
+
     pass
 
 
@@ -41,6 +44,7 @@ class CourseDropFee(DropDown):
 
     Two different dropdowns for course 'cause this class will have some additional functionalities
     """
+
     pass
 
 
@@ -50,6 +54,7 @@ class StreamDropFee(DropDown):
 
     Two different dropdowns for streams 'cause this class will have some additional functionalities
     """
+
     pass
 
 
@@ -58,4 +63,5 @@ class CategoryDrop(DropDown):
     `DropDown` to select a category in the `generate_receipt` screen
     Currently categories available are `All` and `Due`
     """
+
     pass

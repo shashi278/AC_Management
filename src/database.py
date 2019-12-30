@@ -53,7 +53,7 @@ class Database:
                     field_vals = list([field_vals])
 
                 for field, field_val in zip(fields, field_vals):
-                    #print(field,field_val)
+                    # print(field,field_val)
                     cur.execute(
                         """
 							UPDATE {}
@@ -163,11 +163,11 @@ class Database:
                 # print("Error in creating table: {}".format(e))
             conn.commit()
             conn.close()
-    
+
     def delete_table(self, db_file, table_name):
         conn = self.connect_database(db_file)
         if conn is not None:
-            cur= conn.cursor()
+            cur = conn.cursor()
             try:
                 cur.execute("DROP TABLE {}".format(table_name))
                 conn.commit()
@@ -175,7 +175,6 @@ class Database:
                 return True
             except:
                 return False
-
 
     def findTables(self, db_file):
         conn = self.connect_database(db_file)
@@ -206,7 +205,7 @@ class Database:
                         kwargs["stream"],
                         kwargs["fromYear"] + "-" + kwargs["toYear"],
                         kwargs["fee"],
-                        sheet.cell_value(i, 3)
+                        sheet.cell_value(i, 3),
                     )
 
                     self.insert_into_database(tableName, conn, data)
@@ -224,7 +223,7 @@ class Database:
 
         if conn is not None:
             self.create_table(table, conn)
-            tmp= self.insert_into_database(tableName, conn, data)
+            tmp = self.insert_into_database(tableName, conn, data)
             conn.close()
             return tmp
         return None
@@ -236,27 +235,26 @@ class Database:
             cur = conn.execute(
                 "SELECT * FROM {} ORDER BY {}".format(tableName, order_by)
             )
-            data= cur.fetchall()
+            data = cur.fetchall()
             conn.close()
             return data
         return None
-    
+
     def delete_all_data(self, db_file, tableName):
         conn = self.connect_database(db_file)
 
         if conn is not None:
-            #conn.commit()
-            cur= conn.cursor()
+            # conn.commit()
+            cur = conn.cursor()
             cur.execute(
                 """
                 DELETE FROM {};
-                """.format(tableName)
+                """.format(
+                    tableName
+                )
             )
             conn.commit()
             conn.close()
-            
-    
-    
 
 
 if __name__ == "__main__":

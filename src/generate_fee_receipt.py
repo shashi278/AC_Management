@@ -42,14 +42,16 @@ class PDF(FPDF):
         self.set_font("Arial", "I", 8)
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
 
+
 def show_pdf(file_path):
     try:
         if platform.system() == "Windows":
             os.startfile(file_path)
-        elif platform.system()=="Linux":
-            subprocess.call(['xdg-open',file_path])
+        elif platform.system() == "Linux":
+            subprocess.call(["xdg-open", file_path])
     except PermissionError:
         from kivymd.uix.snackbar import Snackbar
+
         Snackbar(text="File is already opened!", duration=1.5).show()
 
 
@@ -137,9 +139,10 @@ def generate_pdf(personalinfo, feeinfo, dir):
 
     if not os.path.exists(dir + "/Students"):
         os.mkdir(dir + "/Students")
-    filepath_and_name=dir + "/Students/" + personalinfo["reg"] + ".pdf"
+    filepath_and_name = dir + "/Students/" + personalinfo["reg"] + ".pdf"
     pdf.output(filepath_and_name, "F")
     show_pdf(filepath_and_name)
+
 
 def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
 
@@ -210,20 +213,20 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
     if not os.path.exists(dir + "/Batch"):
         os.mkdir(dir + "/Batch")
 
-    
-    filepath_and_name=dir        \
-        + "/Batch/"              \
-        + basic_details["batch"] \
-        + "_"                    \
-        + basic_details["course"]\
-        + basic_details["stream"]\
-        + "_Sem-"                \
-        + basic_details["sem"]   \
+    filepath_and_name = (
+        dir
+        + "/Batch/"
+        + basic_details["batch"]
+        + "_"
+        + basic_details["course"]
+        + basic_details["stream"]
+        + "_Sem-"
+        + basic_details["sem"]
         + ".pdf"
+    )
 
     pdf.output(
-        filepath_and_name,
-        "F",
+        filepath_and_name, "F",
     )
 
     show_pdf(filepath_and_name)

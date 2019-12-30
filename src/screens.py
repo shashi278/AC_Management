@@ -83,9 +83,9 @@ class ListRightSwitch(IRightBodyTouch, MDSwitch):
 class ScreenManager(ScreenManager):
     pass
 
+
 # HomeScreen Class
 class HomeScreen(Screen):
-
     def openLoginPop(self, title):
         """Opens up the login popup with desired title
 
@@ -97,6 +97,7 @@ class HomeScreen(Screen):
         lp.ids.username_.focus = True
         lp.open()
 
+
 # UserScreen
 class UserScreen(Screen, Database):
     """
@@ -107,7 +108,7 @@ class UserScreen(Screen, Database):
         """
         Function to get called everytime user screen starts
         """
-        #--------------Update Student list---------------------#
+        # --------------Update Student list---------------------#
         self.ids.rv.data = []
         try:
             data_list = self.extractAllData("student_main.db", "General_record")
@@ -272,7 +273,7 @@ class ProfilePage(Screen, Database):
         """
         self.ids.name.text = ""
         self.ids.roll.text = ""
-        self.ids.email.text= ""
+        self.ids.email.text = ""
         self.ids.course.info_name = ""
         self.ids.stream.info_name = ""
         self.ids.batch.info_name = ""
@@ -300,7 +301,7 @@ class ProfilePage(Screen, Database):
             self.ids.roll.text += next(self.r)
         except StopIteration:
             Clock.unschedule(self.set_roll_info)
-    
+
     def set_email_info(self, interval):
         """
         Function to produce animation effect during setting email
@@ -391,8 +392,8 @@ class ProfilePage(Screen, Database):
             self.f = iter(list(str(self.data_tuple[5])))
             self.total_fee = self.data_tuple[5]
             self.ids.rb.total_fee = self.total_fee
-            self.ids.rb.name= self.data_tuple[1]
-            self.ids.rb.uname= self.parent.ids.userScreen.user_name
+            self.ids.rb.name = self.data_tuple[1]
+            self.ids.rb.uname = self.parent.ids.userScreen.user_name
 
         except Exception as e:
             Snackbar(text="Error retrieving data: {}".format(e), duration=2).show()
@@ -427,66 +428,74 @@ class ProfilePage(Screen, Database):
         if not sem:
             Snackbar(text="Semester is either empty or 0", duration=0.8).show()
             return
-        
+
         if ins.check_all_fields():
             conn = self.connect_database("fee_main.db")
-            table_name= "_" + str(self.reg_no)+"_"+str(sem)
+            table_name = "_" + str(self.reg_no) + "_" + str(sem)
 
-            #create table
+            # create table
             if conn is not None:
                 with open("sem_record.sql") as table:
                     self.create_table(table.read().format(table_name), conn)
 
-            data_list= ins.ids.multipleDataContainer.children[::-1]
+            data_list = ins.ids.multipleDataContainer.children[::-1]
 
-            tot_paid= 0
-            
-            dataset=[]
+            tot_paid = 0
+
+            dataset = []
             for cont in data_list:
-                paid= cont.ids.paid.text
-                tot_paid+= int(paid)
+                paid = cont.ids.paid.text
+                tot_paid += int(paid)
 
-                date= cont.ids.date.text
-                tid= cont.ids.tid.text
-                rem= cont.ids.rem.text
-                doc_file= '' if cont.ids.docName.text=="Upload File" else cont.ids.docName.text
-                
-                data= (paid, date, tid, doc_file, rem)
+                date = cont.ids.date.text
+                tid = cont.ids.tid.text
+                rem = cont.ids.rem.text
+                doc_file = (
+                    ""
+                    if cont.ids.docName.text == "Upload File"
+                    else cont.ids.docName.text
+                )
+
+                data = (paid, date, tid, doc_file, rem)
                 dataset.append(data)
 
-            due= self.total_fee- tot_paid
-            last_date= data_list[-1].ids.date.text
-            last_tid= data_list[-1].ids.tid.text
-            last_rem= data_list[-1].ids.rem.text
-            last_doc_file= '' if data_list[-1].ids.docName.text=="Upload File" else data_list[-1].ids.docName.text
+            due = self.total_fee - tot_paid
+            last_date = data_list[-1].ids.date.text
+            last_tid = data_list[-1].ids.tid.text
+            last_rem = data_list[-1].ids.rem.text
+            last_doc_file = (
+                ""
+                if data_list[-1].ids.docName.text == "Upload File"
+                else data_list[-1].ids.docName.text
+            )
 
-            data= (sem, tot_paid, due, late, last_date, last_tid, last_rem)
+            data = (sem, tot_paid, due, late, last_date, last_tid, last_rem)
 
-            table_name= "_" + str(self.reg_no)
+            table_name = "_" + str(self.reg_no)
             conn = self.connect_database("fee_main.db")
             if self.insert_into_database(table_name, conn, data) is not None:
                 self.populate_screen()
                 ins.dismiss()
 
-                table_name= "_" + str(self.reg_no)+"_"+str(sem)
+                table_name = "_" + str(self.reg_no) + "_" + str(sem)
                 for each in dataset:
                     self.insert_into_database(table_name, conn, each)
                 conn.close()
                 self.move_doc(ins)
                 ##userlog
-                dnt= strftime("%d-%m-%Y %H:%M:%S")
-                uname= self.parent.ids.userScreen.user_name
-                activity= activities["add_fee"].format(self.data_tuple[1],sem)
-                create_log(dnt,uname,activity)
+                dnt = strftime("%d-%m-%Y %H:%M:%S")
+                uname = self.parent.ids.userScreen.user_name
+                activity = activities["add_fee"].format(self.data_tuple[1], sem)
+                create_log(dnt, uname, activity)
             else:
                 Snackbar(
                     text="Data for semester {} already exists.".format(sem), duration=1
                 ).show()
-            
+
         else:
             Snackbar(text="Please fill up all required fields").show()
-        
-    def move_doc(self,ins):
+
+    def move_doc(self, ins):
         """
         This function saves a copy of
         documents in the source folder 
@@ -495,10 +504,10 @@ class ProfilePage(Screen, Database):
             os.makedirs("documents/")
 
         for each in ins.ids.multipleDataContainer.children:
-            if (each.doc_path!=""):
-                extension=os.path.splitext(each.doc_path)[1]
-                shutil.copy(each.doc_path , "documents/"+ each.ids.tid.text + extension)
-        
+            if each.doc_path != "":
+                extension = os.path.splitext(each.doc_path)[1]
+                shutil.copy(each.doc_path, "documents/" + each.ids.tid.text + extension)
+
     def update_fee_data(self, ins):
         """
         Update an existing fee data for a student.
@@ -522,73 +531,76 @@ class ProfilePage(Screen, Database):
             return
 
         if ins.check_all_fields():
-        
-            table_name = "_" + str(self.reg_no)+"_"+sem
+
+            table_name = "_" + str(self.reg_no) + "_" + sem
             conn = self.connect_database("fee_main.db")
             c = conn.execute("select * from {}".format(table_name))
             fields_names = tuple([des[0] for des in c.description][1:])
             conn.close()
 
-            data_list= ins.ids.multipleDataContainer.children[::-1]
+            data_list = ins.ids.multipleDataContainer.children[::-1]
 
-            tot_paid= 0
-            
-            dataset=[]
+            tot_paid = 0
+
+            dataset = []
             for cont in data_list:
-                paid= cont.ids.paid.text
-                tot_paid+= int(paid)
+                paid = cont.ids.paid.text
+                tot_paid += int(paid)
 
-                date= cont.ids.date.text
-                tid= cont.ids.tid.text
-                rem= cont.ids.rem.text
-                doc_file= '' if cont.ids.docName.text=="Upload File" else cont.ids.docName.text
-                
-                data= (paid, date, tid, doc_file, rem)
+                date = cont.ids.date.text
+                tid = cont.ids.tid.text
+                rem = cont.ids.rem.text
+                doc_file = (
+                    ""
+                    if cont.ids.docName.text == "Upload File"
+                    else cont.ids.docName.text
+                )
+
+                data = (paid, date, tid, doc_file, rem)
                 dataset.append(data)
 
-            due= self.total_fee- tot_paid
-            last_date= data_list[-1].ids.date.text
-            last_tid= data_list[-1].ids.tid.text
-            last_rem= data_list[-1].ids.rem.text
-            last_doc_file= '' if data_list[-1].ids.docName.text=="Upload File" else data_list[-1].ids.docName.text
+            due = self.total_fee - tot_paid
+            last_date = data_list[-1].ids.date.text
+            last_tid = data_list[-1].ids.tid.text
+            last_rem = data_list[-1].ids.rem.text
+            last_doc_file = (
+                ""
+                if data_list[-1].ids.docName.text == "Upload File"
+                else data_list[-1].ids.docName.text
+            )
 
-            data= (sem, tot_paid, due, late, last_date, last_tid, last_rem)
-            
-            table_name= "_" + str(self.reg_no)
-            self.delete_all_data("fee_main.db",table_name)
-            conn= self.connect_database("fee_main.db")
+            data = (sem, tot_paid, due, late, last_date, last_tid, last_rem)
+
+            table_name = "_" + str(self.reg_no)
+            self.delete_all_data("fee_main.db", table_name)
+            conn = self.connect_database("fee_main.db")
             if self.insert_into_database(table_name, conn, data) is not None:
                 conn.close()
 
-                table_name= "_" + str(self.reg_no)+"_"+str(sem)
-                self.delete_all_data("fee_main.db",table_name)
-                conn= self.connect_database("fee_main.db")
-                all_okay= True
+                table_name = "_" + str(self.reg_no) + "_" + str(sem)
+                self.delete_all_data("fee_main.db", table_name)
+                conn = self.connect_database("fee_main.db")
+                all_okay = True
                 for each in dataset:
                     if self.insert_into_database(table_name, conn, each) is None:
-                        Snackbar(
-                            text="Duplicate transaction ID", duration=1
-                        ).show()
-                        all_okay= False
+                        Snackbar(text="Duplicate transaction ID", duration=1).show()
+                        all_okay = False
                         break
-                
+
                 if all_okay:
                     self.populate_screen()
                     ins.dismiss()
                     conn.close()
                     self.move_doc(ins)
                     ##userlog
-                    dnt= strftime("%d-%m-%Y %H:%M:%S")
-                    uname= self.parent.ids.userScreen.user_name
-                    activity= activities["edit_fee"].format(self.data_tuple[1],sem)
-                    create_log(dnt,uname,activity)
+                    dnt = strftime("%d-%m-%Y %H:%M:%S")
+                    uname = self.parent.ids.userScreen.user_name
+                    activity = activities["edit_fee"].format(self.data_tuple[1], sem)
+                    create_log(dnt, uname, activity)
             else:
-                Snackbar(
-                    text="Duplicate transaction ID", duration=1
-                ).show()
+                Snackbar(text="Duplicate transaction ID", duration=1).show()
         else:
             Snackbar(text="Please fill up all required fields").show()
-
 
     def populate_screen(self):
         """
@@ -684,11 +696,11 @@ class ProfilePage(Screen, Database):
                 Snackbar(
                     text="PDF generated for reg. no. {}".format(self.reg_no), duration=2
                 ).show()
-                #userlog
-                dnt= strftime("%d-%m-%Y %H:%M:%S")
-                uname= self.parent.ids.userScreen.user_name
-                activity= activities["print_fee"].format(self.reg_no)
-                create_log(dnt,uname,activity)
+                # userlog
+                dnt = strftime("%d-%m-%Y %H:%M:%S")
+                uname = self.parent.ids.userScreen.user_name
+                activity = activities["print_fee"].format(self.reg_no)
+                create_log(dnt, uname, activity)
             else:
                 Snackbar(
                     text="No fee data found for reg. no. {}".format(self.reg_no),
@@ -701,6 +713,7 @@ class AdminScreen(Screen, Database):
     """
     Admin screen class
     """
+
     pc_username = os.getlogin()
 
     admin_password = ""
@@ -724,7 +737,7 @@ class AdminScreen(Screen, Database):
         self.ids.logoutbtn.ids.lbl_txt.text_size = (sp(80), sp(80))
         self.ids.logoutbtn.ids.lbl_txt.font_size = sp(40)
         self.populate_user_data()
-        #self.populate_userslog()
+        # self.populate_userslog()
         # --------------------------------------------#
 
     def change_screen(self, instance):
@@ -751,8 +764,11 @@ class AdminScreen(Screen, Database):
             self.ids.top_bar.text = "Admin: " + instance.text
             self.ids.scrManager.current = "adminSetting"
 
-        elif instance.text == "Users Logs" and self.check_edits_users()\
-                                and self.check_edits_admin():
+        elif (
+            instance.text == "Users Logs"
+            and self.check_edits_users()
+            and self.check_edits_admin()
+        ):
             self.ids.top_bar.text = "Admin: " + instance.text
             self.populate_userslog()
             self.ids.scrManager.current = "usersLogs"
@@ -1009,8 +1025,8 @@ class AdminScreen(Screen, Database):
                     toYear=self.fields["toYear"],
                     course=self.fields["course"],
                     stream=self.fields["stream"],
-                    fee=self.fields["fee"]
-                    ):
+                    fee=self.fields["fee"],
+                ):
                     Snackbar(text="File uploaded successfully!", duration=2).show()
                 else:
                     Snackbar(text="Error uploading file.", duration=2).show()
@@ -1092,7 +1108,7 @@ class AdminScreen(Screen, Database):
                     update_layout.course = data_tuple[2]
                     update_layout.stream = data_tuple[3]
                     update_layout.batch = data_tuple[4]
-                    update_layout.email= data_tuple[6]
+                    update_layout.email = data_tuple[6]
 
                     parent.add_widget(update_layout)
 
@@ -1122,7 +1138,7 @@ class AdminScreen(Screen, Database):
                 widget.ids.courseBtn.text,
                 widget.ids.streamBtn.text,
                 widget.batch,
-                widget.email
+                widget.email,
             )
 
             try:
@@ -1192,15 +1208,15 @@ class AdminScreen(Screen, Database):
             self.admin_password = data_list_admin[4]
         except TypeError:
             pass
-    
+
     def populate_not_mail(self, *args):
         """
         Function to populate notification email
         """
         try:
-            data_not_mail = self.extractAllData(
-                "user_main.db", "admin", order_by="id"
-            )[0]
+            data_not_mail = self.extractAllData("user_main.db", "admin", order_by="id")[
+                0
+            ]
 
             self.ids.notMailLayout.clear_widgets()
             self.ids.notMailLayout.add_widget(
@@ -1208,15 +1224,15 @@ class AdminScreen(Screen, Database):
             )
         except TypeError:
             pass
-    
+
     def populate_not_mail_password(self, *args):
         """
         Function to populate notification email password
         """
         try:
-            data_not_mail = self.extractAllData(
-                "user_main.db", "admin", order_by="id"
-            )[0]
+            data_not_mail = self.extractAllData("user_main.db", "admin", order_by="id")[
+                0
+            ]
             self.not_mail_password = data_not_mail[7]
         except TypeError:
             pass
@@ -1250,7 +1266,7 @@ class AdminScreen(Screen, Database):
         admin = self.ids.adminInfoLayout
         for each in admin.children[::-1]:
             texts.append(each.children[0].text)
-        #print(texts)
+        # print(texts)
 
         admin.clear_widgets()
         for title, text in zip(
@@ -1415,9 +1431,13 @@ class AdminScreen(Screen, Database):
         try:
             conn = self.connect_database("user_main.db")
             # READ ME: Here we're supposing that admin table has just one entry with id=1
-            self.update_database("admin", conn, "not_pass", self.not_mail_password, "id", 1)
+            self.update_database(
+                "admin", conn, "not_pass", self.not_mail_password, "id", 1
+            )
         except Error:
-            Snackbar(text="Error updating notification email password", duration=2).show()
+            Snackbar(
+                text="Error updating notification email password", duration=2
+            ).show()
         else:
             Snackbar(text="Notification email password updated", duration=2,).show()
 
@@ -1440,22 +1460,19 @@ class AdminScreen(Screen, Database):
         """
         Populates user log screen according user activity
         """
-        extracted_logs= extract_log()
+        extracted_logs = extract_log()
         if extracted_logs is not None:
-            tmp_data=[]
+            tmp_data = []
             for each in extracted_logs:
-                _tmp= {
-                    "dnt": each[1],
-                    "uname": each[2],
-                    "activity": each[3]
-                }
+                _tmp = {"dnt": each[1], "uname": each[2], "activity": each[3]}
                 tmp_data.append(_tmp)
             self.ids.logList.clear_widgets()
             from custom_widgets import CustomRecycleView
+
             crv = CustomRecycleView()
-            crv.viewclass = 'RowUsersLogs'
+            crv.viewclass = "RowUsersLogs"
             self.ids.logList.add_widget(crv)
-            crv.data= tmp_data
+            crv.data = tmp_data
 
 
 class ForgotPasswordScreen(Screen, Database):
@@ -1481,7 +1498,7 @@ class ForgotPasswordScreen(Screen, Database):
         t1.start()
 
     def verify_code(self, inst, *args):
-        #print(inst.text, self.otp_recieved)
+        # print(inst.text, self.otp_recieved)
         if inst.text == str(self.otp_recieved):
             if len(self.ids.resetPasswordBox.children) == 0:
                 self.ids.statusLabel.text = ""
@@ -1517,9 +1534,9 @@ class ForgotPasswordScreen(Screen, Database):
             self.ids.statusLabel.color = (1, 0, 0, 1)
             self.ids.resetPasswordBox.clear_widgets()
 
-    def new_password_set(self,inst1,inst2,*args):
-        if(inst1.text==inst2.text):
-            if(inst1.text != ""):
+    def new_password_set(self, inst1, inst2, *args):
+        if inst1.text == inst2.text:
+            if inst1.text != "":
                 """
                 Database Update
                 code here 
@@ -1568,15 +1585,15 @@ class ForgotPasswordScreen(Screen, Database):
         self.ids.statusLabel.text = "Sending..."
 
         # extract notification mail from database
-        data_not_mail = self.extractAllData(
-                "user_main.db", "admin", order_by="id"
-            )[0]
+        data_not_mail = self.extractAllData("user_main.db", "admin", order_by="id")[0]
         not_mail, not_pass = data_not_mail[6:]
 
         if self.login(not_mail, not_pass):
             # extract admin email
-            admin_email = self.extractAllData("user_main.db", "admin", order_by="id")[0][2]
-            self.otp_recieved = self.send_otp(not_mail,admin_email)
+            admin_email = self.extractAllData("user_main.db", "admin", order_by="id")[
+                0
+            ][2]
+            self.otp_recieved = self.send_otp(not_mail, admin_email)
             self.ids.statusLabel.color = (1, 1, 1, 1)
             self.ids.statusLabel.text = "Code Sent"
             self.ids.sendBtn.text = "Resend Code"
@@ -1594,8 +1611,8 @@ class ForgotPasswordScreen(Screen, Database):
             self.ids.statusLabel.color = (1, 0, 0, 1)
             self.ids.statusLabel.text = "Error sending mail"
             self.ids.sendBtn.disabled = False
-    
-    def login(self,email,password):
+
+    def login(self, email, password):
         try:
             self.s = smtplib.SMTP("smtp.gmail.com", 587)
             self.s.starttls()
@@ -1603,12 +1620,14 @@ class ForgotPasswordScreen(Screen, Database):
             return True
         except smtplib.SMTPAuthenticationError:
             Snackbar(
-                text="Authentication Error: Check notification credentials or turn on less secure app access", duration=3
+                text="Authentication Error: Check notification credentials or turn on less secure app access",
+                duration=3,
             ).show()
             return False
         except socket.gaierror:
             Snackbar(
-                text="Connection Error: Could not sent mail. Kindly check your connection.", duration=2
+                text="Connection Error: Could not sent mail. Kindly check your connection.",
+                duration=2,
             ).show()
             return False
         except Exception:
@@ -1616,7 +1635,7 @@ class ForgotPasswordScreen(Screen, Database):
                 text="Error sending mail. Check credentials or coonection.", duration=2
             ).show()
             return False
-    
+
     def send_otp(self, from_, to, *args):
         otp = random.randint(000000, 999999)
 
@@ -1635,17 +1654,17 @@ class ForgotPasswordScreen(Screen, Database):
             self.s.send_message(msg)
             return otp
         except Exception as e:
-            Snackbar(
-                text="Error sending OTP", duration=1.5
-                ).show()
+            Snackbar(text="Error sending OTP", duration=1.5).show()
             return None
+
 
 class ForgotPasswordUser(Screen):
     pass
 
+
 class NotificationScreen(Screen, Database):
-    mail_sending_batch=[]
-    
+    mail_sending_batch = []
+
     def openCourseList(self, instance):
         dropdown = CourseDropFee()
         dropdown.open(instance)
@@ -1680,11 +1699,11 @@ class NotificationScreen(Screen, Database):
         if self.ids.rv.data:
             generate_batch_fee_pdf(basic_details, self.ids.rv.data, None)
             Snackbar(text="PDF generated", duration=1.5).show()
-            #userlog
-            dnt= strftime("%d-%m-%Y %H:%M:%S")
-            uname= self.parent.ids.userScreen.user_name
-            activity= activities["print_batch_fee"]
-            create_log(dnt,uname,activity)
+            # userlog
+            dnt = strftime("%d-%m-%Y %H:%M:%S")
+            uname = self.parent.ids.userScreen.user_name
+            activity = activities["print_batch_fee"]
+            create_log(dnt, uname, activity)
         else:
             Snackbar(text="Empty data!", duration=1.5).show()
 
@@ -1788,25 +1807,30 @@ class NotificationScreen(Screen, Database):
         dropdown.open(instance)
         dropdown.bind(on_select=lambda instance_, btn: self.onSelect(btn, instance))
 
-    def get_data(self,app):
+    def get_data(self, app):
         """
         Method to get batch details of which student will be notified
         in a list of dictionary.
         """
         if self.check_data():
-            if self.ids.notSemester.text != ""\
-                and self.ids.notFromyear.text != ""\
-                and self.ids.notToyear.text != ""\
-                and self.ids.notCourse.text != "Select Course"\
-                and self.ids.notStream.text != "Select Stream":
-                self.mail_sending_batch.append({"sem":self.ids.notSemester.text,
-                                                "fromyear":self.ids.notFromyear.text,
-                                                "toyear":self.ids.notToyear.text,
-                                                "course":self.ids.notCourse.text,
-                                                "stream":self.ids.notStream.text,
-                                                "category":self.ids.notCategory.text
-                })
-                
+            if (
+                self.ids.notSemester.text != ""
+                and self.ids.notFromyear.text != ""
+                and self.ids.notToyear.text != ""
+                and self.ids.notCourse.text != "Select Course"
+                and self.ids.notStream.text != "Select Stream"
+            ):
+                self.mail_sending_batch.append(
+                    {
+                        "sem": self.ids.notSemester.text,
+                        "fromyear": self.ids.notFromyear.text,
+                        "toyear": self.ids.notToyear.text,
+                        "course": self.ids.notCourse.text,
+                        "stream": self.ids.notStream.text,
+                        "category": self.ids.notCategory.text,
+                    }
+                )
+
             else:
                 Snackbar(text="Something not filled or selected!", duration=0.8).show()
 
@@ -1819,99 +1843,114 @@ class NotificationScreen(Screen, Database):
         Rescue from same data multiple entry.
         """
 
-        tmp= {
-            "sem":self.ids.notSemester.text,
-            "fromyear":self.ids.notFromyear.text,
-            "toyear":self.ids.notToyear.text,
-            "course":self.ids.notCourse.text,
-            "category":self.ids.notCategory.text,
-            "stream":self.ids.notStream.text
+        tmp = {
+            "sem": self.ids.notSemester.text,
+            "fromyear": self.ids.notFromyear.text,
+            "toyear": self.ids.notToyear.text,
+            "course": self.ids.notCourse.text,
+            "category": self.ids.notCategory.text,
+            "stream": self.ids.notStream.text,
         }
         if tmp in self.mail_sending_batch:
             Snackbar(text="Duplicate data!", duration=0.8).show()
             return False
         return True
 
-    def mode_selection(self,key):
+    def mode_selection(self, key):
 
-        if key==0:
+        if key == 0:
             self.ids.messageMode.clear_widgets()
-            self.ids.messageBox.text=""
-            self.ids.height=0
+            self.ids.messageBox.text = ""
+            self.ids.height = 0
 
-        elif key==1:
+        elif key == 1:
             self.ids.messageMode.clear_widgets()
-            self.ids.messageBox.text=""
+            self.ids.messageBox.text = ""
             from custom_layouts import SoftwareModeLayout
-            w=SoftwareModeLayout()
+
+            w = SoftwareModeLayout()
             self.ids.messageMode.add_widget(w)
 
-    def delete_data(self,data,app):
+    def delete_data(self, data, app):
         self.mail_sending_batch.remove(data)
         self.populate_not_data(app)
 
-    def populate_not_data(self,app):
-        if len(self.mail_sending_batch)==0:
-            self.ids.listLabel.opacity=0
+    def populate_not_data(self, app):
+        if len(self.mail_sending_batch) == 0:
+            self.ids.listLabel.opacity = 0
             self.ids.batchList.clear_widgets()
-            l=Label()
-            l.text="No data Added"
-            l.color=(0,0,0,1) if app.theme_cls.theme_style=="Light" else (1,1,1,1)
+            l = Label()
+            l.text = "No data Added"
+            l.color = (
+                (0, 0, 0, 1) if app.theme_cls.theme_style == "Light" else (1, 1, 1, 1)
+            )
             self.ids.batchList.add_widget(l)
         else:
             self.ids.batchList.clear_widgets()
-            self.ids.listLabel.opacity=1
-            self.ids.batchList.height=len(self.mail_sending_batch)*36+40
-            self.ids.notificationContainer.height=880+len(self.mail_sending_batch)*36
+            self.ids.listLabel.opacity = 1
+            self.ids.batchList.height = len(self.mail_sending_batch) * 36 + 40
+            self.ids.notificationContainer.height = (
+                880 + len(self.mail_sending_batch) * 36
+            )
             from custom_widgets import CustomRecycleView
             from custom_layouts import RowNotification
-            w=CustomRecycleView()
-            w.viewclass= 'RowNotification'
+
+            w = CustomRecycleView()
+            w.viewclass = "RowNotification"
             self.ids.batchList.add_widget(w)
-            w.data=self.mail_sending_batch.copy()
-    
+            w.data = self.mail_sending_batch.copy()
+
     def send_notification(self):
-        x= self.ids.batchList.children[0]
+        x = self.ids.batchList.children[0]
         if isinstance(x, CustomRecycleView):
             conn = self.connect_database("student_main.db")
-            conn_fee= self.connect_database("fee_main.db")
-            mailing_list=[]
-            
-            for each in x.data:
-                cond= ("batch ='"+each["fromyear"]+"-"+each["toyear"]+
-                        "' AND course='"+each["course"]+"' AND stream='"+each["stream"]+"'")
+            conn_fee = self.connect_database("fee_main.db")
+            mailing_list = []
 
-                filter1= self.search_from_database_many("General_record", conn, cond)
+            for each in x.data:
+                cond = (
+                    "batch ='"
+                    + each["fromyear"]
+                    + "-"
+                    + each["toyear"]
+                    + "' AND course='"
+                    + each["course"]
+                    + "' AND stream='"
+                    + each["stream"]
+                    + "'"
+                )
+
+                filter1 = self.search_from_database_many("General_record", conn, cond)
 
                 for each_data in filter1:
-                    reg= each_data[0]
-                    if each["category"]=="All":
-                        cond= "sem= '"+each["sem"]+"'"
+                    reg = each_data[0]
+                    if each["category"] == "All":
+                        cond = "sem= '" + each["sem"] + "'"
                     else:
-                        cond= "sem= '"+each["sem"]+"' AND due > 0"
-                    
-                    if self.search_from_database_many("_"+str(reg), conn_fee, cond):
+                        cond = "sem= '" + each["sem"] + "' AND due > 0"
+
+                    if self.search_from_database_many("_" + str(reg), conn_fee, cond):
                         mailing_list.append(each_data[6])
-            
-            mail_text= self.ids.messageBox.text
+
+            mail_text = self.ids.messageBox.text
             if not mail_text:
-                Snackbar(text="Empty message!", duration=.8).show()
+                Snackbar(text="Empty message!", duration=0.8).show()
                 return
-            
-            mailing_list= list(set(mailing_list))
+
+            mailing_list = list(set(mailing_list))
             if not mailing_list:
-                Snackbar(text="Mailing list empty!", duration=.8).show()
+                Snackbar(text="Mailing list empty!", duration=0.8).show()
                 return
-            
+
             t1 = threading.Thread(
-            target=self.send_notif_mail, args=(mail_text, mailing_list)
+                target=self.send_notif_mail, args=(mail_text, mailing_list)
             )
             t1.start()
 
         else:
-            Snackbar(text="Mailing list empty!", duration=.8).show()
-    
-    def login(self,email,password):
+            Snackbar(text="Mailing list empty!", duration=0.8).show()
+
+    def login(self, email, password):
         try:
             self.s = smtplib.SMTP("smtp.gmail.com", 587)
             self.s.starttls()
@@ -1919,12 +1958,14 @@ class NotificationScreen(Screen, Database):
             return True
         except smtplib.SMTPAuthenticationError:
             Snackbar(
-                text="Authentication Error: Check notification credentials or turn on less secure app access", duration=3
+                text="Authentication Error: Check notification credentials or turn on less secure app access",
+                duration=3,
             ).show()
             return False
         except socket.gaierror:
             Snackbar(
-                text="Connection Error: Could not sent mail. Kindly check your connection.", duration=2
+                text="Connection Error: Could not sent mail. Kindly check your connection.",
+                duration=2,
             ).show()
             return False
         except Exception:
@@ -1932,42 +1973,38 @@ class NotificationScreen(Screen, Database):
                 text="Error sending mail. Check credentials or coonection.", duration=2
             ).show()
             return False
-    
+
     def send_notif_mail(self, e_msg, receipients):
         self.ids.sendBtn.text = "Sending..."
         self.ids.sendBtn.disabled = True
 
         # extract notification mail from database
-        data_not_mail = self.extractAllData(
-                "user_main.db", "admin", order_by="id"
-            )[0]
+        data_not_mail = self.extractAllData("user_main.db", "admin", order_by="id")[0]
         not_mail, not_pass = data_not_mail[6:]
 
         if self.login(not_mail, not_pass):
             msg = EmailMessage()
-            msg["Subject"]= "Fee Payment Remainder: IIIT Kalyani"
-            msg["From"]= not_mail
-            msg["To"]= ",".join(receipients)
+            msg["Subject"] = "Fee Payment Remainder: IIIT Kalyani"
+            msg["From"] = not_mail
+            msg["To"] = ",".join(receipients)
             msg.set_content(e_msg)
             try:
                 self.s.send_message(msg)
                 Snackbar(text="Notification Sent.", duration=1.5).show()
-                #userlog
-                dnt= strftime("%d-%m-%Y %H:%M:%S")
-                uname= self.parent.ids.userScreen.user_name
-                activity= activities["send_notification"].format()
-                create_log(dnt,uname,activity)
+                # userlog
+                dnt = strftime("%d-%m-%Y %H:%M:%S")
+                uname = self.parent.ids.userScreen.user_name
+                activity = activities["send_notification"].format()
+                create_log(dnt, uname, activity)
             except Exception as e:
                 print(e)
-                Snackbar(
-                text="Error sending notification mail", duration=1.5
-                ).show()
+                Snackbar(text="Error sending notification mail", duration=1.5).show()
 
-        self.ids.sendBtn.text= "Send Notification"
-        self.ids.sendBtn.disabled= False
+        self.ids.sendBtn.text = "Send Notification"
+        self.ids.sendBtn.disabled = False
 
-    def load_message(self,latefine,duedate):
-        msg="""Dear Student,
+    def load_message(self, latefine, duedate):
+        msg = """Dear Student,
                     It is informed you that you have not paid
                 your tution fee yet.
 
@@ -1976,5 +2013,4 @@ class NotificationScreen(Screen, Database):
 
                                                     Thanks
                                             """
-        self.ids.messageBox.text=msg.format(duedate,latefine)
-
+        self.ids.messageBox.text = msg.format(duedate, latefine)
