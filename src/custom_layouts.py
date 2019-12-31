@@ -107,8 +107,8 @@ class Rowinfo(BoxLayout, Database):
         adl.ids.sem.disabled = True
         adl.ids.late.text = str(late)
 
-        adl.height = 60 * (len(data) - 1) + 230
-        adl.ids.multipleDataContainer.height = 60 * (len(data) - 1)
+        adl.height = 60 * len(data) + 230
+        adl.ids.multipleDataContainer.height = 60 * len(data)
         for c, each in enumerate(data):
             if c == 0:
                 w = adl.ids.multipleDataContainer.children[0]
