@@ -245,7 +245,6 @@
 					text_color: [.4,.4,.4,1]
 					on_release:
 						root.edit(root, self.icon, app)
-						#self.icon= "check" if self.icon=="pencil" else "pencil"
 						
 
 		HoverLayout:
@@ -602,11 +601,11 @@
 					size_hint_x: None
 					width:100
 					padding:0,10,0,0
-					MDLabel:
+					MDTextButton:
 						id:date
-						halign:"center"
 						text:"Select Date"
-						color: app.theme_cls.primary_color
+						on_release:
+							root.open_date_picker()
 
 				AnchorLayout:
 					size_hint_x: None
@@ -631,11 +630,11 @@
 			BoxLayout:
 				size_hint: None,1
 				width: root.width/6 if len(root.ids.docName.text)>20 else dp(100)
-				MDLabel:
+				MDTextButton:
 					id:docName
 					text:"Upload File"
-					halign:"center"
-					color:app.theme_cls.primary_color
+					on_release:
+						root.open_FileSelector(root)
 
 			BoxLayout:
 				size_hint_x:None
@@ -721,7 +720,7 @@
 				MDRaisedButton:
 					text:"Add More Data"
 					on_release:
-						root.add_more_data_layout()
+						root.add_more_data_layout() if len(root.ids.multipleDataContainer.children)<6 else None
 		
 		BoxLayout:
 			size_hint_y:None
@@ -746,7 +745,6 @@
 					elevation_normal: 8
 					md_bg_color: app.theme_cls.primary_color
 					on_release:
-						if(root.check_all_fields()):\
 						app.root.ids.profilePage.add_fee_data(root) if not root.from_update else\
 						app.root.ids.profilePage.update_fee_data(root)
 				MDFloatingActionButton:
@@ -935,7 +933,6 @@ ScreenManager:
 					theme_text_color: "Custom"
 					text_color: [1,1,1,1]
 					on_release:
-						if root.check_edits(root.ids.rv.children[0]):\
 						app.root.transition= FallOutTransition();app.root.current= "userScreen"
 				
 
@@ -1035,7 +1032,7 @@ ScreenManager:
 						BoxLayout:
 							size_hint:.13,1
 							Label:
-								text:"Paid"
+								text:"Total Paid"
 						BoxLayout:
 							size_hint:.13,1
 							Label:
@@ -1047,15 +1044,15 @@ ScreenManager:
 						BoxLayout:
 							size_hint:.13,1
 							Label:
-								text:"Date"
+								text:"Last Date"
 						BoxLayout:
 							size_hint:.15,1
 							Label:
-								text:"Trans.Id"
+								text:"Last Trans.Id"
 						BoxLayout:
 							size_hint:.23,1
 							Label:
-								text:"Remarks"
+								text:"Last Remarks"
 						BoxLayout:
 							size_hint:.06,1
 							
@@ -1267,7 +1264,7 @@ ScreenManager:
 				id:sendBtn
 				text:"Send Code"
 				on_release:
-					root.call_code_submit_layout()
+					root.pre_verify_code()
 
 			MDLabel:
 				id:statusLabel

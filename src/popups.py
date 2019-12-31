@@ -27,30 +27,26 @@ class SideNav(ModalView, Database):
 
 # being used to add fee data
 class AddDataLayout(ModalView, Database):
-    
     def add_more_data_layout(self):
         from custom_layouts import MultipleDataLayout
-        w=MultipleDataLayout()
-        self.height=60*(len(self.ids.multipleDataContainer.children)+1)+230
-        self.ids.multipleDataContainer.height=60*(len(self.ids.multipleDataContainer.children)+1)
+
+        w = MultipleDataLayout()
+        self.height = 60 * (len(self.ids.multipleDataContainer.children) + 1) + 230
+        self.ids.multipleDataContainer.height = 60 * (
+            len(self.ids.multipleDataContainer.children) + 1
+        )
         self.ids.multipleDataContainer.add_widget(w)
 
     def check_all_fields(self):
-        count=0
+        count = 0
         for each in self.ids.multipleDataContainer.children:
-            if each.ids.paid.text==""\
-             or each.ids.date.text=="Select Date"\
-             or each.ids.tid.text=="":
-                count=count+1
-                
-        if count==0 and self.ids.sem.text!="":
-            return True
-        else:
-            Snackbar(
-                    text="Something not filled or selected",
-                    duration=2.0,
-                ).show()
-            return False
+            if (
+                each.ids.paid.text == ""
+                or each.ids.date.text == "Select Date"
+                or each.ids.tid.text == ""
+            ):
+                return False
+        return True
 
 
 # popups class
@@ -90,13 +86,12 @@ class LoginPopup(ModalView, Database):
             self.dismiss()
             root.ids.userScreen.user_name = valid_user[1]
 
-            #userlog
-            if table_name=="users":
-                dnt= strftime("%d-%m-%Y %H:%M:%S")
-                uname= valid_user[1]
-                activity= activities["login"]
-                create_log(dnt,uname,activity)
-
+            # userlog
+            if table_name == "users":
+                dnt = strftime("%d-%m-%Y %H:%M:%S")
+                uname = valid_user[1]
+                activity = activities["login"]
+                create_log(dnt, uname, activity)
 
             return True
         else:
@@ -188,11 +183,9 @@ class DeleteWarning(ModalView, Database):
                 'sem = "' + data["sem"] + '" AND tid = "' + data["tid"] + '"'
             )
             self.delete_detail = (
-                "Fee detail: Semester "
+                "Sure to delete fee for sem. "
                 + data["sem"]
-                + ", Trans. Id "
-                + data["tid"]
-                + " for reg. no. "
+                + "of reg. no"
                 + data["reg"]
             )
 
@@ -204,20 +197,36 @@ class DeleteWarning(ModalView, Database):
         """
         conn = self.connect_database(self.db_file)
         res = self.delete_from_database(self.table_name, conn, self.condition)
+        conn.close()
 
         if res:
-            self.success = True
-            res_text = "Successfully deleted!"
-            ##userlog
             if self.id_ == "fee":
-                dnt= strftime("%d-%m-%Y %H:%M:%S")
-                uname= self.data["uname"]
-                activity= activities["delete_fee"].format(self.data["name"],self.data["sem"])
-                create_log(dnt,uname,activity)
-            if self.callback is not None:
-                self.callback()
+                if self.delete_table(
+                    self.db_file, self.table_name + "_" + self.data["sem"]
+                ):
+                    self.success = True
+                    res_text = "Successfully deleted!"
+
+                    if self.callback is not None:
+                        self.callback()
+
+                    ##userlog
+                    dnt = strftime("%d-%m-%Y %H:%M:%S")
+                    uname = self.data["uname"]
+                    activity = activities["delete_fee"].format(
+                        self.data["name"], self.data["sem"]
+                    )
+                    create_log(dnt, uname, activity)
+                else:
+                    res_text = "Error in deletion!"
+            else:
+                self.success = True
+                res_text = "Successfully deleted!"
+
+                if self.callback is not None:
+                    self.callback()
         else:
-            res_text = "Error in deletion!\nYou may re-check all the fields."
+            res_text = "Error in deletion!"
 
         self.ids.container.clear_widgets()
         layout = GridLayout(cols=1)

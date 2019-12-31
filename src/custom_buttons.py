@@ -11,6 +11,7 @@ from kivy.uix.togglebutton import ToggleButton
 
 from kivymd.uix.button import MDRaisedButton
 
+
 class DropBtn(MDRaisedButton):
     """
     A customized `MDRaisedButton` to be used in `DropDowns`
@@ -20,6 +21,7 @@ class DropBtn(MDRaisedButton):
         `select`:
             Action to be taken when this button is selected
     """
+
     def select(self, instance):
         """
         parameters
