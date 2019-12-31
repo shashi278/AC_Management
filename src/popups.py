@@ -4,10 +4,12 @@ from kivy.animation import Animation
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
 
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.picker import MDThemePicker
 from kivymd.uix.snackbar import Snackbar
+from kivymd.uix.label import MDLabel
 
 from sqlite3 import Error
 from time import strftime
@@ -48,6 +50,44 @@ class AddDataLayout(ModalView, Database):
                 return False
         return True
 
+class FeeInfoPopup(ModalView, Database):
+    reg_no=None
+    sem=None
+    app=None
+    def on_open(self):
+        tableName = "_" + str(self.reg_no)
+        conn = self.connect_database("fee_main.db")
+
+        data = self.search_from_database(tableName, conn, "sem", self.sem, order_by="sem")[0]
+        conn.close()
+
+        due,late = data[2],data[3]
+
+        tableName = "_" + str(self.reg_no) + "_" + str(self.sem)
+        data = self.extractAllData("fee_main.db", tableName, order_by="id")
+
+        from custom_layouts import FeeInfoData
+        total_paid=0
+        for each in data:
+            total_paid=total_paid+each[1]
+            l=FeeInfoData(str(each[1]),each[2],each[3],each[4])
+            self.ids.paymentData.add_widget(l)
+        
+        l=BoxLayout()
+        l.padding=(0,40,0,0)
+        color=(1,1,1,1)if self.app.theme_cls.theme_style=="Dark" else(0,0,0,1)
+        mdl1=MDLabel()
+        mdl2=MDLabel()
+        mdl3=MDLabel()
+        mdl1.text="Total Paid: ₹"+str(total_paid)
+        mdl2.text="Due: ₹"+str(due)
+        mdl3.text="Late Fine: ₹"+str(late)
+        mdl1.halign,mdl2.halign,mdl3.halign="center","center","center"
+        mdl1.color,mdl2.color,mdl3.color=color,color,color
+        l.add_widget(mdl1)
+        l.add_widget(mdl2)
+        l.add_widget(mdl3)
+        self.ids.paymentData.add_widget(l)
 
 # popups class
 class LoginPopup(ModalView, Database):

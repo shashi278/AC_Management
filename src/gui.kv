@@ -216,7 +216,7 @@
 		LabelForList:
 			id: lbl6
 			text: root.tid
-			
+
 	#-------remarks item--------#
 	ListItemLayoutProfile:
 		id: item7
@@ -226,7 +226,26 @@
 			text: root.remarks
 			
 	BoxLayout:
-		size_hint: 0.06,1
+		size_hint: None,1
+		width:120
+
+		HoverLayout:
+			on_enter:
+				btn0.text_color= [1,1,1,1]
+				btn0.md_bg_color= [.5,.5,.5,.5]
+			on_leave:
+				btn0.text_color=[.4,.4,.4,1]
+				btn0.md_bg_color= [.5,.5,.5,0]
+
+			AnchorLayout:
+				MDIconButton:
+					id: btn0
+					icon: "information-outline"
+					theme_text_color: "Custom"
+					md_bg_color:[.5,.5,.5,0]
+					text_color: [.4,.4,.4,1]
+					on_release:
+						root.open_feeinfo_popup(root,app)
 
 		HoverLayout:
 			on_enter:
@@ -668,6 +687,114 @@
 <InputFields@MDTextField>:
 	write_tab:False
 
+<FeeInfoPopup>:
+	size_hint:.45,.8
+	BoxLayout:
+		orientation:"vertical"
+		canvas:
+			Color:
+				rgba:(0,0,0,1) if app.theme_cls.theme_style=="Dark" else (1,1,1,1)
+			Rectangle:
+				pos:self.pos
+				size:self.size
+		BoxLayout:
+			size_hint_y:.3
+			canvas:
+				Color:
+					rgba:app.theme_cls.primary_color
+				Rectangle:
+					pos:self.pos
+					size:self.size
+			MDLabel:
+				id:semLabel
+				markup:True
+				font_size:root.width/15
+				halign:"center"
+				color:(1,1,1,1)
+		ScrollView:
+			BoxLayout:
+				orientation:"vertical"
+				BoxLayout:
+					padding:0,7,0,0
+					size_hint_y:None
+					height:40
+					canvas:
+						Color:
+							rgba:app.theme_cls.primary_color
+						Rectangle:
+							pos:self.pos
+							size:self.size
+					MDLabel:
+						size_hint_x:.25
+						halign:"center"
+						color:(1,1,1,1) 
+						text:"Payment"
+						bold:True
+					MDLabel:
+						size_hint_x:.25
+						halign:"center"
+						color:1,1,1,1
+						text:"Date"
+						bold:True
+					MDLabel:
+						size_hint_x:.5
+						halign:"center"
+						color:1,1,1,1
+						text:"Trans. Id"
+						bold:True
+					Widget:
+						size_hint_x:None
+						width:20
+					MDLabel:
+						size_hint_x:None
+						width:50
+						color:1,1,1,1
+						text:"Docs"
+						bold:True
+				BoxLayout:
+					id:paymentData
+					size_hint_y:None
+					height:len(self.children)*60
+					orientation:"vertical"
+				Widget:
+
+		AnchorLayout:
+			size_hint_y:None
+			padding:0,0,15,15
+			height:40
+			anchor_x:"right"
+			MDRaisedButton:
+				text:"Dismiss"
+				on_release:root.dismiss()
+<FeeInfoData>:
+	orientation:"vertical"
+	BoxLayout:
+		size_hint_y:None
+		height:60
+
+		MDLabel:
+			size_hint_x:.25
+			halign:"center"
+			color:(1,1,1,1)if app.theme_cls.theme_style=="Dark" else(0,0,0,1)
+			text:root.paid
+		MDLabel:
+			size_hint_x:.25
+			halign:"center"
+			color:(1,1,1,1)if app.theme_cls.theme_style=="Dark" else(0,0,0,1)
+			text:root.date
+		MDLabel:
+			size_hint_x:.5
+			halign:"center"
+			color:(1,1,1,1)if app.theme_cls.theme_style=="Dark" else(0,0,0,1)
+			text:root.tid
+		MDIconButton:
+			size_hint_x:None
+			width:70
+			icon:"eye"
+			disabled: True if root.filename=="" else False
+			on_release:root.view_doc()
+	MDSeparator:
+
 <AddDataLayout>:
 	size_hint_x:1
 	size_hint_y:None
@@ -1030,11 +1157,11 @@ ScreenManager:
 							Label:
 								text:"Semester"
 						BoxLayout:
-							size_hint:.13,1
+							size_hint:.12,1
 							Label:
 								text:"Total Paid"
 						BoxLayout:
-							size_hint:.13,1
+							size_hint:.12,1
 							Label:
 								text:"Due"
 						BoxLayout:
@@ -1050,11 +1177,11 @@ ScreenManager:
 							Label:
 								text:"Last Trans.Id"
 						BoxLayout:
-							size_hint:.23,1
+							size_hint:.22,1
 							Label:
 								text:"Last Remarks"
 						BoxLayout:
-							size_hint:.06,1
+							size_hint:.09,1
 							
 					BoxLayout:
 						canvas:

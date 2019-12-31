@@ -13,7 +13,7 @@ from kivymd.uix.snackbar import Snackbar
 from database import Database
 from hoverable import HoverBehavior
 from custom_widgets import LabelForList, LabelForListStudent
-from popups import DeleteWarning, AddDataLayout
+from popups import DeleteWarning, AddDataLayout ,FeeInfoPopup
 
 import os
 from kivy.utils import platform
@@ -107,8 +107,8 @@ class Rowinfo(BoxLayout, Database):
         adl.ids.sem.disabled = True
         adl.ids.late.text = str(late)
 
-        adl.height = 60 * (len(data) - 1) + 230
-        adl.ids.multipleDataContainer.height = 60 * (len(data) - 1)
+        adl.height = 60 * len(data) + 230
+        adl.ids.multipleDataContainer.height = 60 * len(data)
         for c, each in enumerate(data):
             if c == 0:
                 w = adl.ids.multipleDataContainer.children[0]
@@ -141,6 +141,37 @@ class Rowinfo(BoxLayout, Database):
             callback=app.root.current_screen.populate_screen,
         ).open()
 
+    def open_feeinfo_popup(self,root,app):
+        popup=FeeInfoPopup()
+        popup.reg_no=self.parent.reg_no
+        popup.app=app
+        popup.sem=root.sem
+        popup.ids.semLabel.text="Semester[size=100][b]{}[/b][/size]".format(root.sem)
+        popup.open()
+
+class FeeInfoData(BoxLayout):
+    paid=""
+    date=""
+    tid=""
+    filename=""
+    def __init__(self,paid,date,tid,filename):
+        self.paid=paid
+        self.date=date
+        self.tid=tid
+        self.filename=filename
+        super().__init__()
+
+    def view_doc(self):
+        from generate_fee_receipt import show_doc
+        if self.filename!="":
+            extension = os.path.splitext(self.filename)[1]
+            print(extension)
+            if os.path.exists("documents/"+self.tid+extension):
+                show_doc("documents\\"+self.tid+extension)
+            else:
+                Snackbar(text="Error in file showing!",duration=2).show()
+            
+        print(type(self.filename))
 
 class AddUserDataLayout(FloatLayout):
     def manage_icon(self, btn):
@@ -279,4 +310,4 @@ class MultipleDataLayout(BoxLayout):
     def show_doc(self):
         import generate_fee_receipt
 
-        generate_fee_receipt.show_pdf(self.doc_path)
+        generate_fee_receipt.show_doc(self.doc_path)

@@ -43,7 +43,7 @@ class PDF(FPDF):
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
 
 
-def show_pdf(file_path):
+def show_doc(file_path):
     try:
         if platform.system() == "Windows":
             os.startfile(file_path)
@@ -141,7 +141,7 @@ def generate_pdf(personalinfo, feeinfo, dir):
         os.mkdir(dir + "/Students")
     filepath_and_name = dir + "/Students/" + personalinfo["reg"] + ".pdf"
     pdf.output(filepath_and_name, "F")
-    show_pdf(filepath_and_name)
+    show_doc(filepath_and_name)
 
 
 def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
@@ -229,7 +229,7 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
         filepath_and_name, "F",
     )
 
-    show_pdf(filepath_and_name)
+    show_doc(filepath_and_name)
 
 
 if __name__ == "__main__":
