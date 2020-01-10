@@ -472,7 +472,7 @@ class ProfilePage(Screen, Database):
             data = (sem, tot_paid, due, late, last_date, last_tid, last_rem)
 
             table_name = "_" + str(self.reg_no)
-            conn = self.connect_database("fee_main.db")
+            #conn = self.connect_database("fee_main.db")
             if self.insert_into_database(table_name, conn, data) is not None:
                 self.populate_screen()
                 ins.dismiss()
@@ -480,7 +480,7 @@ class ProfilePage(Screen, Database):
                 table_name = "_" + str(self.reg_no) + "_" + str(sem)
                 for each in dataset:
                     self.insert_into_database(table_name, conn, each)
-                conn.close()
+
                 self.move_doc(ins)
                 ##userlog
                 dnt = strftime("%d-%m-%Y %H:%M:%S")
@@ -491,6 +491,7 @@ class ProfilePage(Screen, Database):
                 Snackbar(
                     text="Data for semester {} already exists.".format(sem), duration=1
                 ).show()
+            conn.close()
 
         else:
             Snackbar(text="Please fill up all required fields").show()
@@ -628,6 +629,7 @@ class ProfilePage(Screen, Database):
             if conn is not None:
                 with open("fee_record.sql") as table:
                     self.create_table(table.read().format("_" + str(self.reg_no)), conn)
+            conn.close()
 
     def anim_in(self, instance):
         """
@@ -871,6 +873,7 @@ class AdminScreen(Screen, Database):
                                 self.populate_user_data()
                                 self._user_layout_anim_in(layout)
                                 btn.icon = "plus"
+                conn.close()
 
         else:
             self._user_layout_anim_in(layout)

@@ -61,7 +61,7 @@ class AccountManagementSystem(App, Database):
             with open("admin_record.sql") as table:
                 conn = self.connect_database(db_file)
                 self.create_table(table.read(), conn)
-                conn = self.connect_database(db_file)
+                #conn = self.connect_database(db_file)
                 self.insert_into_database(
                     "admin",
                     conn,
