@@ -160,7 +160,7 @@ class Database:
                 cur.execute(table)
             except Error as e:
                 pass
-                # print("Error in creating table: {}".format(e))
+                
             conn.commit()
             conn.close()
 

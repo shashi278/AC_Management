@@ -54,18 +54,20 @@ class AccountManagementSystem(App, Database):
                 json.dump(default_setting, jf, indent=4)
 
         db_file = "user_main.db"
-        conn = self.connect_database(db_file)
         try:
             self.extractAllData(db_file, "admin", order_by="id")
 
         except Error:
             with open("admin_record.sql") as table:
+                conn = self.connect_database(db_file)
                 self.create_table(table.read(), conn)
+                conn = self.connect_database(db_file)
                 self.insert_into_database(
                     "admin",
                     conn,
-                    ("", "admin@example.com", "admin", "admin", "", "", ""),
+                    ("Admin", "admin@example.com", "admin", "admin", "", "", ""),
                 )
+                conn.close()
 
     def build(self):
         return Builder.load_file("gui.kv")

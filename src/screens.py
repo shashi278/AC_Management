@@ -532,12 +532,6 @@ class ProfilePage(Screen, Database):
 
         if ins.check_all_fields():
 
-            table_name = "_" + str(self.reg_no) + "_" + sem
-            conn = self.connect_database("fee_main.db")
-            c = conn.execute("select * from {}".format(table_name))
-            fields_names = tuple([des[0] for des in c.description][1:])
-            conn.close()
-
             data_list = ins.ids.multipleDataContainer.children[::-1]
 
             tot_paid = 0
@@ -569,12 +563,14 @@ class ProfilePage(Screen, Database):
                 else data_list[-1].ids.docName.text
             )
 
-            data = (sem, tot_paid, due, late, last_date, last_tid, last_rem)
+            data = (tot_paid, due, late, last_date, last_tid, last_rem)
 
             table_name = "_" + str(self.reg_no)
-            self.delete_all_data("fee_main.db", table_name)
             conn = self.connect_database("fee_main.db")
-            if self.insert_into_database(table_name, conn, data) is not None:
+            c = conn.execute("select * from {}".format(table_name))
+            fields_names = tuple([des[0] for des in c.description][1:])
+            
+            if self.update_database(table_name, conn, fields_names, data, "sem", sem) is not None:
                 conn.close()
 
                 table_name = "_" + str(self.reg_no) + "_" + str(sem)
