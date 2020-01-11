@@ -7,6 +7,9 @@ import subprocess
 
 
 class PDF(FPDF):
+    last_page=False
+    student_fee=False
+    personalinfo=None
     def header(self):
         # Logo
         add_x=0
@@ -42,6 +45,36 @@ class PDF(FPDF):
         self.set_draw_color(0, 1, 1)
         self.line(10+add_x, 50, 200+add_x, 50)
         self.ln(5)
+        if(self.student_fee):
+            self.ln(5)
+            self.set_font("Times", "B", 14)
+            self.cell(0, 5, "Fee Details", 0, 1, "C")
+
+            self.ln(6)
+            self.set_font("Times", "B", 12)
+
+            self.cell(35,10,"Name: "+self.personalinfo["name"])
+            self.ln(7)
+            self.cell(50,10,"Reg No: "+self.personalinfo["reg"],0,0,"L")
+            self.set_x(-50)
+            self.cell(35,10,"Batch: "+self.personalinfo["batch"])
+            self.set_x(10)
+            self.ln(7)
+            self.cell(35,10,"Course & Stream: "+self.personalinfo["course"]+"("+self.personalinfo["stream"]+")",0,0)
+            self.set_x(-50)
+            self.cell(35,10,"Tution Fee: "+self.personalinfo["fee"],0,1)
+            self.set_x(10)
+
+            self.ln(4)
+            self.set_font("Times", "B", 13)
+            self.cell(
+                278,
+                9,
+                "  Semester          Total Paid                   Due                   Late Fine\
+                    Instalment                  Date                                      Trans. id",
+                1,
+            )
+            self.ln(10)
 
     # Page footer
     def footer(self):
@@ -49,8 +82,9 @@ class PDF(FPDF):
         self.set_font("Arial", "I", 8)
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
         self.set_xy(-55,-20)
-        self.set_font("Arial", "B", 10)
-        self.cell(0, 10, "Signature of Accountant ", 0, 0, "L")
+        if(self.last_page):
+            self.set_font("Arial", "B", 10)
+            self.cell(0, 10, "Signature of Accountant ", 0, 0, "L")
 
 
 def show_doc(file_path):
@@ -59,10 +93,10 @@ def show_doc(file_path):
             os.startfile(file_path)
         elif platform.system() == "Linux":
             subprocess.call(["xdg-open", file_path])
-    except PermissionError:
+    except:
         from kivymd.uix.snackbar import Snackbar
 
-        Snackbar(text="File is already opened!", duration=1.5).show()
+        Snackbar(text="Error opening file!", duration=1.5).show()
 
 
 def generate_pdf(personalinfo, feeinfo, dir):
@@ -86,40 +120,12 @@ def generate_pdf(personalinfo, feeinfo, dir):
     # Instantiation of inherited class
 
     pdf = PDF("L","mm","A4")
+    pdf.student_fee=True
+    pdf.personalinfo=personalinfo
     pdf.alias_nb_pages()
     pdf.add_page()
-
-    pdf.set_font("Times", "B", 14)
-    pdf.cell(0, 5, "Fee Details", 0, 1, "C")
-
-    pdf.ln(9)
-    pdf.set_font("Times", "B", 12)
-
-    pdf.cell(35,10,"Name: "+personalinfo["name"])
-    pdf.ln(7)
-    pdf.cell(50,10,"Reg No: "+personalinfo["reg"],0,0,"L")
-    pdf.set_x(-50)
-    pdf.cell(35,10,"Batch: "+personalinfo["batch"])
-    pdf.set_x(10)
-    pdf.ln(7)
-    pdf.cell(35,10,"Course & Stream: "+personalinfo["course"]+"("+personalinfo["stream"]+")",0,0)
-    pdf.set_x(-50)
-    pdf.cell(35,10,"Tution Fee: "+personalinfo["fee"],0,1)
-    pdf.set_x(10)
-
-    pdf.ln(6)
-    pdf.set_font("Times", "B", 13)
-    pdf.cell(
-        278,
-        9,
-        "  Semester          Total Paid                   Due                   Late Fine\
-            Instalment                  Date                                      Trans. id",
-        1,
-    )
-
     # Data of Semesters
-    pdf.cell(-140)
-    pdf.ln(10)
+    #pdf.cell(-140)
     page_no=1
     for info in feeinfo:
         fee_len=len(info["fee"])
@@ -143,15 +149,17 @@ def generate_pdf(personalinfo, feeinfo, dir):
         pdf.ln(fee_len*9)
         if pdf.page_no()==page_no:
             pdf.ln(-(fee_len*9))
-
-    pdf.set_y(-30)
-    pdf.cell(0, 10, "Singnature of Accountant", 0, 0, "R")
-
+    
+    pdf.last_page=True
     if not os.path.exists(dir + "/Students"):
         os.mkdir(dir + "/Students")
     filepath_and_name = dir + "/Students/" + personalinfo["reg"] + ".pdf"
-    pdf.output(filepath_and_name, "F")
-    show_doc(filepath_and_name)
+    try:
+        pdf.output(filepath_and_name, "F")
+        show_doc(filepath_and_name)
+    except PermissionError:
+        from kivymd.uix.snackbar import Snackbar
+        Snackbar(text="Document is aleady open!", duration=3).show()
 
 
 def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
@@ -177,6 +185,7 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
     pdf.alias_nb_pages()
     pdf.add_page()
 
+    pdf.ln(5)
     pdf.set_font("Times", "B", 15)
     pdf.cell(0, 5, "Batch Fee Details", 0, 1, "C")
 
@@ -235,11 +244,12 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
         + ".pdf"
     )
 
-    pdf.output(
-        filepath_and_name, "F",
-    )
-
-    show_doc(filepath_and_name)
+    try:
+        pdf.output(filepath_and_name, "F")
+        show_doc(filepath_and_name)
+    except PermissionError:
+        from kivymd.uix.snackbar import Snackbar
+        Snackbar(text="Document is aleady open!", duration=3).show()
 
 
 if __name__ == "__main__":
