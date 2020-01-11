@@ -7,28 +7,29 @@ import subprocess
 
 
 class PDF(FPDF):
-    last_page=False
-    student_fee=False
-    personalinfo=None
+    last_page = False
+    student_fee = False
+    personalinfo = None
+
     def header(self):
         # Logo
-        add_x=0
-        add_y=0
-        if self.cur_orientation=="P":
-            add_x=0
-            add_y=0
+        add_x = 0
+        add_y = 0
+        if self.cur_orientation == "P":
+            add_x = 0
+            add_y = 0
         else:
-            add_x=50
-        self.image("media/images/logo.png", 10+add_x, 8, 33)
-        self.set_x(10+add_x)
+            add_x = 50
+        self.image("media/images/logo.png", 10 + add_x, 8, 33)
+        self.set_x(10 + add_x)
         self.set_font("Arial", "B", 14)
         self.cell(93)
         self.cell(
             30, 10, "INDIAN INSTITUTE OF INFORMATION TECHNOLOGY,KALYANI", 0, 0, "C"
         )
 
-        self.ln(8)  # used to give vertical space of box
-        self.cell(38+add_x)  # used to give horizontal space from left side
+        self.ln(8)
+        self.cell(38 + add_x)
         self.set_font("Arial", "", 11)
 
         self.multi_cell(
@@ -43,35 +44,45 @@ class PDF(FPDF):
         )
 
         self.set_draw_color(0, 1, 1)
-        self.line(10+add_x, 50, 200+add_x, 50)
+        self.line(10 + add_x, 50, 200 + add_x, 50)
         self.ln(5)
-        if(self.student_fee):
+        if self.student_fee:
             self.ln(5)
             self.set_font("Times", "B", 14)
             self.cell(0, 5, "Fee Details", 0, 1, "C")
 
-            self.ln(6)
+            self.ln(5)
             self.set_font("Times", "B", 12)
 
-            self.cell(35,10,"Name: "+self.personalinfo["name"])
+            self.cell(35, 10, "Name: " + self.personalinfo["name"])
             self.ln(7)
-            self.cell(50,10,"Reg No: "+self.personalinfo["reg"],0,0,"L")
+            self.cell(50, 10, "Reg No: " + self.personalinfo["reg"], 0, 0, "L")
             self.set_x(-50)
-            self.cell(35,10,"Batch: "+self.personalinfo["batch"])
+            self.cell(35, 10, "Batch: " + self.personalinfo["batch"])
             self.set_x(10)
             self.ln(7)
-            self.cell(35,10,"Course & Stream: "+self.personalinfo["course"]+"("+self.personalinfo["stream"]+")",0,0)
+            self.cell(
+                35,
+                10,
+                "Course & Stream: "
+                + self.personalinfo["course"]
+                + "("
+                + self.personalinfo["stream"]
+                + ")",
+                0,
+                0,
+            )
             self.set_x(-50)
-            self.cell(35,10,"Tution Fee: "+self.personalinfo["fee"],0,1)
+            self.cell(35, 10, "Tution Fee: " + self.personalinfo["fee"], 0, 1)
             self.set_x(10)
 
-            self.ln(4)
+            self.ln(2)
             self.set_font("Times", "B", 13)
             self.cell(
                 278,
                 9,
                 "  Semester          Total Paid                   Due                   Late Fine\
-                    Instalment                  Date                                      Trans. id",
+            Instalment                  Date                                      Trans. id",
                 1,
             )
             self.ln(10)
@@ -81,8 +92,8 @@ class PDF(FPDF):
         self.set_y(-15)  # Position at 1.5 cm from bottom
         self.set_font("Arial", "I", 8)
         self.cell(0, 10, "Page " + str(self.page_no()) + "/{nb}", 0, 0, "C")
-        self.set_xy(-55,-20)
-        if(self.last_page):
+        self.set_xy(-65, -20)
+        if self.last_page:
             self.set_font("Arial", "B", 10)
             self.cell(0, 10, "Signature of Accountant ", 0, 0, "L")
 
@@ -119,38 +130,32 @@ def generate_pdf(personalinfo, feeinfo, dir):
                 dir = desktop + "/Fee Reciepts"
     # Instantiation of inherited class
 
-    pdf = PDF("L","mm","A4")
-    pdf.student_fee=True
-    pdf.personalinfo=personalinfo
+    pdf = PDF("L", "mm", "A4")
+    pdf.student_fee = True
+    pdf.personalinfo = personalinfo
     pdf.alias_nb_pages()
     pdf.add_page()
     # Data of Semesters
-    #pdf.cell(-140)
-    page_no=1
+    page_no = 1
     for info in feeinfo:
-        fee_len=len(info["fee"])
-        pdf.cell(25, fee_len*9, info["sem"], 1, 0, "C")
-        pdf.cell(36, fee_len*9, info["paid"], 1, 0, "C")
-        pdf.cell(36, fee_len*9, info["due"], 1, 0, "C")
-        pdf.cell(32, fee_len*9, info["late"], 1, 0, "C")
+        fee_len = len(info["fee"])
+        pdf.cell(25, fee_len * 9, info["sem"], 1, 0, "C")
+        pdf.cell(36, fee_len * 9, info["paid"], 1, 0, "C")
+        pdf.cell(36, fee_len * 9, info["due"], 1, 0, "C")
+        pdf.cell(32, fee_len * 9, info["late"], 1, 0, "C")
         for each in info["fee"]:
-            pdf.cell(37,9,each["ppaid"],1,0,"C")
-            pdf.cell(37, 9,each["date"], 1, 0, "C")
+            pdf.cell(37, 9, each["ppaid"], 1, 0, "C")
+            pdf.cell(37, 9, each["date"], 1, 0, "C")
             pdf.cell(
-                75,
-                9,
-                each["tid"] ,
-                1,
-                2,
-                "C",
+                75, 9, each["tid"], 1, 2, "C",
             )
-            pdf.cell(-74,-9)
-            page_no=pdf.page_no()
-        pdf.ln(fee_len*9)
-        if pdf.page_no()==page_no:
-            pdf.ln(-(fee_len*9))
-    
-    pdf.last_page=True
+            pdf.cell(-74, -9)
+            page_no = pdf.page_no()
+        pdf.ln(fee_len * 9)
+        if pdf.page_no() == page_no:
+            pdf.ln(-(fee_len * 9))
+
+    pdf.last_page = True
     if not os.path.exists(dir + "/Students"):
         os.mkdir(dir + "/Students")
     filepath_and_name = dir + "/Students/" + personalinfo["reg"] + ".pdf"
@@ -159,6 +164,7 @@ def generate_pdf(personalinfo, feeinfo, dir):
         show_doc(filepath_and_name)
     except PermissionError:
         from kivymd.uix.snackbar import Snackbar
+
         Snackbar(text="Document is aleady open!", duration=3).show()
 
 
@@ -181,7 +187,7 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
             else:
                 dir = desktop + "/Fee Reciepts"
 
-    pdf = PDF("P","mm","A4")
+    pdf = PDF("P", "mm", "A4")
     pdf.alias_nb_pages()
     pdf.add_page()
 
@@ -249,6 +255,7 @@ def generate_batch_fee_pdf(basic_details, students_fee_data, dir):
         show_doc(filepath_and_name)
     except PermissionError:
         from kivymd.uix.snackbar import Snackbar
+
         Snackbar(text="Document is aleady open!", duration=3).show()
 
 
@@ -260,266 +267,199 @@ if __name__ == "__main__":
             "paid": "94700",
             "due": "1000",
             "late": "1000",
-            "fee":[
-                    
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345HHHHHHH",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "10-11-2010",
+                    "tid": "IOJ454355434512345HHHHHHH",
+                },
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "2",
             "paid": "94500",
             "due": "200",
             "late": "1000",
-            "fee":[
-                    
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "3",
             "paid": "93700",
             "due": "1000",
             "late": "0",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "4",
             "paid": "64700",
             "due": "0",
             "late": "0",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "5",
             "paid": "94700",
             "due": "1000",
             "late": "0",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+            ],
         },
         {
             "sem": "7",
             "paid": "91730",
             "due": "1000",
             "late": "1000",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "8",
             "paid": "14500",
             "due": "1000",
             "late": "1000",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "9",
             "paid": "94700",
             "due": "1000",
             "late": "0",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "10",
             "paid": "64700",
             "due": "1000",
             "late": "0",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "11",
             "paid": "91730",
             "due": "1000",
             "late": "1000",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
         {
             "sem": "12",
             "paid": "14500",
             "due": "1000",
             "late": "1000",
-            "fee":[
-                    {
-                        "ppaid":"20000",
-                        "date": "22-12-2012",
-                        "tid": "SVBNJGF4355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2014",
-                        "tid": "XKJKTF55434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "10-11-2010",
-                        "tid": "IOJ454355434512345",
-                    },
-                    {
-                        "ppaid":"20000",
-                        "date": "12-12-2017",
-                        "tid": "GHHTG454355434512345",
-                    },
-                ],
+            "fee": [
+                {
+                    "ppaid": "20000",
+                    "date": "22-12-2012",
+                    "tid": "SVBNJGF4355434512345",
+                },
+                {"ppaid": "20000", "date": "12-12-2014", "tid": "XKJKTF55434512345",},
+                {"ppaid": "20000", "date": "10-11-2010", "tid": "IOJ454355434512345",},
+                {
+                    "ppaid": "20000",
+                    "date": "12-12-2017",
+                    "tid": "GHHTG454355434512345",
+                },
+            ],
         },
     ]
 
@@ -532,11 +472,7 @@ if __name__ == "__main__":
         "fee": "947000",
     }
 
-
-
-
     generate_pdf(personal_info, fee_info, None)
-
 
     batch_details = {
         "batch": "2017-2021",
