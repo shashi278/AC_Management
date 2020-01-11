@@ -678,10 +678,7 @@
 				MDIconButton:
 					icon:"delete"
 					on_release:
-						if len(root.parent.children)>1:\
-						root.parent.height=60*(len(root.parent.children)-1);\
-						root.parent.parent.parent.height=60*(len(root.parent.children)-1)+230;\
-						root.parent.remove_widget(root)
+						root.delete(root)
 					
 
 <InputFields@MDTextField>:
@@ -832,14 +829,19 @@
 				on_text:
 					self.text= self.text.strip()
 
-			InputFields:
-				size_hint_x: None
-				width:dp(130)
-				input_filter:"int"
-				id:late
-				hint_text: "Late Fine"
-				on_text:
-					self.text= self.text.strip()
+			MDLabel:
+				size_hint_x:None
+				width:dp(80)
+				color:app.theme_cls.primary_color
+				text:"Late Fine"
+
+			MDCheckbox:
+				id:lateCheckbox
+				size_hint_x:None
+				width:dp(30)
+				on_state:
+					root.late_fine_layout(self)
+
 
 			AnchorLayout:
 				anchor_x:"right"
