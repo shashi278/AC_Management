@@ -20,7 +20,7 @@ def create_log(dnt, uname, activity):
         db.create_table(table.read(), conn)
 
     data = (dnt, uname, activity)
-    conn = db.connect_database("user_log.db")
+    #conn = db.connect_database("user_log.db")
     db.insert_into_database("user_logs", conn, data)
     conn.close()
 

@@ -162,7 +162,6 @@ class Database:
                 pass
                 
             conn.commit()
-            conn.close()
 
     def delete_table(self, db_file, table_name):
         conn = self.connect_database(db_file)
