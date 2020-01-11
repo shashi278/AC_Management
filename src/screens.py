@@ -671,7 +671,26 @@ class ProfilePage(Screen, Database):
             data_list = self.extractAllData(
                 "fee_main.db", "_" + str(self.reg_no), order_by="sem"
             )
+            sem_fee_data=[]
+            for each in data_list:
+                tableName = "_" + str(self.reg_no) + "_" + str(each[0])
+                data = self.extractAllData("fee_main.db", tableName, order_by="id")
+                instalment_fee_data=[]
+                for each1 in data:
+                    instalment_fee_data.append({
+                        "ppaid":str(each1[1]),
+                        "date":each1[2],
+                        "tid":each1[3],
+                    })
+                sem_fee_data.append({
+                    "sem":str(each[0]),
+                    "paid":str(each[1]),
+                    "due":str(each[2]),
+                    "late":str(each[3]),
+                    "fee":instalment_fee_data,
+                })
 
+                
         except Error:
             Snackbar(
                 text="Error retrieving fee data for reg_no {}".format(self.reg_no),
@@ -679,18 +698,7 @@ class ProfilePage(Screen, Database):
             ).show()
         else:
             if len(data_list):
-                fee_data = []
-                for data_tuple in sorted(data_list):
-                    _temp = {
-                        "sem": str(data_tuple[0]),
-                        "paid": str(data_tuple[1]),
-                        "due": str(data_tuple[2]),
-                        "late": str(data_tuple[3]),
-                        "date": str(data_tuple[4]),
-                        "tid": data_tuple[5],
-                    }
-                    fee_data.append(_temp)
-                generate_pdf(student_info, fee_data, None)
+                generate_pdf(student_info, sem_fee_data, None)
                 Snackbar(
                     text="PDF generated for reg. no. {}".format(self.reg_no), duration=2
                 ).show()
