@@ -1021,6 +1021,8 @@ class AdminScreen(Screen, Database):
         """
         try:
             selected_path = instance.selection[0]
+            #set cursor to wait
+            Window.set_system_cursor("wait")
 
             with open("general_record.sql") as table:
                 if self.readFile(
@@ -1038,6 +1040,8 @@ class AdminScreen(Screen, Database):
                 else:
                     Snackbar(text="Error uploading file.", duration=2).show()
             self.fpopup.dismiss()
+            #set cursor back to arrow
+            Window.set_system_cursor("arrow")
 
         except IndexError:
             Snackbar(text="Please specify a valid file path", duration=2).show()
