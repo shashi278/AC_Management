@@ -105,7 +105,6 @@ class Rowinfo(BoxLayout, Database):
         adl.from_update = True
         adl.ids.sem.text = str(sem)
         adl.ids.sem.disabled = True
-        adl.ids.late.text = str(late)
 
         adl.height = 60 * len(data) + 230
         adl.ids.multipleDataContainer.height = 60 * len(data)
@@ -113,14 +112,22 @@ class Rowinfo(BoxLayout, Database):
             if c == 0:
                 w = adl.ids.multipleDataContainer.children[0]
             else:
-                w = MultipleDataLayout()
+                if (each[5]=="Late Fine"):
+                    adl.ids.lateCheckbox.active=True
+                    w= adl.ids.multipleDataContainer.children[0]
+                    adl.height = 60 * (len(data)) + 230
+                    adl.ids.multipleDataContainer.height = 60 * (len(data))
+
+                else:
+                    w = MultipleDataLayout()
+                    adl.ids.multipleDataContainer.add_widget(w)
+
             w.ids.paid.text = str(each[1])
             w.ids.date.text = each[2]
             w.ids.tid.text = each[3]
             w.ids.docName.text = each[4]
             w.ids.rem.text = each[5]
-            if c != 0:
-                adl.ids.multipleDataContainer.add_widget(w)
+                
         adl.open()
 
     def delete(self, app, root, icon):
@@ -311,3 +318,13 @@ class MultipleDataLayout(BoxLayout):
         import generate_fee_receipt
 
         generate_fee_receipt.show_doc(self.doc_path)
+
+    def delete(self,root):
+        if len(root.parent.children)>1:
+            if(root.ids.rem.text=="Late Fine"):
+                root.parent.parent.parent.ids.lateCheckbox.active=False
+            else:
+                root.parent.height=60*(len(root.parent.children)-1)
+                root.parent.parent.parent.height=60*(len(root.parent.children)-1)+230
+                root.parent.remove_widget(root)
+            

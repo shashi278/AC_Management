@@ -423,7 +423,6 @@ class ProfilePage(Screen, Database):
             if not ins.ids.sem.text or int(ins.ids.sem.text) == 0
             else ins.ids.sem.text
         )
-        late = 0 if not ins.ids.late.text else ins.ids.late.text
 
         if not sem:
             Snackbar(text="Semester is either empty or 0", duration=0.8).show()
@@ -441,11 +440,16 @@ class ProfilePage(Screen, Database):
             data_list = ins.ids.multipleDataContainer.children[::-1]
 
             tot_paid = 0
+            late=0
 
             dataset = []
             for cont in data_list:
                 paid = cont.ids.paid.text
-                tot_paid += int(paid)
+                if(cont.ids.rem.text=="Late Fine"):
+                    late=int(cont.ids.paid.text)
+                    tot_paid += 0
+                else:
+                    tot_paid += int(paid)
 
                 date = cont.ids.date.text
                 tid = cont.ids.tid.text
@@ -525,7 +529,6 @@ class ProfilePage(Screen, Database):
             if not ins.ids.sem.text or int(ins.ids.sem.text) == 0
             else ins.ids.sem.text
         )
-        late = 0 if not ins.ids.late.text else ins.ids.late.text
 
         if not sem:
             Snackbar(text="Semester is either empty or 0", duration=0.8).show()
@@ -536,11 +539,16 @@ class ProfilePage(Screen, Database):
             data_list = ins.ids.multipleDataContainer.children[::-1]
 
             tot_paid = 0
+            late=0
 
             dataset = []
             for cont in data_list:
                 paid = cont.ids.paid.text
-                tot_paid += int(paid)
+                if(cont.ids.rem.text=="Late Fine"):
+                    late=int(cont.ids.paid.text)
+                    tot_paid += 0
+                else:
+                    tot_paid += int(paid)
 
                 date = cont.ids.date.text
                 tid = cont.ids.tid.text

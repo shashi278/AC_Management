@@ -50,6 +50,27 @@ class AddDataLayout(ModalView, Database):
                 return False
         return True
 
+    def late_fine_layout(self,instance):
+        if(instance.active):
+            from custom_layouts import MultipleDataLayout
+            w = MultipleDataLayout()
+            w.ids.rem.disabled=True
+            w.ids.rem.text="Late Fine"
+            self.height = 60 * (len(self.ids.multipleDataContainer.children) + 1) + 230
+            self.ids.multipleDataContainer.height = 60 * (
+                len(self.ids.multipleDataContainer.children) + 1
+            )
+            self.ids.multipleDataContainer.add_widget(w)
+        else:
+            for each in self.ids.multipleDataContainer.children:
+                if(each.ids.rem.text=="Late Fine"):
+                    self.ids.multipleDataContainer.remove_widget(each)
+                    self.height = 60 * (len(self.ids.multipleDataContainer.children) ) + 230
+                    self.ids.multipleDataContainer.height = 60 * (
+                        len(self.ids.multipleDataContainer.children)
+                    )
+
+
 class FeeInfoPopup(ModalView, Database):
     reg_no=None
     sem=None
