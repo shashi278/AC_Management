@@ -174,20 +174,12 @@ class FeeInfoData(BoxLayout):
         if self.filename!="":
             extension = os.path.splitext(self.filename)[1]
             if os.path.exists("documents/"+self.tid+extension):
-<<<<<<< HEAD
-                show_doc("documents/"+self.tid+extension)
-            else:
-                Snackbar(text="File does not exist!",duration=2).show()
-            
-        print(type(self.filename))
-=======
                 if platform=="win":
                     show_doc("documents\\"+self.tid+extension)
                 else:
                     show_doc("documents/"+self.tid+extension) 
             else:
                 Snackbar(text="File does not exist!",duration=2).show()
->>>>>>> 9e191581c8b2bc1eefa28532b30b73cc25ba378c
 
 class AddUserDataLayout(FloatLayout):
     def manage_icon(self, btn):
