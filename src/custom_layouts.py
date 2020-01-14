@@ -102,6 +102,7 @@ class Rowinfo(BoxLayout, Database):
         data = self.extractAllData("fee_main.db", tableName, order_by="id")
 
         adl = AddDataLayout()
+        adl.prev_tid_list=[]
         adl.from_update = True
         adl.ids.sem.text = str(sem)
         adl.ids.sem.disabled = True
@@ -125,9 +126,9 @@ class Rowinfo(BoxLayout, Database):
             w.ids.paid.text = str(each[1])
             w.ids.date.text = each[2]
             w.ids.tid.text = each[3]
-            w.ids.docName.text = each[4]
+            w.ids.docName.text = each[3]+"."+each[4].split(".")[-1] if len(each[4].split("."))>1 else each[4]
             w.ids.rem.text = each[5]
-                
+            adl.prev_tid_list.append(each[3])
         adl.open()
 
     def delete(self, app, root, icon):

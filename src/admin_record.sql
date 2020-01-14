@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS admin (
 	name VARCHAR,
 	email VARCHAR NOT NULL,
 	username VARCHAR UNIQUE NOT NULL,
-	pass PASSWORD NOT NULL,
+	pass VARCHAR NOT NULL,
     phone INTEGER,
 	not_mail VARCHAR,
-	not_pass PASSWORD
+	not_pass VARCHAR
 )

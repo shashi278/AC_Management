@@ -29,6 +29,10 @@ class SideNav(ModalView, Database):
 
 # being used to add fee data
 class AddDataLayout(ModalView, Database):
+
+    #store previous tids when opened for updating fee data
+    prev_tid_list=[]
+    
     def add_more_data_layout(self):
         from custom_layouts import MultipleDataLayout
 
