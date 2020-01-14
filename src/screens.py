@@ -88,7 +88,7 @@ class HomeScreen(Screen):
 
     def selectWallpaper(self,theme_mode):
         if theme_mode=="Dark":
-            return "media/images/dark{}.jpg".format(random.randint(1,6))
+            return "media/images/dark{}.jpg".format(random.randint(1,5))
         else:
             return "media/images/light{}.jpg".format(random.randint(1,7))
 
