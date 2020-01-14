@@ -48,18 +48,17 @@ import smtplib
 from email.message import EmailMessage
 import socket
 from time import strftime
-import shutil
 
 # local imports
 from database import Database
 from popups import LoginPopup, DeleteWarning, SideNav, AddDataLayout
 from custom_layouts import UpdateStudentLayout
-from custom_widgets import AdminInfoLabel, AdminInfoEditField
+from custom_widgets import AdminInfoLabel, AdminInfoEditField, CustomRecycleView
 from custom_buttons import DropBtn
 from dropdowns import *
 from generate_fee_receipt import generate_pdf, generate_batch_fee_pdf
-from custom_widgets import CustomRecycleView
 from create_logs import activities, create_log, extract_log
+from utils import move_doc, rename_doc, delete_doc
 
 # left iconbutton
 class ListLeftIconButton(ILeftBodyTouch, MDIconButton):
@@ -209,7 +208,6 @@ class UserScreen(Screen, Database):
                 "batch": each[4],
             }
             self.ids.rv.data.append(x)
-
 
 # ProfilePage
 class ProfilePage(Screen, Database):
@@ -485,7 +483,7 @@ class ProfilePage(Screen, Database):
                 for each in dataset:
                     self.insert_into_database(table_name, conn, each)
 
-                self.move_doc(ins)
+                move_doc(ins)
                 ##userlog
                 dnt = strftime("%d-%m-%Y %H:%M:%S")
                 uname = self.parent.ids.userScreen.user_name
@@ -499,19 +497,6 @@ class ProfilePage(Screen, Database):
 
         else:
             Snackbar(text="Please fill up all required fields").show()
-
-    def move_doc(self, ins):
-        """
-        This function saves a copy of
-        documents in the source folder 
-        """
-        if not os.path.exists("documents/"):
-            os.makedirs("documents/")
-
-        for each in ins.ids.multipleDataContainer.children:
-            if each.doc_path != "":
-                extension = os.path.splitext(each.doc_path)[1]
-                shutil.copy(each.doc_path, "documents/" + each.ids.tid.text + extension)
 
     def update_fee_data(self, ins):
         """
@@ -541,6 +526,8 @@ class ProfilePage(Screen, Database):
             tot_paid = 0
             late=0
 
+            curr_tid_list=[]
+            curr_doc_list=[]
             dataset = []
             for cont in data_list:
                 paid = cont.ids.paid.text
@@ -561,6 +548,8 @@ class ProfilePage(Screen, Database):
 
                 data = (paid, date, tid, doc_file, rem)
                 dataset.append(data)
+                curr_tid_list.append(tid)
+                curr_doc_list.append(doc_file)
 
             due = self.total_fee - tot_paid
             last_date = data_list[-1].ids.date.text
@@ -594,9 +583,15 @@ class ProfilePage(Screen, Database):
 
                 if all_okay:
                     self.populate_screen()
-                    ins.dismiss()
                     conn.close()
-                    self.move_doc(ins)
+                    for x,y,z in zip(ins.prev_tid_list, curr_doc_list, curr_tid_list):
+                        if x!=y.split(".")[0]:
+                            delete_doc(x,y.split(".")[-1])
+                            move_doc(ins)
+                        elif x!=z:
+                            rename_doc(x,z,y.split(".")[-1])
+                    ins.dismiss()
+
                     ##userlog
                     dnt = strftime("%d-%m-%Y %H:%M:%S")
                     uname = self.parent.ids.userScreen.user_name
@@ -628,7 +623,7 @@ class ProfilePage(Screen, Database):
                     "late": str(data_tuple[3]),
                     "date": str(data_tuple[4]),
                     "tid": data_tuple[5],
-                    "remarks": data_tuple[6],
+                    "remarks": data_tuple[6] if data_tuple[6] else "NA",
                 }
                 self.ids.rv.data.append(_temp)
         except:
@@ -720,7 +715,6 @@ class ProfilePage(Screen, Database):
                     text="No fee data found for reg. no. {}".format(self.reg_no),
                     duration=2,
                 ).show()
-
 
 # AdminScreen
 class AdminScreen(Screen, Database):
@@ -1028,7 +1022,7 @@ class AdminScreen(Screen, Database):
         and shows success or error message accordingly
         """
         try:
-            selected_path = instance.selection[0]
+            selected_path = instance.selection[0]          
             #set cursor to wait
             Window.set_system_cursor("wait")
 
@@ -2023,13 +2017,12 @@ class NotificationScreen(Screen, Database):
         self.ids.sendBtn.disabled = False
 
     def load_message(self, latefine, duedate):
-        msg = """Dear Student,
-                    It is informed you that you have not paid
-                your tution fee yet.
+        msg = """It is to informe you that you have not paid
+                 your tution fee yet.
+                 
+                 Please,pay your tution fee before {} to 
+                 avoid the extra charges of ₹{}.
 
-                    Please,pay your tution fee before {} to
-                avoid the extra charges of ₹{}.
-
-                                                    Thanks
-                                            """
+                 Regards"""
+                
         self.ids.messageBox.text = msg.format(duedate, latefine)

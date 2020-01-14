@@ -102,6 +102,7 @@ class Rowinfo(BoxLayout, Database):
         data = self.extractAllData("fee_main.db", tableName, order_by="id")
 
         adl = AddDataLayout()
+        adl.prev_tid_list=[]
         adl.from_update = True
         adl.ids.sem.text = str(sem)
         adl.ids.sem.disabled = True
@@ -125,9 +126,9 @@ class Rowinfo(BoxLayout, Database):
             w.ids.paid.text = str(each[1])
             w.ids.date.text = each[2]
             w.ids.tid.text = each[3]
-            w.ids.docName.text = each[4]
+            w.ids.docName.text = each[3]+"."+each[4].split(".")[-1] if len(each[4].split("."))>1 else each[4]
             w.ids.rem.text = each[5]
-                
+            adl.prev_tid_list.append(each[3])
         adl.open()
 
     def delete(self, app, root, icon):
@@ -174,9 +175,9 @@ class FeeInfoData(BoxLayout):
             extension = os.path.splitext(self.filename)[1]
             print(extension)
             if os.path.exists("documents/"+self.tid+extension):
-                show_doc("documents\\"+self.tid+extension)
+                show_doc("documents/"+self.tid+extension)
             else:
-                Snackbar(text="Error in file showing!",duration=2).show()
+                Snackbar(text="File does not exist!",duration=2).show()
             
         print(type(self.filename))
 
