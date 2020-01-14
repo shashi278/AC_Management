@@ -22,16 +22,16 @@ from screens import HomeScreen
 # Main App
 class AccountManagementSystem(App, Database):
     theme_cls = ThemeManager()
+    default_setting = {
+            "theme_style": "Light",
+            "theme_primary_palette": "Blue",
+            "theme_accent_palette": "Amber",
+        }
 
     def on_start(self):
         Window.bind(on_close=self.close)
         Window.set_title("Account Management System: IIIT Kalyani")
 
-        default_setting = {
-            "theme_style": "Light",
-            "theme_primary_palette": "Blue",
-            "theme_accent_palette": "Amber",
-        }
         try:
             with open("settings.json") as jf:
                 setting = json.load(jf)
@@ -40,18 +40,18 @@ class AccountManagementSystem(App, Database):
             self.theme_cls.accent_palette = setting["theme_accent_palette"]
 
         except IOError:
-            self.theme_cls.theme_style = default_setting["theme_style"]
-            self.theme_cls.primary_palette = default_setting["theme_primary_palette"]
-            self.theme_cls.accent_palette = default_setting["theme_accent_palette"]
+            self.theme_cls.theme_style = self.default_setting["theme_style"]
+            self.theme_cls.primary_palette = self.default_setting["theme_primary_palette"]
+            self.theme_cls.accent_palette = self.default_setting["theme_accent_palette"]
             with open("settings.json", "w") as jf:
-                json.dump(default_setting, jf, indent=4)
+                json.dump(self.default_setting, jf, indent=4)
 
         except json.decoder.JSONDecodeError:
-            self.theme_cls.theme_style = default_setting["theme_style"]
-            self.theme_cls.primary_palette = default_setting["theme_primary_palette"]
-            self.theme_cls.accent_palette = default_setting["theme_accent_palette"]
+            self.theme_cls.theme_style = self.default_setting["theme_style"]
+            self.theme_cls.primary_palette = self.default_setting["theme_primary_palette"]
+            self.theme_cls.accent_palette = self.default_setting["theme_accent_palette"]
             with open("settings.json", "r+") as jf:
-                json.dump(default_setting, jf, indent=4)
+                json.dump(self.default_setting, jf, indent=4)
 
         db_file = "user_main.db"
         try:
