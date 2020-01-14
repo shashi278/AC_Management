@@ -1210,13 +1210,12 @@ ScreenManager:
 		MDFloatingActionButton:
 			icon: "plus"
 			md_bg_color: app.theme_cls.primary_color
-			x: dp(90)
-			y: dp(30)
+			x: root.width/2-self.width/2
+			y: dp(15)
 			on_release:root.open_add_data_layout()
 
 #--------------------------HomeScreen-----------------------------------------###
 <HomeScreen>:
-
 	name:"homeScreen"
 
 	BoxLayout:
@@ -1225,7 +1224,7 @@ ScreenManager:
 			Rectangle:
 				pos: self.pos
 				size: self.size
-				source:"media/images/back5.jpg"
+				source:root.selectWallpaper(app.theme_cls.theme_style)
 
 		BoxLayout:
 			size_hint: (1,0.2)
@@ -1257,6 +1256,7 @@ ScreenManager:
 					BoxLayout:
 						Label:
 							text:"IIIT KALYANI"
+							color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 							text_size: self.size
 							font_size: self.height/17+self.width/17
 
@@ -1265,6 +1265,7 @@ ScreenManager:
 						Label:
 							text_size: self.size
 							text:"ACCOUNT MANAGEMENT SYSTEM"
+							color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 							font_size: self.height/22+self.width/22
 							halign: 'left'
 							valign: 'middle'
@@ -1281,7 +1282,7 @@ ScreenManager:
 							size: 80,80
 							#text: "User"
 							border: (0, 0, 0, 0)
-							background_normal: 'media/images/admin3.png'
+							background_normal: 'media/images/admin3.png' if app.theme_cls.theme_style=="Light" else 'media/images/admin3_white.png'
 							background_down: 'media/images/admin3_down.png'
 							on_release:
 								root.openLoginPop("Admin")
@@ -1289,8 +1290,8 @@ ScreenManager:
 						size_hint_y:.3
 						Label:
 							text: "ADMIN"
+							color:(1,1,1,1) if app.theme_cls.theme_style=="Dark" else (0,0,0,1)
 							bold: True
-							color: C("#000000")
 							font_size: dp("15")
 					
 
@@ -1318,7 +1319,7 @@ ScreenManager:
 						size: 150,174
 						#text: "User"
 						border: (0, 0, 0, 0)
-						background_normal: 'media/images/multi_user3.png'
+						background_normal: 'media/images/multi_user3.png' if app.theme_cls.theme_style=="Light" else 'media/images/multi_user3_white.png'
 						background_down: 'media/images/multi_user3_down.png'
 
 						on_release:
