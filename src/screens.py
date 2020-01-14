@@ -86,6 +86,13 @@ class ScreenManager(ScreenManager):
 
 # HomeScreen Class
 class HomeScreen(Screen):
+
+    def selectWallpaper(self,theme_mode):
+        if theme_mode=="Dark":
+            return "media/images/dark{}.jpg".format(random.randint(1,6))
+        else:
+            return "media/images/light{}.jpg".format(random.randint(1,7))
+
     def openLoginPop(self, title):
         """Opens up the login popup with desired title
 
