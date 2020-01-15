@@ -41,8 +41,8 @@ If that doesn't work, try this:
 
 Releases:
 ---------
-* v1.0-beta has been released for windows platform and the setup file can be downloaded from [here](https://github.com/shashi278/AC_Management/releases/download/1.0/Account.Management.System.exe).
-* You may visit [this](https://github.com/shashi278/AC_Management/releases) for other releases.
+* v1.0.1-beta has been released for windows platform and the setup file can be downloaded from [here](https://github.com/shashi278/AC_Management/releases/download/1.0.1/setup.exe).
+* You may visit [here](https://github.com/shashi278/AC_Management/releases) for other releases.
 
 Screenshots:
 ===========
