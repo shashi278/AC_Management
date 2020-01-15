@@ -88,9 +88,9 @@ class HomeScreen(Screen):
 
     def selectWallpaper(self,theme_mode):
         if theme_mode=="Dark":
-            return "media/images/dark{}.jpg".format(random.randint(1,5))
+            return "media/images/dark{}.jpg".format(random.choice(["1","2","3","4","5"]))
         else:
-            return "media/images/light{}.jpg".format(random.randint(1,7))
+            return "media/images/light{}.jpg".format(random.choice(["1","2","3","4","5","6","7"]))
 
     def openLoginPop(self, title):
         """Opens up the login popup with desired title
