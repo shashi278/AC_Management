@@ -37,6 +37,7 @@ from kivymd.uix.list import (
 
 # internal imports
 import os
+import getpass
 import threading
 from os.path import sep, expanduser, isdir, dirname
 from random import choice
@@ -729,7 +730,7 @@ class AdminScreen(Screen, Database):
     Admin screen class
     """
 
-    pc_username = os.getlogin()
+    pc_username = getpass.getuser()
 
     admin_password = ""
     not_mail = ""
