@@ -24,7 +24,7 @@ Goto [screenshot_small](https://github.com/shashi278/AC_Management/tree/master/s
 
 ##
 Run the code manually:
----------------------------------------------
+------------------------------------------------
 * Clone this repository: `git clone https://github.com/shashi278/AC_Management.git`
 * Install requirements(Depending upon what you call it, pip/pip3): `cd AC_Management && pip3 install -r requirements.txt`
 * Change current directory to `src` directory: `cd AC_Management/src`
