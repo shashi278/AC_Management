@@ -1505,7 +1505,7 @@ class ForgotPasswordScreen(Screen, Database):
 
     def pre_verify_code(self):
         """
-        
+        Runs a thread to send reset email. This prevents UI from freezing
         """
         self.ids.codeSubmitBox.clear_widgets()
         self.ids.resetPasswordBox.clear_widgets()
@@ -1519,6 +1519,12 @@ class ForgotPasswordScreen(Screen, Database):
         t1.start()
 
     def verify_code(self, inst, *args):
+	"""
+        Actual verification of the code takes place here.
+	
+	Gets user inputted text from inst and compares it with
+	the otp_recieved and updates UI accordingly
+        """
         # print(inst.text, self.otp_recieved)
         if inst.text == str(self.otp_recieved):
             if len(self.ids.resetPasswordBox.children) == 0:
@@ -1556,6 +1562,11 @@ class ForgotPasswordScreen(Screen, Database):
             self.ids.resetPasswordBox.clear_widgets()
 
     def new_password_set(self, inst1, inst2, *args):
+	"""
+	Sets a new password
+	
+	takes password and match password from inst1 and inst2 respectively
+	"""
         if inst1.text == inst2.text:
             if inst1.text != "":
                 """
