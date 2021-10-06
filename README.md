@@ -1,5 +1,6 @@
 # Account Management System
-       A desktop application made with Python/Kivy for managing account related data for college students.
+       A desktop application made with Python/Kivy for managing
+       account related data for college students.
 
 #### Homescreen
 ![1](screenshot_small/1.png)
