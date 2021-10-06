@@ -84,6 +84,7 @@ class AccountManagementSystem(App, Database):
 
 
 if __name__ == "__main__":
+    # Does not seem to work on Linux with SDL2 provider :(
     Window.maximize()
     Window.minimum_width = 900
     Window.minimum_height = 600
